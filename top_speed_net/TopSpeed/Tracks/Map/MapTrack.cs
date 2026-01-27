@@ -1108,7 +1108,7 @@ namespace TopSpeed.Tracks.Map
             var headingDegrees = state.HeadingDegrees;
             if (_approachBeacon.TryGetCue(state.WorldPosition, headingDegrees, out var cue) && !cue.Passed)
             {
-                var position = AudioWorld.ToMeters(new Vector3(cue.PortalPosition.X, 0f, cue.PortalPosition.Y));
+                var position = AudioWorld.ToMeters(new Vector3(cue.BeaconPosition.X, 0f, cue.BeaconPosition.Y));
                 _soundBeacon.SetPosition(position);
                 _soundBeacon.SetVelocity(Vector3.Zero);
                 _beaconCooldown -= elapsed;

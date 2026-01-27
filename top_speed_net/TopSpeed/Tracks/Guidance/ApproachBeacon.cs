@@ -13,6 +13,7 @@ namespace TopSpeed.Tracks.Guidance
             TrackApproachSide side,
             string portalId,
             Vector2 portalPosition,
+            Vector2 beaconPosition,
             float targetHeadingDegrees,
             float deltaDegrees,
             float distanceMeters,
@@ -25,6 +26,7 @@ namespace TopSpeed.Tracks.Guidance
             Side = side;
             PortalId = portalId;
             PortalPosition = portalPosition;
+            BeaconPosition = beaconPosition;
             TargetHeadingDegrees = targetHeadingDegrees;
             DeltaDegrees = deltaDegrees;
             DistanceMeters = distanceMeters;
@@ -38,6 +40,7 @@ namespace TopSpeed.Tracks.Guidance
         public TrackApproachSide Side { get; }
         public string PortalId { get; }
         public Vector2 PortalPosition { get; }
+        public Vector2 BeaconPosition { get; }
         public float TargetHeadingDegrees { get; }
         public float DeltaDegrees { get; }
         public float DistanceMeters { get; }
@@ -105,6 +108,9 @@ namespace TopSpeed.Tracks.Guidance
             var forward = HeadingToVector(best.TargetHeadingDegrees);
             var toPlayer = position - best.PortalPosition;
             var passed = Vector2.Dot(forward, toPlayer) > 0f;
+            var beaconPosition = best.PortalPosition;
+            if (best.UseHeadingBeacon)
+                beaconPosition = ResolveBeaconPosition(position, best.TargetHeadingDegrees, best.BeaconShape);
 
             var sectorId = best.SectorId ?? string.Empty;
             var portalId = best.PortalId ?? string.Empty;
@@ -113,6 +119,7 @@ namespace TopSpeed.Tracks.Guidance
                 best.Side,
                 portalId,
                 best.PortalPosition,
+                beaconPosition,
                 best.TargetHeadingDegrees,
                 delta,
                 best.DistanceMeters,
@@ -148,6 +155,8 @@ namespace TopSpeed.Tracks.Guidance
 
             if (!hasBest || portalDistance < best.DistanceMeters)
             {
+                var useHeadingBeacon = ResolveBeaconPlacement(approach);
+                TryGetBeaconShape(approach, out var beaconShape);
                 best = new Candidate
                 {
                     SectorId = approach.SectorId,
@@ -158,7 +167,9 @@ namespace TopSpeed.Tracks.Guidance
                     DistanceMeters = portalDistance,
                     WidthMeters = approach.WidthMeters,
                     LengthMeters = approach.LengthMeters,
-                    ToleranceDegrees = approach.AlignmentToleranceDegrees
+                    ToleranceDegrees = approach.AlignmentToleranceDegrees,
+                    UseHeadingBeacon = useHeadingBeacon,
+                    BeaconShape = beaconShape
                 };
                 hasBest = true;
             }
@@ -205,6 +216,130 @@ namespace TopSpeed.Tracks.Guidance
             }
 
             return true;
+        }
+
+        private static bool ResolveBeaconPlacement(TrackApproachDefinition approach)
+        {
+            var useHeadingBeacon = true;
+
+            if (approach?.Metadata == null || approach.Metadata.Count == 0)
+                return useHeadingBeacon;
+
+            if (TryGetString(approach.Metadata, out var mode, "beacon_mode", "beacon_position", "beacon_style"))
+            {
+                var trimmed = mode.Trim().ToLowerInvariant();
+                if (trimmed.Contains("portal") || trimmed.Contains("point"))
+                    useHeadingBeacon = false;
+                else if (trimmed.Contains("heading") || trimmed.Contains("direction"))
+                    useHeadingBeacon = true;
+            }
+
+            return useHeadingBeacon;
+        }
+
+        private static Vector2 ResolveBeaconPosition(Vector2 position, float headingDegrees, ShapeDefinition? shape)
+        {
+            var forward = HeadingToVector(headingDegrees);
+            if (shape == null)
+                return position + forward;
+
+            switch (shape.Type)
+            {
+                case ShapeType.Rectangle:
+                    return ClosestPointOnRectangle(position, shape);
+                case ShapeType.Circle:
+                    return ClosestPointOnCircle(position, shape);
+                case ShapeType.Polyline:
+                    return ClosestPointOnPolyline(position, shape.Points);
+                case ShapeType.Polygon:
+                    return ClosestPointOnPolygon(position, shape.Points);
+                default:
+                    return position + forward;
+            }
+        }
+
+        private static Vector2 ClosestPointOnRectangle(Vector2 position, ShapeDefinition shape)
+        {
+            var minX = shape.X;
+            var maxX = shape.X + shape.Width;
+            var minZ = shape.Z;
+            var maxZ = shape.Z + shape.Height;
+            var x = Math.Max(minX, Math.Min(maxX, position.X));
+            var z = Math.Max(minZ, Math.Min(maxZ, position.Y));
+            return new Vector2(x, z);
+        }
+
+        private static Vector2 ClosestPointOnCircle(Vector2 position, ShapeDefinition shape)
+        {
+            var center = new Vector2(shape.X, shape.Z);
+            var toPoint = position - center;
+            var length = toPoint.Length();
+            if (length <= float.Epsilon)
+                return center + new Vector2(shape.Radius, 0f);
+            return center + (toPoint / length) * Math.Max(0f, shape.Radius);
+        }
+
+        private static Vector2 ClosestPointOnPolyline(Vector2 position, IReadOnlyList<Vector2> points)
+        {
+            if (points == null || points.Count == 0)
+                return position;
+            if (points.Count == 1)
+                return points[0];
+
+            var best = points[0];
+            var bestDist = float.MaxValue;
+            for (var i = 0; i < points.Count - 1; i++)
+            {
+                var candidate = ClosestPointOnSegment(points[i], points[i + 1], position);
+                var dist = Vector2.DistanceSquared(candidate, position);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    best = candidate;
+                }
+            }
+            return best;
+        }
+
+        private static Vector2 ClosestPointOnPolygon(Vector2 position, IReadOnlyList<Vector2> points)
+        {
+            if (points == null || points.Count == 0)
+                return position;
+            if (IsPointInPolygon(points, position))
+                return position;
+
+            var best = points[0];
+            var bestDist = float.MaxValue;
+            for (var i = 0; i < points.Count; i++)
+            {
+                var a = points[i];
+                var b = points[(i + 1) % points.Count];
+                var candidate = ClosestPointOnSegment(a, b, position);
+                var dist = Vector2.DistanceSquared(candidate, position);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    best = candidate;
+                }
+            }
+            return best;
+        }
+
+        private static Vector2 ClosestPointOnSegment(Vector2 a, Vector2 b, Vector2 p)
+        {
+            var ab = b - a;
+            var ap = p - a;
+            var abLenSq = Vector2.Dot(ab, ab);
+            if (abLenSq <= float.Epsilon)
+                return a;
+
+            var t = Vector2.Dot(ap, ab) / abLenSq;
+            if (t < 0f)
+                t = 0f;
+            else if (t > 1f)
+                t = 1f;
+
+            return a + (ab * t);
         }
 
         private bool TryGetBeaconShape(TrackApproachDefinition approach, out ShapeDefinition shape)
@@ -447,6 +582,8 @@ namespace TopSpeed.Tracks.Guidance
             public float? WidthMeters;
             public float? LengthMeters;
             public float? ToleranceDegrees;
+            public bool UseHeadingBeacon;
+            public ShapeDefinition? BeaconShape;
         }
     }
 }

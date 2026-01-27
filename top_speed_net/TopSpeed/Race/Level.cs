@@ -79,6 +79,7 @@ namespace TopSpeed.Race
         protected readonly List<RaceEvent> _events;
         protected readonly Stopwatch _stopwatch;
         protected readonly AudioSourceHandle[] _soundNumbers;
+        private readonly Dictionary<int, AudioSourceHandle> _guidanceNumbers;
         protected readonly AudioSourceHandle?[][] _randomSounds;
         protected readonly int[] _totalRandomSounds;
         private readonly SoundQueue _soundQueue;
@@ -208,6 +209,14 @@ namespace TopSpeed.Race
             for (var i = 0; i <= 100; i++)
             {
                 _soundNumbers[i] = LoadLanguageSound($"numbers\\{i}");
+            }
+
+            _guidanceNumbers = new Dictionary<int, AudioSourceHandle>();
+            for (var i = 10; i <= 500; i += 10)
+            {
+                var sound = TryLoadLanguageSound($"numbers\\guidance\\{i}", allowFallback: true);
+                if (sound != null)
+                    _guidanceNumbers[i] = sound;
             }
 
             _soundStart = LoadLanguageSound("race\\start321");
@@ -619,9 +628,22 @@ namespace TopSpeed.Race
             }
 
             SpeakText($"Turn {headingText} in {roundedDistance} meters");
+            PlayGuidanceDistance(roundedDistance);
             _lastTurnPortalId = portalKey;
             _lastTurnAnnouncementTime = _elapsedTotal;
             _lastTurnAnnouncementDistance = roundedDistance;
+        }
+
+        private void PlayGuidanceDistance(int meters)
+        {
+            if (_guidanceNumbers.Count == 0)
+                return;
+            var value = Math.Max(10, (int)Math.Round(meters / 10f) * 10);
+            if (!_guidanceNumbers.TryGetValue(value, out var sound))
+                return;
+            sound.Stop();
+            sound.SeekToStart();
+            sound.Play(loop: false);
         }
 
         protected void HandlePauseRequest(ref bool pauseKeyReleased)
@@ -1187,6 +1209,9 @@ namespace TopSpeed.Race
 
             for (var i = 0; i < _soundNumbers.Length; i++)
                 DisposeSound(_soundNumbers[i]);
+
+            foreach (var sound in _guidanceNumbers.Values)
+                DisposeSound(sound);
 
             for (var i = 0; i < _soundUnkey.Length; i++)
                 DisposeSound(_soundUnkey[i]);
