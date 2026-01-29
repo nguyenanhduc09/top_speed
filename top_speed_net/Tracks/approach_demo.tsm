@@ -298,6 +298,38 @@ width=12
 exit_heading=east
 role=exit
 
+[portal: p_ne_entry]
+sector=corner_ne
+x=235
+z=210
+width=12
+entry_heading=north
+role=entry
+
+[portal: p_ne_exit]
+sector=corner_ne
+x=210
+z=235
+width=12
+exit_heading=west
+role=exit
+
+[portal: p_nw_entry]
+sector=corner_nw
+x=40
+z=235
+width=12
+entry_heading=west
+role=entry
+
+[portal: p_nw_exit]
+sector=corner_nw
+x=15
+z=210
+width=12
+exit_heading=south
+role=exit
+
 [portal: p_east_entry]
 sector=east_turn
 x=235
@@ -325,7 +357,44 @@ exit_heading=north
 side=exit
 turn_range=60
 beacon_range=0
-centerline_shape=east_turn_beacon_zone
+turn_shape=east_turn_zone
+beacon_shape=east_turn_beacon_zone
+
+[guide: sw_turn_guide]
+area=corner_sw_area
+name=South west guide
+entry_portal=p_sw_entry_c
+exit_portal=p_sw_exit
+entry_heading=south
+exit_heading=east
+side=exit
+turn_range=60
+beacon_range=0
+centerline_shape=corner_sw_zone
+
+[guide: ne_turn_guide]
+area=corner_ne_area
+name=North east guide
+entry_portal=p_ne_entry
+exit_portal=p_ne_exit
+entry_heading=north
+exit_heading=west
+side=exit
+turn_range=60
+beacon_range=0
+centerline_shape=corner_ne_zone
+
+[guide: nw_turn_guide]
+area=corner_nw_area
+name=North west guide
+entry_portal=p_nw_entry
+exit_portal=p_nw_exit
+entry_heading=west
+exit_heading=south
+side=exit
+turn_range=60
+beacon_range=0
+centerline_shape=corner_nw_zone
 
 # Branches (area-linked exits)
 [branch: sw_corner_branch]

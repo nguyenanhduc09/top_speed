@@ -34,6 +34,10 @@ namespace TopSpeed.Race
         protected const float SteerAlignResponseSpeedDegrees = 30.0f;
         protected const float SteerAlignSlowdownDegrees = 20.0f;
         protected const float SteerAlignSlowdownSpeedDegrees = 20.0f;
+        protected const float SteerSnapBaseToleranceDegrees = 12.0f;
+        protected const float SteerAlignCorrectionWindowDegrees = 15.0f;
+        protected const float SteerAlignMinAngleDegrees = 3.0f;
+        protected const float SteerAlignMinAngleSpeedDegrees = 4.0f;
         private static readonly float[] SteerSnapHeadings =
         {
             0f,
@@ -521,6 +525,7 @@ namespace TopSpeed.Race
             if (_input.TryGetSteerAlign(out var alignDirection))
             {
                 var baseHeading = _steerAlignActive ? _steerAlignTargetHeading : _car.HeadingDegrees;
+                baseHeading = ResolveSnapBaseHeading(baseHeading);
                 var target = NextCompassHeading(baseHeading, alignDirection);
                 _steerAlignTargetHeading = target;
                 _steerAlignActive = true;
@@ -566,8 +571,14 @@ namespace TopSpeed.Race
                 var normalized = delta / Math.Max(1f, response);
                 var desiredAngle = steerLimit * (float)Math.Tanh(normalized) * SteerAlignGain;
                 var slowdownWindow = SteerAlignSlowdownDegrees + (speedT * SteerAlignSlowdownSpeedDegrees);
-                var approachFactor = Math.Min(1f, Math.Abs(delta) / Math.Max(1f, slowdownWindow));
+                var absDelta = Math.Abs(delta);
+                var approachFactor = Math.Min(1f, absDelta / Math.Max(1f, slowdownWindow));
                 desiredAngle *= approachFactor;
+                var correctionWindow = SteerAlignCorrectionWindowDegrees;
+                var correctionFactor = Math.Min(1f, absDelta / Math.Max(1f, correctionWindow));
+                var minAngle = (SteerAlignMinAngleDegrees + (speedT * SteerAlignMinAngleSpeedDegrees)) * correctionFactor;
+                if (absDelta > SteerAlignToleranceDegrees && Math.Abs(desiredAngle) < minAngle)
+                    desiredAngle = Math.Sign(delta) * minAngle;
                 desiredAngle = Clamp(desiredAngle, -steerLimit, steerLimit);
                 var command = (int)Math.Round((desiredAngle / steerLimit) * 100f);
                 _car.SetSteeringOverride(command);
@@ -731,6 +742,24 @@ namespace TopSpeed.Race
             if (delta > 180f)
                 delta -= 360f;
             return delta;
+        }
+
+        private static float ResolveSnapBaseHeading(float headingDegrees)
+        {
+            var normalized = NormalizeDegrees(headingDegrees);
+            var best = normalized;
+            var bestDelta = float.MaxValue;
+            foreach (var heading in SteerSnapHeadings)
+            {
+                var delta = Math.Abs(SignedDeltaDegrees(normalized, heading));
+                if (delta < bestDelta)
+                {
+                    bestDelta = delta;
+                    best = heading;
+                }
+            }
+
+            return bestDelta <= SteerSnapBaseToleranceDegrees ? best : normalized;
         }
 
         private static string FormatTurnDirection(float headingDegrees)
