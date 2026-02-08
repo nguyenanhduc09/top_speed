@@ -543,6 +543,7 @@ namespace TopSpeed.Tracks.Map
         public void Dispose()
         {
             FinalizeTrack();
+            _audio.SteamAudio?.ClearScene();
             _steamAudioScene?.Dispose();
             DisposeSound(_soundCrowd);
             DisposeSound(_soundOcean);

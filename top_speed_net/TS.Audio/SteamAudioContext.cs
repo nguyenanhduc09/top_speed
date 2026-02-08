@@ -151,6 +151,25 @@ namespace TS.Audio
             }
         }
 
+        public void ClearScene()
+        {
+            lock (_simLock)
+            {
+                if (_simulator.Handle != IntPtr.Zero)
+                {
+                    if (_probeBatch.Handle != IntPtr.Zero)
+                        IPL.SimulatorRemoveProbeBatch(_simulator, _probeBatch);
+                    IPL.SimulatorSetScene(_simulator, default);
+                    IPL.SimulatorCommit(_simulator);
+                }
+
+                _scene = default;
+                _probeBatch = default;
+                _bakedIdentifier = default;
+                _hasBakedReflections = false;
+            }
+        }
+
         public void UpdateSimulation(IReadOnlyList<AudioSourceHandle> sources)
         {
             if (sources == null || sources.Count == 0)
