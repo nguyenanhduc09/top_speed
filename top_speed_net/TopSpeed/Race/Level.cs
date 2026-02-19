@@ -53,13 +53,20 @@ namespace TopSpeed.Race
         private const float KmToMiles = 0.621371f;
         private const float MetersPerMile = 1609.344f;
         private const float MetersToFeet = 3.28084f;
-        private const float WallPingRangeMeters = 50.0f;
-        private const float WallPingDetectRangeMeters = 100.0f;
-        private const float WallPingNearMeters = 5.0f;
+        private const float WallPingTtcStartSeconds = 15.0f;
+        private const float WallPingTtcFastRampSeconds = 5.0f;
+        private const float WallPingTtcCriticalSeconds = 2.0f;
+        private const float WallPingMinClosingSpeedMps = 0.5f;
+        private const float WallPingDetectMinRangeMeters = 60.0f;
+        private const float WallPingDetectMaxRangeMeters = 400.0f;
+        private const float WallPingDetectBufferMeters = 15.0f;
         private const float WallPingMinIntervalSeconds = 0.15f;
         private const float WallPingMaxIntervalSeconds = 2.0f;
-        private const float WallPingMinVolume = 0.15f;
-        private const float WallPingMaxVolume = 0.6f;
+        private const float WallPingMinVolume = 0.35f;
+        private const float WallPingMaxVolume = 1.0f;
+        private const float WallPingFarUrgencyFloor = 0.25f;
+        private const float WallPingCueMinDistanceMeters = 8.0f;
+        private const float WallPingCueMaxDistanceMeters = 35.0f;
 
         public enum RandomSound
         {
@@ -1080,22 +1087,67 @@ namespace TopSpeed.Race
             var forward = _car.WorldForward;
             if (forward.LengthSquared() < 0.0001f)
                 forward = MapMovement.HeadingVector(_car.HeadingDegrees);
+            else
+                forward = Vector3.Normalize(forward);
 
-            var startOffset = Math.Max(0.5f, _car.LengthM * 0.5f);
-            var start = _car.WorldPosition + (forward * startOffset);
-            if (!_track.TryGetWallProximity(start, forward, WallPingDetectRangeMeters, out _, out var distance, out var hitWorld, out _))
+            var closingSpeedMps = Math.Abs(_car.SpeedKmh) / 3.6f;
+            if (closingSpeedMps < WallPingMinClosingSpeedMps)
             {
                 ResetWallPing();
                 return;
             }
 
-            var clampedDistance = Clamp(distance, WallPingNearMeters, WallPingRangeMeters);
-            var t = (clampedDistance - WallPingNearMeters) / Math.Max(0.001f, WallPingRangeMeters - WallPingNearMeters);
-            t = (float)Math.Pow(t, 0.5f);
-            var interval = WallPingMinIntervalSeconds + (WallPingMaxIntervalSeconds - WallPingMinIntervalSeconds) * t;
-            var volume = WallPingMaxVolume - (WallPingMaxVolume - WallPingMinVolume) * t;
+            var detectRange = (closingSpeedMps * WallPingTtcStartSeconds) + WallPingDetectBufferMeters;
+            detectRange = Clamp(detectRange, WallPingDetectMinRangeMeters, WallPingDetectMaxRangeMeters);
 
-            _soundWallPing.SetPosition(AudioWorld.ToMeters(hitWorld));
+            var carPosition = _car.WorldPosition;
+            var startOffset = Math.Max(0.5f, _car.LengthM * 0.5f);
+            var probeFromFront = carPosition + (forward * startOffset);
+            var probeStart = _track.IsWithinTrack(probeFromFront) ? probeFromFront : carPosition;
+
+            var hasHit = _track.TryGetWallProximity(probeStart, forward, detectRange, out _, out var distance, out var hitWorld, out _);
+            if (!hasHit && probeStart != carPosition)
+            {
+                // Near edges the front probe can clip outside track limits; retry from car center.
+                hasHit = _track.TryGetWallProximity(carPosition, forward, detectRange, out _, out distance, out hitWorld, out _);
+            }
+
+            if (!hasHit)
+            {
+                ResetWallPing();
+                return;
+            }
+
+            var timeToImpact = distance / Math.Max(WallPingMinClosingSpeedMps, closingSpeedMps);
+            if (timeToImpact > WallPingTtcStartSeconds)
+            {
+                ResetWallPing();
+                return;
+            }
+
+            var urgency = ComputeWallPingUrgency(timeToImpact);
+            if (urgency <= 0f)
+            {
+                ResetWallPing();
+                return;
+            }
+
+            var interval = WallPingMaxIntervalSeconds - ((WallPingMaxIntervalSeconds - WallPingMinIntervalSeconds) * urgency);
+            var volume = WallPingMinVolume + ((WallPingMaxVolume - WallPingMinVolume) * urgency);
+
+            // Keep the ping direction aligned to the wall hit point, but clamp cue distance
+            // so far walls still localize clearly and remain easy to notice.
+            var cuePosition = hitWorld;
+            var toHit = hitWorld - carPosition;
+            var toHitLength = toHit.Length();
+            if (toHitLength > 0.001f)
+            {
+                var toHitDirection = toHit / toHitLength;
+                var cueDistance = Clamp(toHitLength, WallPingCueMinDistanceMeters, WallPingCueMaxDistanceMeters);
+                cuePosition = carPosition + (toHitDirection * cueDistance);
+            }
+
+            _soundWallPing.SetPosition(AudioWorld.ToMeters(cuePosition));
             _soundWallPing.SetVelocity(Vector3.Zero);
             _soundWallPing.SetVolume(volume);
 
@@ -1107,6 +1159,32 @@ namespace TopSpeed.Race
                 _soundWallPing.Play(loop: false);
                 _wallPingCooldown = interval;
             }
+        }
+
+        private static float ComputeWallPingUrgency(float timeToImpactSeconds)
+        {
+            if (timeToImpactSeconds <= 0f)
+                return 1f;
+
+            if (timeToImpactSeconds <= WallPingTtcCriticalSeconds)
+                return 1f;
+
+            if (timeToImpactSeconds <= WallPingTtcFastRampSeconds)
+            {
+                // Ramp strongly between 5s and 2s so the ping becomes almost continuous near 2s.
+                var u = (timeToImpactSeconds - WallPingTtcCriticalSeconds) /
+                        Math.Max(0.001f, WallPingTtcFastRampSeconds - WallPingTtcCriticalSeconds);
+                return 1f - (0.25f * u * u);
+            }
+
+            if (timeToImpactSeconds <= WallPingTtcStartSeconds)
+            {
+                var u = (timeToImpactSeconds - WallPingTtcFastRampSeconds) /
+                        Math.Max(0.001f, WallPingTtcStartSeconds - WallPingTtcFastRampSeconds);
+                return WallPingFarUrgencyFloor + ((0.75f - WallPingFarUrgencyFloor) * (1f - u));
+            }
+
+            return 0f;
         }
 
         private void ResetWallPing()

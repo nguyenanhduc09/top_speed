@@ -60,7 +60,7 @@ namespace TopSpeed.Tracks.Map
     {
         private const float CallLengthMeters = 30.0f;
         private const float WallProbeStepMeters = 0.5f;
-        private const float WallProbeMinDot = 0.17f;
+        private const float WallProbeMinDot = 0.0f;
 
         private readonly AudioManager _audio;
         private readonly TrackMap _map;
