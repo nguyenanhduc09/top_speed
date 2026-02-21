@@ -149,8 +149,6 @@ namespace TS.Audio
         {
             if (sources == null || sources.Count == 0)
                 return;
-            if (_simulator.Handle == IntPtr.Zero || _scene.Handle == IntPtr.Zero)
-                return;
 
             lock (_simLock)
             {
@@ -160,6 +158,28 @@ namespace TS.Audio
                     if (source == null || !source.IsSpatialized || !source.UsesSteamAudio)
                         continue;
                     active.Add(source);
+                }
+
+                if (active.Count == 0)
+                {
+                    if (_sources.Count > 0)
+                        RemoveInactiveSources(active);
+                    return;
+                }
+
+                if (_simulator.Handle == IntPtr.Zero || _scene.Handle == IntPtr.Zero)
+                {
+                    if (_sources.Count > 0)
+                        RemoveInactiveSources(new HashSet<AudioSourceHandle>());
+
+                    foreach (var source in active)
+                        ApplyRoomOnlyOutputs(source);
+
+                    return;
+                }
+
+                foreach (var source in active)
+                {
                     EnsureSource(source);
                     SetSourceInputs(source);
                 }
@@ -183,6 +203,29 @@ namespace TS.Audio
                     ApplyReverbOutputs(source, in outputs.Reflections);
                 }
             }
+        }
+
+        private static unsafe void ApplyRoomOnlyOutputs(AudioSourceHandle handle)
+        {
+            var direct = new IPL.DirectEffectParams
+            {
+                Occlusion = 1f
+            };
+            direct.AirAbsorption[0] = 1f;
+            direct.AirAbsorption[1] = 1f;
+            direct.AirAbsorption[2] = 1f;
+            direct.Transmission[0] = 1f;
+            direct.Transmission[1] = 1f;
+            direct.Transmission[2] = 1f;
+            ApplyDirectOutputs(handle, in direct);
+
+            var roomFlags = Volatile.Read(ref handle.SpatialParams.RoomFlags);
+            var hasRoom = (roomFlags & AudioSourceSpatialParams.RoomHasProfile) != 0;
+            if (!hasRoom)
+                return;
+
+            var reflections = new IPL.ReflectionEffectParams();
+            ApplyReverbOutputs(handle, in reflections);
         }
 
         public void UpdateListener(Vector3 position, Vector3 forward, Vector3 up)

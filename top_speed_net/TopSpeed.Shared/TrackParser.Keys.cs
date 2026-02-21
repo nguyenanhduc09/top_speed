@@ -42,7 +42,7 @@ namespace TopSpeed.Data
                 return;
             }
 
-            if (key == "room" || key == "room_profile")
+            if (key == "room" || key == "room_profile" || key == "room_preset")
             {
                 builder.RoomId = NormalizeNullable(value);
                 return;
@@ -68,7 +68,7 @@ namespace TopSpeed.Data
                 return;
             }
 
-            if (key == "preset")
+            if (key == "room_preset")
             {
                 builder.ApplyPreset(value);
                 return;

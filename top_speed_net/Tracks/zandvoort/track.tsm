@@ -5,12 +5,12 @@ weather = sunny
 ambience = noambience
 
 [room: outdoor_default]
-preset = outdoor_open
+room_preset = outdoor_open
 reverb_gain = 0.1
 
 [sound: crowd_loop]
 type = ambient
-path = tracks/zandvoort/sounds/crowd.wav
+path = sounds/crowd.wav
 loop = true
 volume = 0.5
 spatial = true

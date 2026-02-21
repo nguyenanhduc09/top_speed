@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace TopSpeed.Data
 {
@@ -59,7 +60,7 @@ namespace TopSpeed.Data
                 return;
             }
 
-            if (key == "room" || key == "room_profile")
+            if (key == "room" || key == "room_profile" || key == "room_preset")
             {
                 var roomId = NormalizeNullable(value);
                 if (roomId == null)
@@ -94,7 +95,7 @@ namespace TopSpeed.Data
             if (key == "name")
                 return;
 
-            if (key == "preset")
+            if (key == "room_preset")
             {
                 if (!TrackRoomLibrary.IsPreset(value.Trim()))
                     issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Unknown room preset '{value}'."));
@@ -129,9 +130,29 @@ namespace TopSpeed.Data
             }
 
             if (key == "path" || key == "file")
+            {
+                if (!IsValidTrackRelativeSoundPath(value))
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound key '{key}' must be a track-relative path and cannot escape the track folder."));
                 return;
+            }
 
-            if (key == "variant_paths" || key == "variant_source_ids")
+            if (key == "variant_paths")
+            {
+                var list = ParseCsvList(value);
+                if (list.Count == 0)
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound list for '{key}' cannot be empty."));
+                else
+                {
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        if (!IsValidTrackRelativeSoundPath(list[i]))
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound key '{key}' contains invalid path '{list[i]}'. Paths must be track-relative."));
+                    }
+                }
+                return;
+            }
+
+            if (key == "variant_source_ids")
             {
                 var list = ParseCsvList(value);
                 if (list.Count == 0)
@@ -260,6 +281,30 @@ namespace TopSpeed.Data
             return key == "start_position" ||
                    key == "end_position" ||
                    key == "position";
+        }
+
+        private static bool IsValidTrackRelativeSoundPath(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            var trimmed = value.Trim();
+            if (Path.IsPathRooted(trimmed) || trimmed.IndexOf(':') >= 0)
+                return false;
+
+            var normalized = trimmed.Replace('\\', '/');
+            var parts = normalized.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+                return false;
+
+            for (var i = 0; i < parts.Length; i++)
+            {
+                var part = parts[i].Trim();
+                if (part.Length == 0 || part == "." || part == "..")
+                    return false;
+            }
+
+            return true;
         }
 
         private static bool IsMetadataKey(string key)

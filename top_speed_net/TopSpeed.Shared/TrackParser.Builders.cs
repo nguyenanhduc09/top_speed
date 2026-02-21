@@ -43,14 +43,15 @@ namespace TopSpeed.Data
         {
             public string Id;
             public string? Name;
-            public float ReverbTimeSeconds;
-            public float ReverbGain;
-            public float HfDecayRatio;
-            public float LateReverbGain;
-            public float Diffusion;
-            public float AirAbsorption;
-            public float OcclusionScale;
-            public float TransmissionScale;
+            public string PresetId;
+            public float? ReverbTimeSeconds;
+            public float? ReverbGain;
+            public float? HfDecayRatio;
+            public float? LateReverbGain;
+            public float? Diffusion;
+            public float? AirAbsorption;
+            public float? OcclusionScale;
+            public float? TransmissionScale;
             public float? OcclusionOverride;
             public float? TransmissionOverrideLow;
             public float? TransmissionOverrideMid;
@@ -64,54 +65,45 @@ namespace TopSpeed.Data
                 var builder = new RoomBuilder
                 {
                     Id = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString("N") : id.Trim(),
-                    Name = null
+                    Name = null,
+                    PresetId = "outdoor_open"
                 };
-                builder.ApplyPreset("outdoor_open");
                 return builder;
             }
 
             public void ApplyPreset(string presetId)
             {
-                if (!TrackRoomLibrary.TryGetPreset(presetId, out var preset))
+                var normalized = presetId?.Trim();
+                if (string.IsNullOrWhiteSpace(normalized))
                     return;
-
-                ReverbTimeSeconds = preset.ReverbTimeSeconds;
-                ReverbGain = preset.ReverbGain;
-                HfDecayRatio = preset.HfDecayRatio;
-                LateReverbGain = preset.LateReverbGain;
-                Diffusion = preset.Diffusion;
-                AirAbsorption = preset.AirAbsorption;
-                OcclusionScale = preset.OcclusionScale;
-                TransmissionScale = preset.TransmissionScale;
-                OcclusionOverride = preset.OcclusionOverride;
-                TransmissionOverrideLow = preset.TransmissionOverrideLow;
-                TransmissionOverrideMid = preset.TransmissionOverrideMid;
-                TransmissionOverrideHigh = preset.TransmissionOverrideHigh;
-                AirAbsorptionOverrideLow = preset.AirAbsorptionOverrideLow;
-                AirAbsorptionOverrideMid = preset.AirAbsorptionOverrideMid;
-                AirAbsorptionOverrideHigh = preset.AirAbsorptionOverrideHigh;
+                if (!TrackRoomLibrary.IsPreset(normalized!))
+                    return;
+                PresetId = normalized!;
             }
 
             public TrackRoomDefinition Build()
             {
+                if (!TrackRoomLibrary.TryGetPreset(PresetId, out var preset))
+                    TrackRoomLibrary.TryGetPreset("outdoor_open", out preset);
+
                 return new TrackRoomDefinition(
                     Id,
                     Name,
-                    ReverbTimeSeconds,
-                    ReverbGain,
-                    HfDecayRatio,
-                    LateReverbGain,
-                    Diffusion,
-                    AirAbsorption,
-                    OcclusionScale,
-                    TransmissionScale,
-                    OcclusionOverride,
-                    TransmissionOverrideLow,
-                    TransmissionOverrideMid,
-                    TransmissionOverrideHigh,
-                    AirAbsorptionOverrideLow,
-                    AirAbsorptionOverrideMid,
-                    AirAbsorptionOverrideHigh);
+                    ReverbTimeSeconds ?? preset.ReverbTimeSeconds,
+                    ReverbGain ?? preset.ReverbGain,
+                    HfDecayRatio ?? preset.HfDecayRatio,
+                    LateReverbGain ?? preset.LateReverbGain,
+                    Diffusion ?? preset.Diffusion,
+                    AirAbsorption ?? preset.AirAbsorption,
+                    OcclusionScale ?? preset.OcclusionScale,
+                    TransmissionScale ?? preset.TransmissionScale,
+                    OcclusionOverride ?? preset.OcclusionOverride,
+                    TransmissionOverrideLow ?? preset.TransmissionOverrideLow,
+                    TransmissionOverrideMid ?? preset.TransmissionOverrideMid,
+                    TransmissionOverrideHigh ?? preset.TransmissionOverrideHigh,
+                    AirAbsorptionOverrideLow ?? preset.AirAbsorptionOverrideLow,
+                    AirAbsorptionOverrideMid ?? preset.AirAbsorptionOverrideMid,
+                    AirAbsorptionOverrideHigh ?? preset.AirAbsorptionOverrideHigh);
             }
         }
 

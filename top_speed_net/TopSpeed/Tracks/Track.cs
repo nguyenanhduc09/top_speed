@@ -29,7 +29,7 @@ namespace TopSpeed.Tracks
         {
             private const float DefaultRandomCrossfadeSeconds = 0.75f;
             private readonly AudioManager _audio;
-            private readonly string _sourceDirectory;
+            private readonly string _sourceRootFullPath;
             private readonly Random _random;
             private readonly IReadOnlyDictionary<string, TrackSoundSourceDefinition> _soundDefinitions;
             private readonly Action<AudioSourceHandle, float> _enqueueFadeOut;
@@ -46,7 +46,7 @@ namespace TopSpeed.Tracks
                 TrackSoundSourceDefinition definition)
             {
                 _audio = audio;
-                _sourceDirectory = sourceDirectory;
+                _sourceRootFullPath = Path.GetFullPath(sourceDirectory);
                 _random = random;
                 _soundDefinitions = soundDefinitions;
                 _enqueueFadeOut = enqueueFadeOut;
@@ -213,24 +213,42 @@ namespace TopSpeed.Tracks
 
                 var trimmed = path.Trim();
                 if (Path.IsPathRooted(trimmed))
-                    return File.Exists(trimmed) ? trimmed : null;
+                    return null;
 
                 var normalized = trimmed
                     .Replace('/', Path.DirectorySeparatorChar)
-                    .Replace('\\', Path.DirectorySeparatorChar);
-                var fromTrack = Path.Combine(_sourceDirectory, normalized);
-                if (File.Exists(fromTrack))
-                    return fromTrack;
+                    .Replace('\\', Path.DirectorySeparatorChar)
+                    .TrimStart(Path.DirectorySeparatorChar);
+                if (normalized.IndexOf(':') >= 0 || ContainsTraversal(normalized))
+                    return null;
 
-                var fromAssets = Path.Combine(AssetPaths.Root, normalized);
-                if (File.Exists(fromAssets))
-                    return fromAssets;
+                var candidate = Path.GetFullPath(Path.Combine(_sourceRootFullPath, normalized));
+                if (!IsInsideTrackRoot(candidate))
+                    return null;
 
-                var fromSounds = Path.Combine(AssetPaths.SoundsRoot, normalized);
-                if (File.Exists(fromSounds))
-                    return fromSounds;
+                return File.Exists(candidate) ? candidate : null;
+            }
 
-                return null;
+            private bool IsInsideTrackRoot(string candidate)
+            {
+                if (string.Equals(candidate, _sourceRootFullPath, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                var rootWithSeparator = _sourceRootFullPath.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+                return candidate.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase);
+            }
+
+            private static bool ContainsTraversal(string path)
+            {
+                var parts = path.Split(Path.DirectorySeparatorChar);
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    var segment = parts[i].Trim();
+                    if (segment == "." || segment == "..")
+                        return true;
+                }
+
+                return false;
             }
 
             private void DisposeHandle()
