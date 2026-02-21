@@ -1,21 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using LiteNetLib;
+using TopSpeed.Protocol;
 using TopSpeed.Server.Logging;
 
 namespace TopSpeed.Server.Network
 {
     internal sealed class UdpServerTransport : IDisposable
     {
-        public const int MaxDatagramSize = 65507;
         private readonly Logger _logger;
-        private UdpClient? _client;
+        private readonly object _peerLock = new object();
+        private EventBasedNetListener? _listener;
+        private NetManager? _server;
+        private readonly Dictionary<string, NetPeer> _peers = new Dictionary<string, NetPeer>(StringComparer.OrdinalIgnoreCase);
         private CancellationTokenSource? _cts;
-        private Task? _receiveTask;
+        private Task? _pollTask;
 
         public event Action<IPEndPoint, byte[]>? PacketReceived;
+        public event Action<IPEndPoint>? PeerDisconnected;
 
         public UdpServerTransport(Logger logger)
         {
@@ -24,75 +29,112 @@ namespace TopSpeed.Server.Network
 
         public void Start(int port)
         {
-            if (_client != null)
+            if (_server != null)
                 return;
-            var client = new UdpClient(AddressFamily.InterNetwork);
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            client.Client.ReceiveBufferSize = 1024 * 1024;
-            client.Client.SendBufferSize = 1024 * 1024;
-            client.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-            _client = client;
+
+            _listener = new EventBasedNetListener();
+            _listener.ConnectionRequestEvent += request => request.AcceptIfKey(ProtocolConstants.ConnectionKey);
+            _listener.PeerConnectedEvent += peer =>
+            {
+                lock (_peerLock)
+                    _peers[GetPeerKey(peer)] = peer;
+            };
+            _listener.PeerDisconnectedEvent += (peer, _) =>
+            {
+                var endpoint = CreatePeerEndpoint(peer);
+                lock (_peerLock)
+                    _peers.Remove(GetPeerKey(peer));
+                PeerDisconnected?.Invoke(endpoint);
+            };
+            _listener.NetworkReceiveEvent += (peer, reader, _, _) =>
+            {
+                var buffer = reader.GetRemainingBytes();
+                reader.Recycle();
+                PacketReceived?.Invoke(CreatePeerEndpoint(peer), buffer);
+            };
+
+            _server = new NetManager(_listener)
+            {
+                ReuseAddress = true,
+                UpdateTime = 1
+            };
+
+            if (!_server.Start(port))
+                throw new InvalidOperationException($"Failed to start transport on port {port}.");
+
             _cts = new CancellationTokenSource();
-            _receiveTask = Task.Run(() => ReceiveLoop(_cts.Token));
-            _logger.Info($"UDP transport listening on {port}.");
+            _pollTask = Task.Run(() => PollLoop(_cts.Token));
+            _logger.Info($"LiteNetLib transport listening on {port}.");
         }
 
         public void Stop()
         {
-            if (_client == null)
-                return;
             _cts?.Cancel();
-            _client.Close();
-            _client.Dispose();
-            _client = null;
-            _logger.Info("UDP transport stopped.");
+            _pollTask?.Wait(250);
+            _pollTask = null;
+            _cts?.Dispose();
+            _cts = null;
+
+            _server?.Stop();
+            _server = null;
+            lock (_peerLock)
+                _peers.Clear();
+            _listener = null;
+            _logger.Info("LiteNetLib transport stopped.");
         }
 
         public void Send(IPEndPoint endPoint, byte[] payload)
         {
-            if (_client == null)
+            if (_server == null || payload == null || payload.Length == 0)
                 return;
-            if (payload.Length > MaxDatagramSize)
-            {
-                _logger.Warning($"UDP send dropped: payload too large ({payload.Length} bytes).");
+
+            NetPeer? peer;
+            lock (_peerLock)
+                _peers.TryGetValue(endPoint.ToString(), out peer);
+
+            if (peer == null || peer.ConnectionState != ConnectionState.Connected)
                 return;
-            }
+
             try
             {
-                _client.Send(payload, payload.Length, endPoint);
+                peer.Send(payload, DeliveryMethod.ReliableOrdered);
             }
             catch (Exception ex)
             {
-                _logger.Warning($"UDP send failed: {ex.Message}");
+                _logger.Warning($"LiteNetLib send failed: {ex.Message}");
             }
         }
 
-        private async Task ReceiveLoop(CancellationToken token)
+        private void PollLoop(CancellationToken token)
         {
-            if (_client == null)
-                return;
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    var result = await _client.ReceiveAsync(token);
-                    PacketReceived?.Invoke(result.RemoteEndPoint, result.Buffer);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
+                    _server?.PollEvents();
                 }
                 catch (Exception ex)
                 {
-                    _logger.Warning($"UDP receive failed: {ex.Message}");
+                    _logger.Warning($"LiteNetLib poll failed: {ex.Message}");
                 }
+
+                Thread.Sleep(1);
             }
+        }
+
+        private static string GetPeerKey(NetPeer peer)
+        {
+            return $"{peer.Address}:{peer.Port}";
+        }
+
+        private static IPEndPoint CreatePeerEndpoint(NetPeer peer)
+        {
+            return new IPEndPoint(peer.Address, peer.Port);
         }
 
         public void Dispose()
         {
             Stop();
-            _cts?.Dispose();
         }
     }
 }

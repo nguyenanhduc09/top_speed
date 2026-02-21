@@ -2,18 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using TopSpeed.Data;
+using TopSpeed.Protocol;
 using TopSpeed.Server.Logging;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
-using TopSpeed.Data;
-using TopSpeed.Protocol;
 
 namespace TopSpeed.Server.Network
 {
     internal sealed class PlayerConnection
     {
+        public PlayerConnection(IPEndPoint endPoint, uint id)
+        {
+            EndPoint = endPoint;
+            Id = id;
+            Frequency = ProtocolConstants.DefaultFrequency;
+            State = PlayerState.NotReady;
+            Name = string.Empty;
+            LastSeenUtc = DateTime.UtcNow;
+        }
+
         public IPEndPoint EndPoint { get; }
         public uint Id { get; }
+        public uint? RoomId { get; set; }
         public byte PlayerNumber { get; set; }
         public CarType Car { get; set; }
         public float PositionX { get; set; }
@@ -27,29 +38,8 @@ namespace TopSpeed.Server.Network
         public bool Horning { get; set; }
         public bool Backfiring { get; set; }
         public DateTime LastSeenUtc { get; set; }
-        public bool JoinBroadcasted { get; set; }
 
-        public PlayerConnection(IPEndPoint endPoint, uint id)
-        {
-            EndPoint = endPoint;
-            Id = id;
-            PlayerNumber = 0;
-            Car = CarType.Vehicle1;
-            PositionX = 0;
-            PositionY = 0;
-            Speed = 0;
-            Frequency = ProtocolConstants.DefaultFrequency;
-            State = PlayerState.NotReady;
-            Name = string.Empty;
-            EngineRunning = false;
-            Braking = false;
-            Horning = false;
-            Backfiring = false;
-            LastSeenUtc = DateTime.UtcNow;
-            JoinBroadcasted = false;
-        }
-
-        public PacketPlayerData ToPacket(PlayerState overrideState)
+        public PacketPlayerData ToPacket()
         {
             return new PacketPlayerData
             {
@@ -63,13 +53,39 @@ namespace TopSpeed.Server.Network
                     Speed = Speed,
                     Frequency = Frequency
                 },
-                State = overrideState,
+                State = State,
                 EngineRunning = EngineRunning,
                 Braking = Braking,
                 Horning = Horning,
                 Backfiring = Backfiring
             };
         }
+    }
+
+    internal sealed class RaceRoom
+    {
+        public RaceRoom(uint id, string name, GameRoomType roomType, byte playersToStart)
+        {
+            Id = id;
+            Name = name;
+            RoomType = roomType;
+            PlayersToStart = playersToStart;
+            TrackName = "america";
+            Laps = 3;
+        }
+
+        public uint Id { get; }
+        public string Name { get; set; }
+        public GameRoomType RoomType { get; set; }
+        public byte PlayersToStart { get; set; }
+        public uint HostId { get; set; }
+        public HashSet<uint> PlayerIds { get; } = new HashSet<uint>();
+        public bool RaceStarted { get; set; }
+        public bool TrackSelected { get; set; }
+        public TrackData? TrackData { get; set; }
+        public string TrackName { get; set; }
+        public byte Laps { get; set; }
+        public List<byte> RaceResults { get; } = new List<byte>();
     }
 
     internal sealed class RaceServer : IDisposable
@@ -79,18 +95,15 @@ namespace TopSpeed.Server.Network
 
         private readonly RaceServerConfig _config;
         private readonly Logger _logger;
-        private readonly Dictionary<uint, PlayerConnection> _players = new Dictionary<uint, PlayerConnection>();
-        private readonly Dictionary<string, uint> _endpointIndex = new Dictionary<string, uint>(StringComparer.OrdinalIgnoreCase);
         private readonly object _lock = new object();
         private readonly UdpServerTransport _transport;
+        private readonly Dictionary<uint, PlayerConnection> _players = new Dictionary<uint, PlayerConnection>();
+        private readonly Dictionary<string, uint> _endpointIndex = new Dictionary<string, uint>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<uint, RaceRoom> _rooms = new Dictionary<uint, RaceRoom>();
 
-        private uint _nextId = 1;
+        private uint _nextPlayerId = 1;
+        private uint _nextRoomId = 1;
         private float _lastUpdateTime;
-        private bool _raceStarted;
-        private bool _trackSelected;
-        private TrackData? _trackData;
-        private string _trackName = string.Empty;
-        private readonly List<byte> _raceResults = new List<byte>();
 
         public RaceServer(RaceServerConfig config, Logger logger)
         {
@@ -98,6 +111,7 @@ namespace TopSpeed.Server.Network
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _transport = new UdpServerTransport(_logger);
             _transport.PacketReceived += OnPacketReceived;
+            _transport.PeerDisconnected += OnPeerDisconnected;
         }
 
         public void Start()
@@ -110,12 +124,11 @@ namespace TopSpeed.Server.Network
         {
             lock (_lock)
             {
+                _rooms.Clear();
                 _players.Clear();
                 _endpointIndex.Clear();
-                _raceStarted = false;
-                _trackSelected = false;
-                _trackData = null;
             }
+
             _transport.Stop();
             _logger.Info("Race server stopped.");
         }
@@ -127,80 +140,11 @@ namespace TopSpeed.Server.Network
                 _lastUpdateTime += deltaSeconds;
                 if (_lastUpdateTime < ServerUpdateTime)
                     return;
-                _lastUpdateTime = 0.0f;
+                _lastUpdateTime = 0f;
 
                 CleanupConnections();
                 BroadcastPlayerData();
                 CheckForBumps();
-            }
-        }
-
-        public void LoadTrack(string trackName, byte defaultLaps)
-        {
-            if (string.IsNullOrWhiteSpace(trackName))
-                throw new ArgumentException("Track name required.", nameof(trackName));
-
-            var data = TrackLoader.LoadTrack(trackName, defaultLaps);
-            LoadCustomTrack(trackName, data);
-        }
-
-        public void LoadCustomTrack(string trackName, TrackData data)
-        {
-            if (string.IsNullOrWhiteSpace(trackName))
-                throw new ArgumentException("Track name required.", nameof(trackName));
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-
-            lock (_lock)
-            {
-                _trackName = trackName;
-                _trackData = data;
-                _trackSelected = true;
-                SendTrackToNotReady();
-                _logger.Info($"Track loaded: {trackName}.");
-            }
-        }
-
-        public void StartRace()
-        {
-            lock (_lock)
-            {
-                if (_raceStarted)
-                    return;
-                _raceStarted = true;
-                _raceResults.Clear();
-                SendGeneral(Command.StartRace);
-                _logger.Info("Race started.");
-            }
-        }
-
-        public void StopRace(byte[]? results = null)
-        {
-            lock (_lock)
-            {
-                _raceStarted = false;
-                _trackSelected = false;
-                _trackData = null;
-                _trackName = string.Empty;
-
-                var finalResults = results ?? _raceResults.ToArray();
-                var packet = new PacketRaceResults
-                {
-                    Results = finalResults,
-                    NPlayers = (byte)Math.Min(finalResults.Length, ProtocolConstants.MaxPlayers)
-                };
-                Send(PacketSerializer.WriteRaceResults(packet));
-                _logger.Info("Race stopped.");
-            }
-        }
-
-        public void AbortRace()
-        {
-            lock (_lock)
-            {
-                _raceStarted = false;
-                SendGeneral(Command.RaceAborted);
-                _logger.Warning("Race aborted.");
             }
         }
 
@@ -213,324 +157,682 @@ namespace TopSpeed.Server.Network
 
             lock (_lock)
             {
-            var connection = GetOrAddConnection(endPoint);
-            if (connection == null)
-                return;
-            connection.LastSeenUtc = DateTime.UtcNow;
+                var player = GetOrAddConnection(endPoint);
+                if (player == null)
+                    return;
+
+                player.LastSeenUtc = DateTime.UtcNow;
 
                 switch (header.Command)
                 {
-                    case Command.PlayerDataToServer:
-                        if (PacketSerializer.TryReadPlayerData(payload, out var playerData))
-                            HandlePlayerData(connection, playerData);
-                        break;
-                    case Command.PlayerState:
-                        if (PacketSerializer.TryReadPlayerState(payload, out var playerState))
-                            HandlePlayerState(connection, playerState);
+                    case Command.KeepAlive:
                         break;
                     case Command.PlayerHello:
                         if (PacketSerializer.TryReadPlayerHello(payload, out var hello))
-                            HandlePlayerHello(connection, hello);
+                            HandlePlayerHello(player, hello);
                         break;
-                    case Command.KeepAlive:
+                    case Command.PlayerState:
+                        if (PacketSerializer.TryReadPlayerState(payload, out var state))
+                            HandlePlayerState(player, state);
+                        break;
+                    case Command.PlayerDataToServer:
+                        if (PacketSerializer.TryReadPlayerData(payload, out var playerData))
+                            HandlePlayerData(player, playerData);
+                        break;
+                    case Command.PlayerStarted:
+                        if (PacketSerializer.TryReadPlayer(payload, out _))
+                            player.State = PlayerState.Racing;
                         break;
                     case Command.PlayerFinished:
                         if (PacketSerializer.TryReadPlayer(payload, out var finished))
-                            HandlePlayerFinished(connection, finished);
-                        break;
-                    case Command.PlayerFinalize:
-                        if (PacketSerializer.TryReadPlayerState(payload, out var finalize))
-                            HandlePlayerFinalize(connection, finalize);
-                        break;
-                    case Command.PlayerStarted:
-                        if (PacketSerializer.TryReadPlayer(payload, out var started))
-                            HandlePlayerStarted(connection, started);
+                            HandlePlayerFinished(player, finished);
                         break;
                     case Command.PlayerCrashed:
                         if (PacketSerializer.TryReadPlayer(payload, out var crashed))
-                            HandlePlayerCrashed(connection, crashed);
+                            HandlePlayerCrashed(player, crashed);
+                        break;
+                    case Command.RoomListRequest:
+                        SendRoomList(player);
+                        break;
+                    case Command.RoomCreate:
+                        if (PacketSerializer.TryReadRoomCreate(payload, out var create))
+                            HandleCreateRoom(player, create);
+                        break;
+                    case Command.RoomJoin:
+                        if (PacketSerializer.TryReadRoomJoin(payload, out var join))
+                            HandleJoinRoom(player, join);
+                        break;
+                    case Command.RoomLeave:
+                        HandleLeaveRoom(player, true);
+                        break;
+                    case Command.RoomSetTrack:
+                        if (PacketSerializer.TryReadRoomSetTrack(payload, out var track))
+                            HandleSetTrack(player, track);
+                        break;
+                    case Command.RoomSetLaps:
+                        if (PacketSerializer.TryReadRoomSetLaps(payload, out var laps))
+                            HandleSetLaps(player, laps);
+                        break;
+                    case Command.RoomStartRace:
+                        HandleStartRace(player);
+                        break;
+                    case Command.RoomSetPlayersToStart:
+                        if (PacketSerializer.TryReadRoomSetPlayersToStart(payload, out var setPlayers))
+                            HandleSetPlayersToStart(player, setPlayers);
                         break;
                 }
             }
         }
 
-        private PlayerConnection? GetOrAddConnection(IPEndPoint endPoint)
+        private PlayerConnection? GetOrAddConnection(IPEndPoint endpoint)
         {
-            var key = endPoint.ToString();
+            var key = endpoint.ToString();
             if (_endpointIndex.TryGetValue(key, out var id) && _players.TryGetValue(id, out var existing))
                 return existing;
 
-            var playerNumber = FindFreePlayerNumber();
-            if (playerNumber < 0)
+            if (_players.Count >= _config.MaxPlayers)
             {
-                SendDisconnect(endPoint);
-                _logger.Warning("Server full. Connection refused.");
+                _transport.Send(endpoint, PacketSerializer.WriteGeneral(Command.Disconnect));
                 return null;
             }
 
-            var connectionId = _nextId++;
-            var connection = new PlayerConnection(endPoint, connectionId)
-            {
-                PlayerNumber = (byte)playerNumber
-            };
-            _players[connectionId] = connection;
-            _endpointIndex[key] = connectionId;
+            var playerId = _nextPlayerId++;
+            var player = new PlayerConnection(endpoint, playerId);
+            _players[playerId] = player;
+            _endpointIndex[key] = playerId;
 
-            var packet = PacketSerializer.WritePlayerNumber(connectionId, connection.PlayerNumber);
-            _transport.Send(endPoint, packet);
-            _logger.Info($"Player connected: id={connectionId}, number={connection.PlayerNumber}.");
-
+            _transport.Send(endpoint, PacketSerializer.WritePlayerNumber(playerId, 0));
             if (!string.IsNullOrWhiteSpace(_config.Motd))
-            {
-                var info = new PacketServerInfo { Motd = _config.Motd };
-                _transport.Send(endPoint, PacketSerializer.WriteServerInfo(info));
-            }
+                _transport.Send(endpoint, PacketSerializer.WriteServerInfo(new PacketServerInfo { Motd = _config.Motd }));
 
-            if (_trackSelected)
-            {
-                if (_raceStarted)
-                    _transport.Send(endPoint, PacketSerializer.WriteGeneral(Command.StartRace));
-                else
-                    SendTrackTo(connection);
-            }
-
-            return connection;
+            SendRoomState(player, null);
+            SendRoomList(player);
+            return player;
         }
 
-        private int FindFreePlayerNumber()
+        private void HandlePlayerHello(PlayerConnection player, PacketPlayerHello hello)
         {
-            var maxPlayers = Math.Min(_config.MaxPlayers, ProtocolConstants.MaxPlayers);
-            for (var i = 0; i < maxPlayers; i++)
-            {
-                if (_players.Values.All(p => p.PlayerNumber != i))
-                    return i;
-            }
-            return -1;
-        }
-
-        private void HandlePlayerData(PlayerConnection connection, PacketPlayerData packet)
-        {
-            connection.Car = packet.Car;
-            connection.PlayerNumber = packet.PlayerNumber;
-            connection.PositionX = packet.RaceData.PositionX;
-            connection.PositionY = packet.RaceData.PositionY;
-            connection.Speed = packet.RaceData.Speed;
-            connection.Frequency = packet.RaceData.Frequency;
-            connection.EngineRunning = packet.EngineRunning;
-            connection.Braking = packet.Braking;
-            connection.Horning = packet.Horning;
-            connection.Backfiring = packet.Backfiring;
-        }
-
-        private void HandlePlayerState(PlayerConnection connection, PacketPlayerState packet)
-        {
-            if (packet.State == PlayerState.NotReady && connection.State != PlayerState.NotReady && _trackSelected)
-            {
-                SendTrackTo(connection);
-            }
-            connection.State = packet.State;
-        }
-
-        private void HandlePlayerHello(PlayerConnection connection, PacketPlayerHello packet)
-        {
-            var name = (packet.Name ?? string.Empty).Trim();
+            var name = (hello.Name ?? string.Empty).Trim();
             if (name.Length > ProtocolConstants.MaxPlayerNameLength)
                 name = name.Substring(0, ProtocolConstants.MaxPlayerNameLength);
-            connection.Name = name;
-            if (!connection.JoinBroadcasted)
+            player.Name = name;
+            if (player.RoomId.HasValue && _rooms.TryGetValue(player.RoomId.Value, out var room))
+                BroadcastRoomState(room);
+        }
+
+        private void HandlePlayerState(PlayerConnection player, PacketPlayerState state)
+        {
+            player.State = state.State;
+            if (!player.RoomId.HasValue || !_rooms.TryGetValue(player.RoomId.Value, out var room))
+                return;
+
+            if (player.State == PlayerState.NotReady && room.TrackSelected)
+                SendTrack(room, player);
+            BroadcastRoomState(room);
+        }
+
+        private void HandlePlayerData(PlayerConnection player, PacketPlayerData data)
+        {
+            if (!player.RoomId.HasValue)
+                return;
+
+            player.Car = data.Car;
+            player.PositionX = data.RaceData.PositionX;
+            player.PositionY = data.RaceData.PositionY;
+            player.Speed = data.RaceData.Speed;
+            player.Frequency = data.RaceData.Frequency;
+            player.EngineRunning = data.EngineRunning;
+            player.Braking = data.Braking;
+            player.Horning = data.Horning;
+            player.Backfiring = data.Backfiring;
+            player.State = data.State;
+        }
+
+        private void HandlePlayerFinished(PlayerConnection player, PacketPlayer finished)
+        {
+            if (!player.RoomId.HasValue || !_rooms.TryGetValue(player.RoomId.Value, out var room))
+                return;
+
+            player.State = PlayerState.Finished;
+            if (!room.RaceResults.Contains(finished.PlayerNumber))
+                room.RaceResults.Add(finished.PlayerNumber);
+
+            SendToRoomExcept(room, player.Id, PacketSerializer.WritePlayer(Command.PlayerFinished, finished.PlayerId, finished.PlayerNumber));
+            if (CountRacingPlayers(room) == 0)
+                StopRace(room);
+        }
+
+        private void HandlePlayerCrashed(PlayerConnection player, PacketPlayer crashed)
+        {
+            if (!player.RoomId.HasValue || !_rooms.TryGetValue(player.RoomId.Value, out var room))
+                return;
+
+            SendToRacingPlayersExcept(room, player.Id, PacketSerializer.WritePlayer(Command.PlayerCrashed, crashed.PlayerId, crashed.PlayerNumber));
+        }
+
+        private void HandleCreateRoom(PlayerConnection player, PacketRoomCreate packet)
+        {
+            var roomName = (packet.RoomName ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(roomName))
+                roomName = $"Game {_nextRoomId}";
+            if (roomName.Length > ProtocolConstants.MaxRoomNameLength)
+                roomName = roomName.Substring(0, ProtocolConstants.MaxRoomNameLength);
+
+            var roomType = packet.RoomType;
+            var playersToStart = packet.PlayersToStart;
+            if (roomType == GameRoomType.OneOnOne)
+                playersToStart = 2;
+            if (playersToStart < 1 || playersToStart > ProtocolConstants.MaxRoomPlayersToStart)
+                playersToStart = 2;
+
+            var room = new RaceRoom(_nextRoomId++, roomName, roomType, playersToStart);
+            _rooms[room.Id] = room;
+            SetTrack(room, room.TrackName);
+            JoinRoom(player, room);
+            SendProtocolMessage(player, ProtocolMessageCode.Ok, $"Created {room.Name}.");
+            BroadcastRoomList();
+        }
+
+        private void HandleJoinRoom(PlayerConnection player, PacketRoomJoin packet)
+        {
+            if (!_rooms.TryGetValue(packet.RoomId, out var room))
             {
-                connection.JoinBroadcasted = true;
-                var displayName = string.IsNullOrWhiteSpace(name)
-                    ? $"Player {connection.PlayerNumber + 1}"
-                    : name;
-                var joined = new PacketPlayerJoined
-                {
-                    PlayerId = connection.Id,
-                    PlayerNumber = connection.PlayerNumber,
-                    Name = displayName
-                };
-                SendExcept(connection.Id, PacketSerializer.WritePlayerJoined(joined));
+                SendProtocolMessage(player, ProtocolMessageCode.RoomNotFound, "Game room not found.");
+                return;
+            }
+
+            if (room.PlayerIds.Count >= room.PlayersToStart)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.RoomFull, "This game room is unavailable because it is full.");
+                return;
+            }
+
+            JoinRoom(player, room);
+            SendProtocolMessage(player, ProtocolMessageCode.Ok, $"Joined {room.Name}.");
+            BroadcastRoomList();
+        }
+
+        private void HandleLeaveRoom(PlayerConnection player, bool notify)
+        {
+            if (!player.RoomId.HasValue)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                return;
+            }
+
+            var roomId = player.RoomId.Value;
+            if (!_rooms.TryGetValue(roomId, out var room))
+            {
+                player.RoomId = null;
+                SendRoomState(player, null);
+                return;
+            }
+
+            var oldNumber = player.PlayerNumber;
+            room.PlayerIds.Remove(player.Id);
+            player.RoomId = null;
+            player.PlayerNumber = 0;
+            player.State = PlayerState.NotReady;
+
+            if (notify)
+                SendToRoom(room, PacketSerializer.WritePlayer(Command.PlayerDisconnected, player.Id, oldNumber));
+
+            SendRoomState(player, null);
+
+            if (room.PlayerIds.Count == 0)
+            {
+                _rooms.Remove(room.Id);
+            }
+            else
+            {
+                if (room.HostId == player.Id)
+                    room.HostId = room.PlayerIds.OrderBy(x => x).First();
+                if (room.RaceStarted && CountRacingPlayers(room) == 0)
+                    StopRace(room);
+                BroadcastRoomState(room);
+            }
+
+            BroadcastRoomList();
+        }
+
+        private void HandleSetTrack(PlayerConnection player, PacketRoomSetTrack packet)
+        {
+            if (!TryGetHostedRoom(player, out var room))
+                return;
+
+            var trackName = (packet.TrackName ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(trackName))
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.InvalidTrack, "Track cannot be empty.");
+                return;
+            }
+
+            SetTrack(room, trackName);
+            SendTrackToNotReady(room);
+            BroadcastRoomState(room);
+            SendProtocolMessage(player, ProtocolMessageCode.Ok, $"Track set to {room.TrackName}.");
+        }
+
+        private void HandleSetLaps(PlayerConnection player, PacketRoomSetLaps packet)
+        {
+            if (!TryGetHostedRoom(player, out var room))
+                return;
+
+            if (packet.Laps < 1 || packet.Laps > 16)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.InvalidLaps, "Laps must be between 1 and 16.");
+                return;
+            }
+
+            room.Laps = packet.Laps;
+            if (room.TrackSelected)
+                SetTrack(room, room.TrackName);
+            SendTrackToNotReady(room);
+            BroadcastRoomState(room);
+            SendProtocolMessage(player, ProtocolMessageCode.Ok, $"Laps set to {room.Laps}.");
+        }
+
+        private void HandleStartRace(PlayerConnection player)
+        {
+            if (!TryGetHostedRoom(player, out var room))
+                return;
+
+            if (room.PlayerIds.Count < room.PlayersToStart)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, $"Not enough players. {room.PlayersToStart} required.");
+                return;
+            }
+
+            StartRace(room);
+        }
+
+        private void HandleSetPlayersToStart(PlayerConnection player, PacketRoomSetPlayersToStart packet)
+        {
+            if (!TryGetHostedRoom(player, out var room))
+                return;
+
+            var value = packet.PlayersToStart;
+            if (room.RoomType == GameRoomType.OneOnOne)
+                value = 2;
+
+            if (value < 1 || value > ProtocolConstants.MaxRoomPlayersToStart)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.InvalidPlayersToStart, "Players to start must be between 1 and 10.");
+                return;
+            }
+
+            if (room.PlayerIds.Count > value)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.InvalidPlayersToStart, "Cannot set lower than current players in room.");
+                return;
+            }
+
+            room.PlayersToStart = value;
+            BroadcastRoomState(room);
+            BroadcastRoomList();
+            SendProtocolMessage(player, ProtocolMessageCode.Ok, $"Players required to start set to {value}.");
+        }
+
+        private bool TryGetHostedRoom(PlayerConnection player, out RaceRoom room)
+        {
+            room = null!;
+            if (!player.RoomId.HasValue)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                return false;
+            }
+
+            if (!_rooms.TryGetValue(player.RoomId.Value, out var foundRoom) || foundRoom == null)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                return false;
+            }
+
+            room = foundRoom;
+
+            if (room.HostId != player.Id)
+            {
+                SendProtocolMessage(player, ProtocolMessageCode.NotHost, "Only host can do this.");
+                return false;
+            }
+
+            return true;
+        }
+
+        private void JoinRoom(PlayerConnection player, RaceRoom room)
+        {
+            if (player.RoomId.HasValue)
+                HandleLeaveRoom(player, true);
+
+            room.PlayerIds.Add(player.Id);
+            if (room.HostId == 0 || !room.PlayerIds.Contains(room.HostId))
+                room.HostId = player.Id;
+
+            player.RoomId = room.Id;
+            player.PlayerNumber = (byte)FindFreeRoomNumber(room);
+            player.State = PlayerState.NotReady;
+
+            _transport.Send(player.EndPoint, PacketSerializer.WritePlayerNumber(player.Id, player.PlayerNumber));
+            SendTrack(room, player);
+            BroadcastRoomState(room);
+
+            var joinedName = string.IsNullOrWhiteSpace(player.Name)
+                ? $"Player {player.PlayerNumber + 1}"
+                : player.Name;
+            var joined = new PacketPlayerJoined { PlayerId = player.Id, PlayerNumber = player.PlayerNumber, Name = joinedName };
+            SendToRoomExcept(room, player.Id, PacketSerializer.WritePlayerJoined(joined));
+        }
+
+        private int FindFreeRoomNumber(RaceRoom room)
+        {
+            for (var i = 0; i < room.PlayersToStart; i++)
+            {
+                var used = room.PlayerIds.Any(id => _players.TryGetValue(id, out var p) && p.PlayerNumber == i);
+                if (!used)
+                    return i;
+            }
+
+            return 0;
+        }
+
+        private void SetTrack(RaceRoom room, string trackName)
+        {
+            room.TrackName = trackName;
+            room.TrackData = TrackLoader.LoadTrack(room.TrackName, room.Laps);
+            room.TrackSelected = true;
+        }
+
+        private void StartRace(RaceRoom room)
+        {
+            if (room.RaceStarted)
+                return;
+
+            if (!room.TrackSelected || room.TrackData == null)
+                SetTrack(room, room.TrackName);
+
+            room.RaceStarted = true;
+            room.RaceResults.Clear();
+            foreach (var id in room.PlayerIds)
+            {
+                if (_players.TryGetValue(id, out var p))
+                    p.State = PlayerState.AwaitingStart;
+            }
+
+            SendTrackToRoom(room);
+            SendToRoom(room, PacketSerializer.WriteGeneral(Command.StartRace));
+            BroadcastRoomState(room);
+        }
+
+        private void StopRace(RaceRoom room)
+        {
+            room.RaceStarted = false;
+
+            var results = room.RaceResults.ToArray();
+            SendToRoom(room, PacketSerializer.WriteRaceResults(new PacketRaceResults
+            {
+                NPlayers = (byte)Math.Min(results.Length, ProtocolConstants.MaxPlayers),
+                Results = results
+            }));
+
+            room.RaceResults.Clear();
+            foreach (var id in room.PlayerIds)
+            {
+                if (_players.TryGetValue(id, out var p))
+                    p.State = PlayerState.NotReady;
+            }
+
+            BroadcastRoomState(room);
+        }
+
+        private void SendTrackToRoom(RaceRoom room)
+        {
+            foreach (var id in room.PlayerIds)
+            {
+                if (_players.TryGetValue(id, out var player))
+                    SendTrack(room, player);
             }
         }
 
-        private void HandlePlayerFinished(PlayerConnection connection, PacketPlayer packet)
+        private void SendTrackToNotReady(RaceRoom room)
         {
-            _raceResults.Add(packet.PlayerNumber);
-            SendExcept(connection.Id, PacketSerializer.WritePlayer(Command.PlayerFinished, packet.PlayerId, packet.PlayerNumber));
-            if (CountRacers() == 0)
-                StopRace();
+            foreach (var id in room.PlayerIds)
+            {
+                if (_players.TryGetValue(id, out var player) && player.State == PlayerState.NotReady)
+                    SendTrack(room, player);
+            }
         }
 
-        private void HandlePlayerFinalize(PlayerConnection connection, PacketPlayerState packet)
+        private void SendTrack(RaceRoom room, PlayerConnection player)
         {
-            SendExcept(connection.Id, PacketSerializer.WritePlayerState(Command.PlayerFinalize, packet.PlayerId, packet.PlayerNumber, packet.State));
-            if (_raceStarted)
-                _transport.Send(connection.EndPoint, PacketSerializer.WriteGeneral(Command.StartRace));
+            if (!room.TrackSelected || room.TrackData == null)
+                return;
+
+            var trackLength = (ushort)Math.Min(room.TrackData.Definitions.Length, ProtocolConstants.MaxMultiTrackLength);
+            _transport.Send(player.EndPoint, PacketSerializer.WriteLoadCustomTrack(new PacketLoadCustomTrack
+            {
+                NrOfLaps = room.TrackData.Laps,
+                TrackName = room.TrackData.UserDefined ? "custom" : room.TrackName,
+                TrackWeather = room.TrackData.Weather,
+                TrackAmbience = room.TrackData.Ambience,
+                TrackLength = trackLength,
+                Definitions = room.TrackData.Definitions
+            }));
         }
 
-        private void HandlePlayerStarted(PlayerConnection connection, PacketPlayer packet)
+        private void SendRoomList(PlayerConnection player)
         {
-            SendExcept(connection.Id, PacketSerializer.WritePlayer(Command.PlayerStarted, packet.PlayerId, packet.PlayerNumber));
+            var list = new PacketRoomList
+            {
+                Rooms = _rooms.Values.OrderBy(r => r.Id).Take(ProtocolConstants.MaxRoomListEntries).Select(r => new PacketRoomSummary
+                {
+                    RoomId = r.Id,
+                    RoomName = r.Name,
+                    RoomType = r.RoomType,
+                    PlayerCount = (byte)r.PlayerIds.Count,
+                    PlayersToStart = r.PlayersToStart,
+                    RaceStarted = r.RaceStarted,
+                    TrackName = r.TrackName
+                }).ToArray()
+            };
+
+            _transport.Send(player.EndPoint, PacketSerializer.WriteRoomList(list));
         }
 
-        private void HandlePlayerCrashed(PlayerConnection connection, PacketPlayer packet)
+        private void BroadcastRoomList()
         {
-            SendToRacersExcept(connection.Id, PacketSerializer.WritePlayer(Command.PlayerCrashed, packet.PlayerId, packet.PlayerNumber));
+            foreach (var player in _players.Values)
+                SendRoomList(player);
+        }
+
+        private void SendRoomState(PlayerConnection player, RaceRoom? room)
+        {
+            if (room == null)
+            {
+                _transport.Send(player.EndPoint, PacketSerializer.WriteRoomState(new PacketRoomState
+                {
+                    InRoom = false,
+                    HostPlayerId = 0,
+                    RoomType = GameRoomType.BotsRace,
+                    PlayersToStart = 0,
+                    Players = Array.Empty<PacketRoomPlayer>()
+                }));
+                return;
+            }
+
+            var players = room.PlayerIds
+                .Where(id => _players.ContainsKey(id))
+                .Select(id => _players[id])
+                .OrderBy(p => p.PlayerNumber)
+                .Select(p => new PacketRoomPlayer
+                {
+                    PlayerId = p.Id,
+                    PlayerNumber = p.PlayerNumber,
+                    State = p.State,
+                    Name = string.IsNullOrWhiteSpace(p.Name) ? $"Player {p.PlayerNumber + 1}" : p.Name
+                }).ToArray();
+
+            _transport.Send(player.EndPoint, PacketSerializer.WriteRoomState(new PacketRoomState
+            {
+                RoomId = room.Id,
+                HostPlayerId = room.HostId,
+                RoomName = room.Name,
+                RoomType = room.RoomType,
+                PlayersToStart = room.PlayersToStart,
+                InRoom = true,
+                IsHost = room.HostId == player.Id,
+                RaceStarted = room.RaceStarted,
+                TrackName = room.TrackName,
+                Laps = room.Laps,
+                Players = players
+            }));
+        }
+
+        private void BroadcastRoomState(RaceRoom room)
+        {
+            foreach (var id in room.PlayerIds)
+            {
+                if (_players.TryGetValue(id, out var player))
+                    SendRoomState(player, room);
+            }
+        }
+
+        private void SendProtocolMessage(PlayerConnection player, ProtocolMessageCode code, string text)
+        {
+            _transport.Send(player.EndPoint, PacketSerializer.WriteProtocolMessage(new PacketProtocolMessage
+            {
+                Code = code,
+                Message = text ?? string.Empty
+            }));
+        }
+
+        private void SendToRoom(RaceRoom room, byte[] payload)
+        {
+            foreach (var id in room.PlayerIds)
+            {
+                if (_players.TryGetValue(id, out var player))
+                    _transport.Send(player.EndPoint, payload);
+            }
+        }
+
+        private void SendToRoomExcept(RaceRoom room, uint exceptId, byte[] payload)
+        {
+            foreach (var id in room.PlayerIds)
+            {
+                if (id == exceptId)
+                    continue;
+                if (_players.TryGetValue(id, out var player))
+                    _transport.Send(player.EndPoint, payload);
+            }
+        }
+
+        private void SendToRacingPlayersExcept(RaceRoom room, uint exceptId, byte[] payload)
+        {
+            foreach (var id in room.PlayerIds)
+            {
+                if (id == exceptId)
+                    continue;
+                if (_players.TryGetValue(id, out var player) && player.State == PlayerState.Racing)
+                    _transport.Send(player.EndPoint, payload);
+            }
+        }
+
+        private int CountRacingPlayers(RaceRoom room)
+        {
+            return room.PlayerIds.Count(id => _players.TryGetValue(id, out var player) && player.State == PlayerState.Racing);
         }
 
         private void BroadcastPlayerData()
         {
-            foreach (var player in _players.Values)
+            foreach (var room in _rooms.Values)
             {
-                if (player.State == PlayerState.Undefined || player.State == PlayerState.NotReady)
-                    continue;
-                var dataPacket = player.ToPacket(player.State);
-                var payload = PacketSerializer.WritePlayerData(dataPacket);
-                SendToRacersExcept(player.Id, payload);
+                foreach (var id in room.PlayerIds)
+                {
+                    if (!_players.TryGetValue(id, out var player))
+                        continue;
+                    if (player.State == PlayerState.NotReady || player.State == PlayerState.Undefined)
+                        continue;
+
+                    SendToRacingPlayersExcept(room, player.Id, PacketSerializer.WritePlayerData(player.ToPacket()));
+                }
             }
         }
 
         private void CheckForBumps()
         {
-            var racers = _players.Values.Where(p => p.State == PlayerState.Racing).ToList();
-            for (var i = 0; i < racers.Count; i++)
+            foreach (var room in _rooms.Values)
             {
-                for (var j = 0; j < racers.Count; j++)
+                var racers = room.PlayerIds.Where(id => _players.TryGetValue(id, out var p) && p.State == PlayerState.Racing)
+                    .Select(id => _players[id]).ToList();
+
+                for (var i = 0; i < racers.Count; i++)
                 {
-                    if (i == j)
-                        continue;
-                    var player = racers[i];
-                    var other = racers[j];
-                    if (Math.Abs(player.PositionX - other.PositionX) < 10.0f && Math.Abs(player.PositionY - other.PositionY) < 5.0f)
+                    for (var j = 0; j < racers.Count; j++)
                     {
-                        var bump = new PacketPlayerBumped
+                        if (i == j)
+                            continue;
+
+                        var player = racers[i];
+                        var other = racers[j];
+                        if (Math.Abs(player.PositionX - other.PositionX) < 10.0f && Math.Abs(player.PositionY - other.PositionY) < 5.0f)
                         {
-                            PlayerId = player.Id,
-                            PlayerNumber = player.PlayerNumber,
-                            BumpX = player.PositionX - other.PositionX,
-                            BumpY = player.PositionY - other.PositionY,
-                            BumpSpeed = (ushort)Math.Max(0, player.Speed - other.Speed)
-                        };
-                        _transport.Send(player.EndPoint, PacketSerializer.WritePlayerBumped(bump));
+                            _transport.Send(player.EndPoint, PacketSerializer.WritePlayerBumped(new PacketPlayerBumped
+                            {
+                                PlayerId = player.Id,
+                                PlayerNumber = player.PlayerNumber,
+                                BumpX = player.PositionX - other.PositionX,
+                                BumpY = player.PositionY - other.PositionY,
+                                BumpSpeed = (ushort)Math.Max(0, player.Speed - other.Speed)
+                            }));
+                        }
                     }
                 }
             }
         }
 
-        private void SendTrackToNotReady()
-        {
-            foreach (var player in _players.Values)
-            {
-                if (player.State == PlayerState.NotReady)
-                    SendTrackTo(player);
-            }
-        }
-
-        private void SendTrackTo(PlayerConnection connection)
-        {
-            if (_trackData == null)
-                return;
-
-            var trackLength = (ushort)Math.Min(_trackData.Definitions.Length, ProtocolConstants.MaxMultiTrackLength);
-            var packet = new PacketLoadCustomTrack
-            {
-                NrOfLaps = _trackData.Laps,
-                TrackName = _trackData.UserDefined ? "custom" : _trackName,
-                TrackWeather = _trackData.Weather,
-                TrackAmbience = _trackData.Ambience,
-                TrackLength = trackLength,
-                Definitions = _trackData.Definitions
-            };
-            _transport.Send(connection.EndPoint, PacketSerializer.WriteLoadCustomTrack(packet));
-        }
-
-        private void SendGeneral(Command command)
-        {
-            Send(PacketSerializer.WriteGeneral(command));
-        }
-
-        private void Send(byte[] payload)
-        {
-            foreach (var player in _players.Values)
-                _transport.Send(player.EndPoint, payload);
-        }
-
-        private void SendExcept(uint playerId, byte[] payload)
-        {
-            foreach (var player in _players.Values)
-            {
-                if (player.Id == playerId)
-                    continue;
-                _transport.Send(player.EndPoint, payload);
-            }
-        }
-
-        private void SendToRacersExcept(uint playerId, byte[] payload)
-        {
-            foreach (var player in _players.Values)
-            {
-                if (player.Id == playerId)
-                    continue;
-                if (player.State != PlayerState.Racing)
-                    continue;
-                _transport.Send(player.EndPoint, payload);
-            }
-        }
-
-        private int CountRacers()
-        {
-            var count = 0;
-            foreach (var player in _players.Values)
-            {
-                if (player.State == PlayerState.Racing)
-                    count++;
-            }
-            return count;
-        }
-
         private void CleanupConnections()
         {
-            var expired = new List<uint>();
-            foreach (var pair in _players)
-            {
-                if (DateTime.UtcNow - pair.Value.LastSeenUtc > ConnectionTimeout)
-                    expired.Add(pair.Key);
-            }
-
+            var expired = _players.Values.Where(p => DateTime.UtcNow - p.LastSeenUtc > ConnectionTimeout).Select(p => p.Id).ToList();
             foreach (var id in expired)
             {
-                if (_players.TryGetValue(id, out var player))
-                {
-                    _logger.Warning($"Player timeout: id={id}.");
-                    SendDisconnect(player.EndPoint);
-                    SendExcept(player.Id, PacketSerializer.WritePlayer(Command.PlayerDisconnected, player.Id, player.PlayerNumber));
-                    _endpointIndex.Remove(player.EndPoint.ToString());
-                    _players.Remove(id);
-                    if (_raceStarted && CountRacers() == 0)
-                        StopRace();
-                }
+                if (!_players.TryGetValue(id, out var player))
+                    continue;
+
+                RemoveConnection(player, notifyRoom: true, sendDisconnectPacket: true);
             }
         }
 
-        private void SendDisconnect(IPEndPoint endPoint)
+        private void OnPeerDisconnected(IPEndPoint endpoint)
         {
-            _transport.Send(endPoint, PacketSerializer.WriteGeneral(Command.Disconnect));
+            lock (_lock)
+            {
+                var key = endpoint.ToString();
+                if (!_endpointIndex.TryGetValue(key, out var id))
+                    return;
+                if (!_players.TryGetValue(id, out var player))
+                    return;
+
+                RemoveConnection(player, notifyRoom: true, sendDisconnectPacket: false);
+            }
+        }
+
+        private void RemoveConnection(PlayerConnection player, bool notifyRoom, bool sendDisconnectPacket)
+        {
+            if (player.RoomId.HasValue)
+                HandleLeaveRoom(player, notifyRoom);
+            if (sendDisconnectPacket)
+                _transport.Send(player.EndPoint, PacketSerializer.WriteGeneral(Command.Disconnect));
+            _endpointIndex.Remove(player.EndPoint.ToString());
+            _players.Remove(player.Id);
         }
 
         public ServerSnapshot GetSnapshot()
         {
             lock (_lock)
             {
-                var name = _config.Name ?? "TopSpeed Server";
-                var trackName = _trackData != null && _trackData.UserDefined ? "custom" : _trackName;
-                return new ServerSnapshot(
-                    name,
-                    _config.Port,
-                    _config.MaxPlayers,
-                    _players.Count,
-                    _raceStarted,
-                    _trackSelected,
-                    trackName);
+                var raceStarted = _rooms.Values.Any(r => r.RaceStarted);
+                var trackSelected = _rooms.Values.Any(r => r.TrackSelected);
+                var trackName = _rooms.Count == 1 ? _rooms.Values.First().TrackName : (_rooms.Count > 1 ? "multiple" : string.Empty);
+                return new ServerSnapshot(_config.Name ?? "TopSpeed Server", _config.Port, _config.MaxPlayers, _players.Count, raceStarted, trackSelected, trackName);
             }
         }
 

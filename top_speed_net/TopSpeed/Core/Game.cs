@@ -101,6 +101,7 @@ namespace TopSpeed.Core
                 SaveSettings,
                 EnterMenuState,
                 SetSession,
+                GetSession,
                 ClearSession,
                 ResetPendingMultiplayerState);
             _menuRegistry.RegisterAll();
@@ -311,10 +312,16 @@ namespace TopSpeed.Core
             _session = session;
         }
 
+        private MultiplayerSession? GetSession()
+        {
+            return _session;
+        }
+
         private void ClearSession()
         {
             _session?.Dispose();
             _session = null;
+            _multiplayerCoordinator.OnSessionCleared();
         }
 
         private void ResetPendingMultiplayerState()
@@ -443,17 +450,26 @@ namespace TopSpeed.Core
 
         private void ProcessMultiplayerPackets()
         {
-            if (_session == null)
+            var session = _session;
+            if (session == null)
                 return;
 
-            while (_session.TryDequeuePacket(out var packet))
+            while (session.TryDequeuePacket(out var packet))
             {
                 switch (packet.Command)
                 {
+                    case Command.Disconnect:
+                        _speech.Speak("Disconnected from server.");
+                        DisconnectFromServer();
+                        return;
+                    case Command.PlayerNumber:
+                        if (ClientPacketSerializer.TryReadPlayer(packet.Payload, out var assigned) && assigned.PlayerId == session.PlayerId)
+                            session.UpdatePlayerNumber(assigned.PlayerNumber);
+                        break;
                     case Command.PlayerJoined:
                         if (ClientPacketSerializer.TryReadPlayerJoined(packet.Payload, out var joined))
                         {
-                            if (joined.PlayerNumber != _session.PlayerNumber)
+                            if (joined.PlayerNumber != session.PlayerNumber)
                             {
                                 var name = string.IsNullOrWhiteSpace(joined.Name)
                                     ? $"Player {joined.PlayerNumber + 1}"
@@ -493,6 +509,18 @@ namespace TopSpeed.Core
                     case Command.RaceAborted:
                         if (_state == AppState.MultiplayerRace)
                             EndMultiplayerRace();
+                        break;
+                    case Command.RoomList:
+                        if (ClientPacketSerializer.TryReadRoomList(packet.Payload, out var roomList))
+                            _multiplayerCoordinator.HandleRoomList(roomList);
+                        break;
+                    case Command.RoomState:
+                        if (ClientPacketSerializer.TryReadRoomState(packet.Payload, out var roomState))
+                            _multiplayerCoordinator.HandleRoomState(roomState);
+                        break;
+                    case Command.ProtocolMessage:
+                        if (ClientPacketSerializer.TryReadProtocolMessage(packet.Payload, out var message))
+                            _multiplayerCoordinator.HandleProtocolMessage(message);
                         break;
                 }
             }

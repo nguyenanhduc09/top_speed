@@ -15,7 +15,7 @@ namespace TopSpeed.Race
 {
     internal sealed class LevelMultiplayer : Level
     {
-        private const int MaxPlayers = 8;
+        private const int MaxPlayers = ProtocolConstants.MaxPlayers;
         private const float SendIntervalSeconds = 0.1f;
         private const float StartLineY = 140.0f;
 
@@ -223,8 +223,8 @@ namespace TopSpeed.Race
                     _car.Quiet();
                     _car.Stop();
                     _raceTime = (int)(_stopwatch.ElapsedMilliseconds - _stopwatchDiffMs);
-                    Speak(_soundPlayerNr[_playerNumber]!, true);
-                    Speak(_soundFinished[_positionFinish++]!, true);
+                    SpeakIfAvailable(_soundPlayerNr[_playerNumber], true);
+                    SpeakIfAvailable(_soundFinished[Math.Min(_positionFinish++, _soundFinished.Length - 1)], true);
                     if (!_sentFinish)
                     {
                         _sentFinish = true;
@@ -366,8 +366,8 @@ namespace TopSpeed.Race
                 remote.Player.Stop();
                 if ((int)data.PlayerNumber < _soundPlayerNr.Length)
                 {
-                    Speak(_soundPlayerNr[data.PlayerNumber]!, true);
-                    Speak(_soundFinished[Math.Min(_positionFinish++, _soundFinished.Length - 1)]!, true);
+                    SpeakIfAvailable(_soundPlayerNr[data.PlayerNumber], true);
+                    SpeakIfAvailable(_soundFinished[Math.Min(_positionFinish++, _soundFinished.Length - 1)], true);
                 }
             }
 
@@ -472,7 +472,7 @@ namespace TopSpeed.Race
             if (automatic && position != _positionComment)
             {
                 if (position - 1 < _soundPosition.Length)
-                    Speak(_soundPosition[position - 1]!, true);
+                    SpeakIfAvailable(_soundPosition[position - 1], true);
                 _positionComment = position;
                 return;
             }
@@ -481,7 +481,7 @@ namespace TopSpeed.Race
             {
                 if (inFrontNumber != -1 && inFrontNumber < _soundPlayerNr.Length)
                 {
-                    Speak(_soundPlayerNr[inFrontNumber]!, true);
+                    SpeakIfAvailable(_soundPlayerNr[inFrontNumber], true);
                     var sound = _randomSounds[(int)RandomSound.Front][Algorithm.RandomInt(_totalRandomSounds[(int)RandomSound.Front])];
                     if (sound != null)
                         Speak(sound, true);
@@ -492,7 +492,7 @@ namespace TopSpeed.Race
             {
                 if (onTailNumber != -1 && onTailNumber < _soundPlayerNr.Length)
                 {
-                    Speak(_soundPlayerNr[onTailNumber]!, true);
+                    SpeakIfAvailable(_soundPlayerNr[onTailNumber], true);
                     var sound = _randomSounds[(int)RandomSound.Tail][Algorithm.RandomInt(_totalRandomSounds[(int)RandomSound.Tail])];
                     if (sound != null)
                         Speak(sound, true);
@@ -503,9 +503,16 @@ namespace TopSpeed.Race
             if (inFrontNumber == -1 && onTailNumber == -1 && !automatic)
             {
                 if (position - 1 < _soundPosition.Length)
-                    Speak(_soundPosition[position - 1]!, true);
+                    SpeakIfAvailable(_soundPosition[position - 1], true);
                 _positionComment = position;
             }
+        }
+
+        private void SpeakIfAvailable(AudioSourceHandle? sound, bool queue = false)
+        {
+            if (sound == null)
+                return;
+            Speak(sound, queue);
         }
 
         private int CalculatePlayerPerc(int player)

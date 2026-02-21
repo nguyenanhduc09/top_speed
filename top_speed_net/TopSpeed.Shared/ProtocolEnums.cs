@@ -58,6 +58,37 @@ namespace TopSpeed.Protocol
         PlayerHello = 15,
         ServerInfo = 16,
         KeepAlive = 17,
-        PlayerJoined = 18
+        PlayerJoined = 18,
+        RoomListRequest = 19,
+        RoomList = 20,
+        RoomCreate = 21,
+        RoomJoin = 22,
+        RoomLeave = 23,
+        RoomState = 24,
+        RoomSetTrack = 25,
+        RoomSetLaps = 26,
+        RoomStartRace = 27,
+        ProtocolMessage = 28,
+        RoomSetPlayersToStart = 29
+    }
+
+    public enum ProtocolMessageCode : byte
+    {
+        None = 0,
+        Ok = 1,
+        Failed = 2,
+        NotHost = 3,
+        RoomFull = 4,
+        RoomNotFound = 5,
+        InvalidTrack = 6,
+        InvalidLaps = 7,
+        NotInRoom = 8,
+        InvalidPlayersToStart = 9
+    }
+
+    public enum GameRoomType : byte
+    {
+        BotsRace = 0,
+        OneOnOne = 1
     }
 }

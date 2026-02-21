@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text;
+using LiteNetLib;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network
@@ -27,6 +29,7 @@ namespace TopSpeed.Network
                         break;
                     }
                 }
+
                 address ??= addresses.Length > 0 ? addresses[0] : null;
             }
             catch (Exception ex)
@@ -40,84 +43,131 @@ namespace TopSpeed.Network
             if (port <= 0 || port > 65535)
                 port = ClientProtocol.DefaultServerPort;
 
-            var client = new UdpClient(AddressFamily.InterNetwork);
-            client.Client.ReceiveBufferSize = 1024 * 1024;
-            client.Client.SendBufferSize = 1024 * 1024;
-            var endpoint = new IPEndPoint(address, port);
             var sanitizedCallSign = SanitizeCallSign(callSign);
+            var endpoint = new IPEndPoint(address, port);
+
+            var incoming = new ConcurrentQueue<IncomingPacket>();
+            var listener = new EventBasedNetListener();
+            NetPeer? connectedPeer = null;
+            var disconnected = false;
+            var disconnectReason = string.Empty;
+
+            listener.PeerConnectedEvent += peer => connectedPeer = peer;
+            listener.PeerDisconnectedEvent += (_, info) =>
+            {
+                disconnected = true;
+                disconnectReason = info.Reason.ToString();
+                incoming.Enqueue(new IncomingPacket(Command.Disconnect, new[] { ProtocolConstants.Version, (byte)Command.Disconnect }));
+            };
+            listener.NetworkReceiveEvent += (_, reader, _, _) =>
+            {
+                var data = reader.GetRemainingBytes();
+                reader.Recycle();
+                if (ClientPacketSerializer.TryReadHeader(data, out var command))
+                    incoming.Enqueue(new IncomingPacket(command, data));
+            };
+
+            var manager = new NetManager(listener)
+            {
+                UpdateTime = 1
+            };
+
+            if (!manager.Start())
+                return ConnectResult.CreateFail("Failed to initialize network client.");
+
+            manager.Connect(endpoint.Address.ToString(), endpoint.Port, ProtocolConstants.ConnectionKey);
 
             var hello = BuildPlayerHelloPacket(sanitizedCallSign);
-            var handshake = BuildPlayerStatePacket();
-            try
-            {
-                await client.SendAsync(hello, hello.Length, endpoint);
-                await client.SendAsync(handshake, handshake.Length, endpoint);
-            }
-            catch (Exception ex)
-            {
-                client.Dispose();
-                return ConnectResult.CreateFail($"Failed to send handshake: {ex.Message}");
-            }
-
-            var deadline = DateTime.UtcNow + timeout;
-            var keepAlivePayload = BuildKeepAlivePacket();
-            var nextKeepAlive = DateTime.UtcNow + TimeSpan.FromSeconds(1);
+            var initialState = BuildPlayerStatePacket();
+            var keepAlive = new[] { ProtocolConstants.Version, (byte)Command.KeepAlive };
+            var handshakeSent = false;
+            var nextKeepAliveUtc = DateTime.UtcNow;
             byte? playerNumber = null;
             uint? playerId = null;
             string? motd = null;
+            var deadline = DateTime.UtcNow + timeout;
+
             while (DateTime.UtcNow < deadline && !token.IsCancellationRequested)
             {
-                var remaining = deadline - DateTime.UtcNow;
-                if (remaining <= TimeSpan.Zero)
-                    break;
-                if (DateTime.UtcNow >= nextKeepAlive)
+                manager.PollEvents();
+
+                if (disconnected && connectedPeer == null)
+                {
+                    manager.Stop();
+                    return ConnectResult.CreateFail($"Connection failed: {disconnectReason}");
+                }
+
+                if (!handshakeSent && connectedPeer != null && connectedPeer.ConnectionState == ConnectionState.Connected)
                 {
                     try
                     {
-                        await client.SendAsync(keepAlivePayload, keepAlivePayload.Length, endpoint);
+                        connectedPeer.Send(hello, DeliveryMethod.ReliableOrdered);
+                        connectedPeer.Send(initialState, DeliveryMethod.ReliableOrdered);
+                        handshakeSent = true;
+                        nextKeepAliveUtc = DateTime.UtcNow + TimeSpan.FromSeconds(1);
+                    }
+                    catch (Exception ex)
+                    {
+                        manager.Stop();
+                        return ConnectResult.CreateFail($"Failed to send handshake: {ex.Message}");
+                    }
+                }
+
+                if (handshakeSent && connectedPeer != null && DateTime.UtcNow >= nextKeepAliveUtc)
+                {
+                    try
+                    {
+                        connectedPeer.Send(keepAlive, DeliveryMethod.Unreliable);
                     }
                     catch
                     {
-                        // Ignore keep alive failures during connect.
+                        // Ignore keepalive failures during connect.
                     }
-                    nextKeepAlive = DateTime.UtcNow + TimeSpan.FromSeconds(1);
+
+                    nextKeepAliveUtc = DateTime.UtcNow + TimeSpan.FromSeconds(1);
                 }
 
-                var wait = remaining < TimeSpan.FromMilliseconds(200) ? remaining : TimeSpan.FromMilliseconds(200);
-                var delayTask = Task.Delay(wait, token);
-                var receiveTask = client.ReceiveAsync();
-                var completed = await Task.WhenAny(receiveTask, delayTask);
-                if (completed != receiveTask)
-                    continue;
+                while (incoming.TryDequeue(out var packet))
+                {
+                    if (packet.Command == Command.Disconnect)
+                    {
+                        manager.Stop();
+                        return ConnectResult.CreateFail("The server refused the connection (server may be full)." );
+                    }
 
-                var result = receiveTask.Result;
-                if (!TryReadHeader(result.Buffer, out var command))
-                    continue;
+                    if (packet.Command == Command.PlayerNumber && ClientPacketSerializer.TryReadPlayer(packet.Payload, out var assigned))
+                    {
+                        playerId = assigned.PlayerId;
+                        playerNumber = assigned.PlayerNumber;
+                        if (!string.IsNullOrWhiteSpace(motd))
+                            return ConnectResult.CreateSuccess(manager, connectedPeer, endpoint, assigned.PlayerId, assigned.PlayerNumber, motd, sanitizedCallSign, incoming);
+                    }
+                    else if (packet.Command == Command.ServerInfo && ClientPacketSerializer.TryReadServerInfo(packet.Payload, out var info))
+                    {
+                        motd = info.Motd;
+                        if (playerId.HasValue && playerNumber.HasValue)
+                            return ConnectResult.CreateSuccess(manager, connectedPeer, endpoint, playerId.Value, playerNumber.Value, motd, sanitizedCallSign, incoming);
+                    }
+                    else if (packet.Command == Command.ProtocolMessage && ClientPacketSerializer.TryReadProtocolMessage(packet.Payload, out var protocolMessage))
+                    {
+                        // Surface immediate protocol errors during handshake.
+                        if (protocolMessage.Code == ProtocolMessageCode.Failed)
+                        {
+                            manager.Stop();
+                            return ConnectResult.CreateFail(string.IsNullOrWhiteSpace(protocolMessage.Message)
+                                ? "Connection refused by server."
+                                : protocolMessage.Message);
+                        }
+                    }
+                }
 
-                if (command == Command.Disconnect)
-                {
-                    client.Dispose();
-                    return ConnectResult.CreateFail("The server refused the connection (server may be full).");
-                }
-                if (command == Command.PlayerNumber && TryReadPlayerNumber(result.Buffer, out var assignedId, out var assignedNumber))
-                {
-                    playerId = assignedId;
-                    playerNumber = assignedNumber;
-                    if (!string.IsNullOrWhiteSpace(motd))
-                        return ConnectResult.CreateSuccess(client, endpoint, assignedId, assignedNumber, motd, sanitizedCallSign);
-                }
-                else if (command == Command.ServerInfo && TryReadServerInfo(result.Buffer, out var message))
-                {
-                    motd = message;
-                    if (playerNumber.HasValue && playerId.HasValue)
-                        return ConnectResult.CreateSuccess(client, endpoint, playerId.Value, playerNumber.Value, motd, sanitizedCallSign);
-                }
+                if (playerId.HasValue && playerNumber.HasValue && connectedPeer != null)
+                    return ConnectResult.CreateSuccess(manager, connectedPeer, endpoint, playerId.Value, playerNumber.Value, motd, sanitizedCallSign, incoming);
+
+                await Task.Delay(10, token);
             }
 
-            if (playerNumber.HasValue && playerId.HasValue)
-                return ConnectResult.CreateSuccess(client, endpoint, playerId.Value, playerNumber.Value, motd, sanitizedCallSign);
-
-            client.Dispose();
+            manager.Stop();
             return ConnectResult.CreateFail("No response from server. The server may be offline or unreachable.");
         }
 
@@ -158,46 +208,6 @@ namespace TopSpeed.Network
             buffer[7] = (byte)PlayerState.NotReady;
             return buffer;
         }
-
-        private static byte[] BuildKeepAlivePacket()
-        {
-            return new[] { ProtocolConstants.Version, (byte)Command.KeepAlive };
-        }
-
-        private static bool TryReadHeader(byte[] data, out Command command)
-        {
-            command = Command.Disconnect;
-            if (data.Length < 2)
-                return false;
-            if (data[0] != ProtocolConstants.Version)
-                return false;
-            command = (Command)data[1];
-            return true;
-        }
-
-        private static bool TryReadPlayerNumber(byte[] data, out uint playerId, out byte playerNumber)
-        {
-            playerId = 0;
-            playerNumber = 0;
-            if (data.Length < 2 + 4 + 1)
-                return false;
-            playerId = BitConverter.ToUInt32(data, 2);
-            playerNumber = data[6];
-            return true;
-        }
-
-        private static bool TryReadServerInfo(byte[] data, out string motd)
-        {
-            motd = string.Empty;
-            if (data.Length < 2 + ProtocolConstants.MaxMotdLength)
-                return false;
-            if (data[0] != ProtocolConstants.Version || data[1] != (byte)Command.ServerInfo)
-                return false;
-            var text = Encoding.ASCII.GetString(data, 2, ProtocolConstants.MaxMotdLength);
-            var nullIndex = text.IndexOf('\0');
-            motd = nullIndex >= 0 ? text.Substring(0, nullIndex) : text.Trim();
-            return true;
-        }
     }
 
     internal readonly struct ConnectResult
@@ -223,9 +233,23 @@ namespace TopSpeed.Network
         public uint PlayerId { get; }
         public string Motd { get; }
 
-        public static ConnectResult CreateSuccess(UdpClient client, IPEndPoint endPoint, uint playerId, byte playerNumber, string? motd, string? playerName)
+        public static ConnectResult CreateSuccess(
+            NetManager manager,
+            NetPeer? peer,
+            IPEndPoint endPoint,
+            uint playerId,
+            byte playerNumber,
+            string? motd,
+            string? playerName,
+            ConcurrentQueue<IncomingPacket> incoming)
         {
-            var session = new MultiplayerSession(client, endPoint, playerId, playerNumber, motd, playerName);
+            if (peer == null)
+            {
+                manager.Stop();
+                return CreateFail("Connection lost before session initialization.");
+            }
+
+            var session = new MultiplayerSession(manager, peer, endPoint, playerId, playerNumber, motd, playerName, incoming);
             return new ConnectResult(true, "Connected.", session, motd);
         }
 

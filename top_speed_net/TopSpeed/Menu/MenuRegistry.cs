@@ -74,6 +74,9 @@ namespace TopSpeed.Menu
             _menu.Register(BuildMultiplayerMenu());
             _menu.Register(BuildMultiplayerServersMenu());
             _menu.Register(BuildMultiplayerLobbyMenu());
+            _menu.Register(BuildMultiplayerRoomsMenu());
+            _menu.Register(BuildMultiplayerRoomControlsMenu());
+            _menu.Register(BuildMultiplayerRoomOptionsMenu());
 
             _menu.Register(BuildTrackTypeMenu("time_trial_type", RaceMode.TimeTrial));
             _menu.Register(BuildTrackTypeMenu("single_race_type", RaceMode.SingleRace));
@@ -159,11 +162,39 @@ namespace TopSpeed.Menu
             {
                 new MenuItem("Create a new game", MenuAction.None, onActivate: _actions.SpeakNotImplemented),
                 new MenuItem("Join an existing game", MenuAction.None, onActivate: _actions.SpeakNotImplemented),
-                new MenuItem("Who is online", MenuAction.None, onActivate: _actions.SpeakNotImplemented),
                 new MenuItem("Options", MenuAction.None, nextMenuId: "options_main"),
                 new MenuItem("Disconnect", MenuAction.None, onActivate: _actions.DisconnectFromServer)
             };
             return _menu.CreateMenu("multiplayer_lobby", items, string.Empty);
+        }
+
+        private MenuScreen BuildMultiplayerRoomsMenu()
+        {
+            var items = new List<MenuItem>
+            {
+                BackItem()
+            };
+            return _menu.CreateMenu("multiplayer_rooms", items, "Available game rooms");
+        }
+
+        private MenuScreen BuildMultiplayerRoomControlsMenu()
+        {
+            var items = new List<MenuItem>
+            {
+                new MenuItem("Join a game room first", MenuAction.None),
+                BackItem()
+            };
+            return _menu.CreateMenu("multiplayer_room_controls", items, "Room controls");
+        }
+
+        private MenuScreen BuildMultiplayerRoomOptionsMenu()
+        {
+            var items = new List<MenuItem>
+            {
+                new MenuItem("Join a game room first", MenuAction.None),
+                BackItem()
+            };
+            return _menu.CreateMenu("multiplayer_room_options", items, "Change game options");
         }
 
         private MenuScreen BuildTrackMenu(string id, RaceMode mode, TrackCategory category)

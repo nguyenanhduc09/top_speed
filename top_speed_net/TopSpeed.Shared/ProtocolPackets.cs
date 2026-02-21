@@ -84,4 +84,76 @@ namespace TopSpeed.Protocol
         public byte PlayerNumber;
         public string Name = string.Empty;
     }
+
+    public sealed class PacketRoomSummary
+    {
+        public uint RoomId;
+        public string RoomName = string.Empty;
+        public GameRoomType RoomType;
+        public byte PlayerCount;
+        public byte PlayersToStart;
+        public bool RaceStarted;
+        public string TrackName = string.Empty;
+    }
+
+    public sealed class PacketRoomList
+    {
+        public PacketRoomSummary[] Rooms = Array.Empty<PacketRoomSummary>();
+    }
+
+    public sealed class PacketRoomCreate
+    {
+        public string RoomName = string.Empty;
+        public GameRoomType RoomType;
+        public byte PlayersToStart;
+    }
+
+    public sealed class PacketRoomJoin
+    {
+        public uint RoomId;
+    }
+
+    public sealed class PacketRoomSetTrack
+    {
+        public string TrackName = string.Empty;
+    }
+
+    public sealed class PacketRoomSetLaps
+    {
+        public byte Laps;
+    }
+
+    public sealed class PacketRoomSetPlayersToStart
+    {
+        public byte PlayersToStart;
+    }
+
+    public sealed class PacketRoomPlayer
+    {
+        public uint PlayerId;
+        public byte PlayerNumber;
+        public PlayerState State;
+        public string Name = string.Empty;
+    }
+
+    public sealed class PacketRoomState
+    {
+        public uint RoomId;
+        public uint HostPlayerId;
+        public string RoomName = string.Empty;
+        public GameRoomType RoomType;
+        public byte PlayersToStart;
+        public bool InRoom;
+        public bool IsHost;
+        public bool RaceStarted;
+        public string TrackName = string.Empty;
+        public byte Laps;
+        public PacketRoomPlayer[] Players = Array.Empty<PacketRoomPlayer>();
+    }
+
+    public sealed class PacketProtocolMessage
+    {
+        public ProtocolMessageCode Code;
+        public string Message = string.Empty;
+    }
 }

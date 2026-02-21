@@ -137,7 +137,7 @@ namespace TopSpeed.Server
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine("  --port <number>         Server port (1-65535).");
-            Console.WriteLine("  --max-players <number>  Max players (1-8).");
+            Console.WriteLine("  --max-players <number>  Max connected players (1-255).");
             Console.WriteLine("  --motd <text>           Message of the day.");
             Console.WriteLine("  --log <levels>          Comma-separated levels: error,warning,info,debug,all.");
             Console.WriteLine("  -h, --help              Show this help.");
@@ -200,7 +200,7 @@ namespace TopSpeed.Server
 
             if (TryGetIntArg(args, "--max-players", out var maxPlayers))
             {
-                if (maxPlayers >= 1 && maxPlayers <= ProtocolConstants.MaxPlayers)
+                if (maxPlayers >= 1 && maxPlayers <= byte.MaxValue)
                     settings.MaxPlayers = maxPlayers;
                 else
                     logger.Warning("Invalid --max-players value. Using configured max players.");

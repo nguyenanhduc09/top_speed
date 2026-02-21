@@ -1,101 +1,91 @@
 using System;
 using System.Collections.Concurrent;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using LiteNetLib;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network
 {
     internal sealed class MultiplayerSession : IDisposable
     {
-        private readonly UdpClient _client;
+        private readonly NetManager _manager;
+        private readonly NetPeer _peer;
         private readonly IPEndPoint _serverEndPoint;
         private readonly CancellationTokenSource _cts;
+        private readonly Task _pollTask;
         private readonly Task _keepAliveTask;
-        private readonly Task _receiveTask;
         private readonly ConcurrentQueue<IncomingPacket> _incoming;
+        private byte _playerNumber;
 
-        public MultiplayerSession(UdpClient client, IPEndPoint serverEndPoint, uint playerId, byte playerNumber, string? motd, string? playerName)
+        public MultiplayerSession(
+            NetManager manager,
+            NetPeer peer,
+            IPEndPoint serverEndPoint,
+            uint playerId,
+            byte playerNumber,
+            string? motd,
+            string? playerName,
+            ConcurrentQueue<IncomingPacket> incoming)
         {
-            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            _peer = peer ?? throw new ArgumentNullException(nameof(peer));
             _serverEndPoint = serverEndPoint ?? throw new ArgumentNullException(nameof(serverEndPoint));
+            _incoming = incoming ?? throw new ArgumentNullException(nameof(incoming));
             PlayerId = playerId;
-            PlayerNumber = playerNumber;
+            _playerNumber = playerNumber;
             Motd = motd ?? string.Empty;
             PlayerName = playerName ?? string.Empty;
             _cts = new CancellationTokenSource();
-            _keepAliveTask = Task.Run(KeepAliveLoop);
-            _incoming = new ConcurrentQueue<IncomingPacket>();
-            _receiveTask = Task.Run(ReceiveLoop);
+            _pollTask = Task.Run(() => PollLoop(_cts.Token));
+            _keepAliveTask = Task.Run(() => KeepAliveLoop(_cts.Token));
         }
 
         public IPAddress Address => _serverEndPoint.Address;
         public int Port => _serverEndPoint.Port;
         public uint PlayerId { get; }
-        public byte PlayerNumber { get; }
+        public byte PlayerNumber => _playerNumber;
         public string Motd { get; }
         public string PlayerName { get; }
 
-        private async Task KeepAliveLoop()
+        public void UpdatePlayerNumber(byte playerNumber)
         {
-            var payload = new[] { ProtocolConstants.Version, (byte)Command.KeepAlive };
-            while (!_cts.IsCancellationRequested)
+            _playerNumber = playerNumber;
+        }
+
+        private void PollLoop(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    await _client.SendAsync(payload, payload.Length, _serverEndPoint);
+                    _manager.PollEvents();
                 }
                 catch
                 {
-                    // Keepalive failures shouldn't crash the session.
+                    // Ignore poll failures to keep the session alive.
                 }
+
+                Thread.Sleep(1);
+            }
+        }
+
+        private async Task KeepAliveLoop(CancellationToken token)
+        {
+            var payload = new[] { ProtocolConstants.Version, (byte)Command.KeepAlive };
+            while (!token.IsCancellationRequested)
+            {
+                SafeSend(payload, DeliveryMethod.Unreliable);
 
                 try
                 {
-                    await Task.Delay(1000, _cts.Token);
+                    await Task.Delay(1000, token);
                 }
                 catch (TaskCanceledException)
                 {
                     break;
                 }
-            }
-        }
-
-        private async Task ReceiveLoop()
-        {
-            while (!_cts.IsCancellationRequested)
-            {
-                UdpReceiveResult result;
-                try
-                {
-                    result = await _client.ReceiveAsync();
-                }
-                catch (ObjectDisposedException)
-                {
-                    break;
-                }
-                catch (SocketException)
-                {
-                    if (_cts.IsCancellationRequested)
-                        break;
-                    continue;
-                }
-                catch
-                {
-                    if (_cts.IsCancellationRequested)
-                        break;
-                    continue;
-                }
-
-                if (!Equals(result.RemoteEndPoint.Address, _serverEndPoint.Address))
-                    continue;
-                if (result.RemoteEndPoint.Port != _serverEndPoint.Port)
-                    continue;
-                if (!ClientPacketSerializer.TryReadHeader(result.Buffer, out var command))
-                    continue;
-                _incoming.Enqueue(new IncomingPacket(command, result.Buffer));
             }
         }
 
@@ -107,44 +97,85 @@ namespace TopSpeed.Network
         public void SendPlayerState(PlayerState state)
         {
             var payload = ClientPacketSerializer.WritePlayerState(Command.PlayerState, PlayerId, PlayerNumber, state);
-            SafeSend(payload);
+            SafeSend(payload, DeliveryMethod.ReliableOrdered);
         }
 
         public void SendPlayerData(PlayerRaceData raceData, CarType car, PlayerState state, bool engine, bool braking, bool horning, bool backfiring)
         {
             var payload = ClientPacketSerializer.WritePlayerDataToServer(PlayerId, PlayerNumber, car, raceData, state, engine, braking, horning, backfiring);
-            SafeSend(payload);
+            SafeSend(payload, DeliveryMethod.Sequenced);
         }
 
         public void SendPlayerStarted()
         {
             var payload = ClientPacketSerializer.WritePlayer(Command.PlayerStarted, PlayerId, PlayerNumber);
-            SafeSend(payload);
+            SafeSend(payload, DeliveryMethod.ReliableOrdered);
         }
 
         public void SendPlayerFinished()
         {
             var payload = ClientPacketSerializer.WritePlayer(Command.PlayerFinished, PlayerId, PlayerNumber);
-            SafeSend(payload);
+            SafeSend(payload, DeliveryMethod.ReliableOrdered);
         }
 
         public void SendPlayerFinalize(PlayerState state)
         {
             var payload = ClientPacketSerializer.WritePlayerState(Command.PlayerFinalize, PlayerId, PlayerNumber, state);
-            SafeSend(payload);
+            SafeSend(payload, DeliveryMethod.ReliableOrdered);
         }
 
         public void SendPlayerCrashed()
         {
             var payload = ClientPacketSerializer.WritePlayer(Command.PlayerCrashed, PlayerId, PlayerNumber);
-            SafeSend(payload);
+            SafeSend(payload, DeliveryMethod.ReliableOrdered);
         }
 
-        private void SafeSend(byte[] payload)
+        public void SendRoomListRequest()
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomListRequest(), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomCreate(string roomName, GameRoomType roomType, byte playersToStart)
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomCreate(roomName, roomType, playersToStart), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomJoin(uint roomId)
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomJoin(roomId), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomLeave()
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomLeave(), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomSetTrack(string trackName)
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomSetTrack(trackName), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomSetLaps(byte laps)
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomSetLaps(laps), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomStartRace()
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomStartRace(), DeliveryMethod.ReliableOrdered);
+        }
+
+        public void SendRoomSetPlayersToStart(byte playersToStart)
+        {
+            SafeSend(ClientPacketSerializer.WriteRoomSetPlayersToStart(playersToStart), DeliveryMethod.ReliableOrdered);
+        }
+
+        private void SafeSend(byte[] payload, DeliveryMethod deliveryMethod)
         {
             try
             {
-                _client.Send(payload, payload.Length, _serverEndPoint);
+                if (_peer.ConnectionState == ConnectionState.Connected)
+                    _peer.Send(payload, deliveryMethod);
             }
             catch
             {
@@ -155,8 +186,9 @@ namespace TopSpeed.Network
         public void Dispose()
         {
             _cts.Cancel();
-            _client.Close();
-            _client.Dispose();
+            try { _pollTask.Wait(250); } catch { }
+            try { _keepAliveTask.Wait(250); } catch { }
+            _manager.Stop();
             _cts.Dispose();
         }
     }
