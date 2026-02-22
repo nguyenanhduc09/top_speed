@@ -22,7 +22,6 @@ namespace TopSpeed.Race
         protected const int MaxUnkeys = 12;
         protected const int RandomSoundGroups = 16;
         protected const int RandomSoundMax = 32;
-        protected const float AdventureLaneWidth = 80.0f;
         private const float KmToMiles = 0.621371f;
         private const float MetersPerMile = 1609.344f;
         private const float MetersToFeet = 3.28084f;
@@ -161,7 +160,6 @@ namespace TopSpeed.Race
             if (!string.IsNullOrWhiteSpace(track) &&
                 track.IndexOf("adv", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                _track.SetLaneWidth(AdventureLaneWidth);
                 _nrOfLaps = 1;
             }
 
