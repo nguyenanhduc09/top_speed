@@ -846,6 +846,7 @@ namespace TopSpeed.Core
         void IMenuActions.StartServerDiscovery() => _multiplayerCoordinator.StartServerDiscovery();
         void IMenuActions.OpenSavedServersManager() => _multiplayerCoordinator.OpenSavedServersManager();
         void IMenuActions.BeginManualServerEntry() => _multiplayerCoordinator.BeginManualServerEntry();
+        void IMenuActions.SpeakMessage(string text) => _speech.Speak(text);
         void IMenuActions.SpeakNotImplemented() => _speech.Speak("Not implemented yet.");
         void IMenuActions.BeginServerPortEntry() => _multiplayerCoordinator.BeginServerPortEntry();
         void IMenuActions.RestoreDefaults() => RestoreDefaults();

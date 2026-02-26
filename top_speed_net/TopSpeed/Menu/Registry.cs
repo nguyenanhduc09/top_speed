@@ -16,6 +16,7 @@ namespace TopSpeed.Menu
         void StartServerDiscovery();
         void OpenSavedServersManager();
         void BeginManualServerEntry();
+        void SpeakMessage(string text);
         void SpeakNotImplemented();
         void BeginServerPortEntry();
         void RestoreDefaults();
@@ -95,7 +96,9 @@ namespace TopSpeed.Menu
             _menu.Register(BuildCustomTrackMenu("single_race_tracks_custom", RaceMode.SingleRace));
 
             _menu.Register(BuildVehicleMenu("time_trial_vehicles", RaceMode.TimeTrial));
+            _menu.Register(BuildCustomVehicleMenu("time_trial_vehicles_custom", RaceMode.TimeTrial));
             _menu.Register(BuildVehicleMenu("single_race_vehicles", RaceMode.SingleRace));
+            _menu.Register(BuildCustomVehicleMenu("single_race_vehicles_custom", RaceMode.SingleRace));
 
             _menu.Register(BuildTransmissionMenu("time_trial_transmission", RaceMode.TimeTrial));
             _menu.Register(BuildTransmissionMenu("single_race_transmission", RaceMode.SingleRace));
@@ -129,11 +132,7 @@ namespace TopSpeed.Menu
             {
                 new MenuItem("Race track", MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.RaceTrack), onActivate: () => _setup.TrackCategory = TrackCategory.RaceTrack),
                 new MenuItem("Street adventure", MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.StreetAdventure), onActivate: () => _setup.TrackCategory = TrackCategory.StreetAdventure),
-                new MenuItem("Custom track", MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.CustomTrack), onActivate: () =>
-                {
-                    _setup.TrackCategory = TrackCategory.CustomTrack;
-                    RefreshCustomTrackMenu(mode);
-                }),
+                new MenuItem("Custom track", MenuAction.None, onActivate: () => OpenCustomTrackMenuOrAnnounce(mode)),
                 new MenuItem("Random", MenuAction.None, onActivate: () => PushRandomTrackType(mode)),
                 BackItem()
             };
@@ -299,7 +298,6 @@ namespace TopSpeed.Menu
             var customTracks = _selection.GetCustomTrackInfo();
             if (customTracks.Count == 0)
             {
-                items.Add(new MenuItem("No custom tracks found", MenuAction.None));
                 items.Add(BackItem());
                 return items;
             }
@@ -328,7 +326,37 @@ namespace TopSpeed.Menu
                 items.Add(new MenuItem(name, MenuAction.None, nextMenuId: nextMenuId, onActivate: () => _selection.SelectVehicle(index)));
             }
 
-            foreach (var vehicle in _selection.GetCustomVehicleInfo())
+            items.Add(new MenuItem("Custom", MenuAction.None, onActivate: () => OpenCustomVehicleMenuOrAnnounce(mode)));
+
+            items.Add(new MenuItem("Random", MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomCustomVehicle));
+            items.Add(BackItem());
+            var title = "Select a vehicle";
+            return _menu.CreateMenu(id, items, title);
+        }
+
+        private MenuScreen BuildCustomVehicleMenu(string id, RaceMode mode)
+        {
+            var items = BuildCustomVehicleItems(mode);
+            return _menu.CreateMenu(id, items, "Select a custom vehicle");
+        }
+
+        private void RefreshCustomVehicleMenu(RaceMode mode)
+        {
+            _menu.UpdateItems(CustomVehicleMenuId(mode), BuildCustomVehicleItems(mode));
+        }
+
+        private List<MenuItem> BuildCustomVehicleItems(RaceMode mode)
+        {
+            var items = new List<MenuItem>();
+            var nextMenuId = TransmissionMenuId(mode);
+            var customVehicles = _selection.GetCustomVehicleInfo();
+            if (customVehicles.Count == 0)
+            {
+                items.Add(BackItem());
+                return items;
+            }
+
+            foreach (var vehicle in customVehicles)
             {
                 var filePath = vehicle.Key;
                 var displayName = string.IsNullOrWhiteSpace(vehicle.Display) ? "Custom vehicle" : vehicle.Display;
@@ -337,8 +365,7 @@ namespace TopSpeed.Menu
 
             items.Add(new MenuItem("Random", MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomVehicle));
             items.Add(BackItem());
-            var title = "Select a vehicle";
-            return _menu.CreateMenu(id, items, title);
+            return items;
         }
 
         private MenuScreen BuildTransmissionMenu(string id, RaceMode mode)
@@ -589,6 +616,33 @@ namespace TopSpeed.Menu
             _menu.Push(TrackMenuId(mode, category));
         }
 
+        private void OpenCustomTrackMenuOrAnnounce(RaceMode mode)
+        {
+            var customTracks = _selection.GetCustomTrackInfo();
+            if (customTracks.Count == 0)
+            {
+                _actions.SpeakMessage("No custom tracks found.");
+                return;
+            }
+
+            _setup.TrackCategory = TrackCategory.CustomTrack;
+            RefreshCustomTrackMenu(mode);
+            _menu.Push(TrackMenuId(mode, TrackCategory.CustomTrack));
+        }
+
+        private void OpenCustomVehicleMenuOrAnnounce(RaceMode mode)
+        {
+            var customVehicles = _selection.GetCustomVehicleInfo();
+            if (customVehicles.Count == 0)
+            {
+                _actions.SpeakMessage("No custom vehicles found.");
+                return;
+            }
+
+            RefreshCustomVehicleMenu(mode);
+            _menu.Push(CustomVehicleMenuId(mode));
+        }
+
         private static string TrackMenuId(RaceMode mode, TrackCategory category)
         {
             var prefix = mode == RaceMode.TimeTrial ? "time_trial" : "single_race";
@@ -603,6 +657,11 @@ namespace TopSpeed.Menu
         private static string VehicleMenuId(RaceMode mode)
         {
             return mode == RaceMode.TimeTrial ? "time_trial_vehicles" : "single_race_vehicles";
+        }
+
+        private static string CustomVehicleMenuId(RaceMode mode)
+        {
+            return mode == RaceMode.TimeTrial ? "time_trial_vehicles_custom" : "single_race_vehicles_custom";
         }
 
         private static string TransmissionMenuId(RaceMode mode)

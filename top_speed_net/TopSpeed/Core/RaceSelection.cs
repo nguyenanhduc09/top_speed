@@ -106,6 +106,19 @@ namespace TopSpeed.Core
                 SelectVehicle(0);
         }
 
+        public void SelectRandomCustomVehicle()
+        {
+            var customFiles = GetCustomVehicleInfo().Select(v => v.Key).ToList();
+            if (customFiles.Count == 0)
+            {
+                SelectVehicle(0);
+                return;
+            }
+
+            var index = Algorithm.RandomInt(customFiles.Count);
+            SelectCustomVehicle(customFiles[index]);
+        }
+
         public IEnumerable<string> GetCustomTrackFiles()
         {
             var root = Path.Combine(AssetPaths.Root, "Tracks");
