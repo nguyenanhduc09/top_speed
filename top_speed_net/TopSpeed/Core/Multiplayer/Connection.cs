@@ -38,9 +38,9 @@ namespace TopSpeed.Core.Multiplayer
 
         public void BeginServerPortEntry()
         {
-            var current = _settings.ServerPort > 0 ? _settings.ServerPort.ToString() : string.Empty;
+            var current = _settings.DefaultServerPort.ToString();
             _promptTextInput(
-                "Enter a custom server port, or leave empty for default.",
+                "Enter the default server port used for manual connections.",
                 current,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -285,9 +285,9 @@ namespace TopSpeed.Core.Multiplayer
             var trimmed = (text ?? string.Empty).Trim();
             if (string.IsNullOrEmpty(trimmed))
             {
-                _settings.ServerPort = 0;
+                _settings.DefaultServerPort = ClientProtocol.DefaultServerPort;
                 _saveSettings();
-                _speech.Speak("Server port cleared. The default port will be used.");
+                _speech.Speak($"Default server port reset to {ClientProtocol.DefaultServerPort}.");
                 return;
             }
 
@@ -298,14 +298,16 @@ namespace TopSpeed.Core.Multiplayer
                 return;
             }
 
-            _settings.ServerPort = port;
+            _settings.DefaultServerPort = port;
             _saveSettings();
-            _speech.Speak($"Server port set to {port}.");
+            _speech.Speak($"Default server port set to {port}.");
         }
 
         private int ResolveServerPort()
         {
-            return _settings.ServerPort > 0 ? _settings.ServerPort : ClientProtocol.DefaultServerPort;
+            return _settings.DefaultServerPort >= 1 && _settings.DefaultServerPort <= 65535
+                ? _settings.DefaultServerPort
+                : ClientProtocol.DefaultServerPort;
         }
 
         private MultiplayerSession? SessionOrNull()

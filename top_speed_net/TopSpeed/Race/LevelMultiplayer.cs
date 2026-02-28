@@ -192,44 +192,19 @@ namespace TopSpeed.Race
         {
             if (_elapsedTotal == 0.0f)
             {
-                var raceStartDelay = 4.0f;
-                PushEvent(RaceEventType.CarStart, 3.0f);
-                PushEvent(RaceEventType.RaceStart, raceStartDelay);
-                PushEvent(RaceEventType.PlaySound, 1.0f, _soundStart);
+                ScheduleDefaultStartSequence();
             }
 
             var dueEvents = CollectDueEvents();
             foreach (var e in dueEvents)
             {
+                if (HandleSharedLifecycleEvent(e))
+                    continue;
+
                 switch (e.Type)
                 {
-                    case RaceEventType.CarStart:
-                        // Manual start now
-                        break;
-                    case RaceEventType.RaceStart:
-                        _raceTime = 0;
-                        _stopwatch.Restart();
-                        _lap = 0;
-                        _started = true;
-                        if (!_sentStart)
-                        {
-                            _sentStart = true;
-                            _currentState = PlayerState.Racing;
-                            _session.SendPlayerStarted();
-                            _session.SendPlayerState(_currentState);
-                        }
-                        break;
-                    case RaceEventType.RaceFinish:
-                        PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundYourTime);
-                        _sayTimeLength += _soundYourTime.GetLengthSeconds() + 0.5f;
-                        SayTime(_raceTime);
-                        PushEvent(RaceEventType.RaceTimeFinalize, _sayTimeLength);
-                        break;
                     case RaceEventType.PlaySound:
                         QueueSound(e.Sound);
-                        break;
-                    case RaceEventType.RaceTimeFinalize:
-                        _sayTimeLength = 0.0f;
                         break;
                     case RaceEventType.PlayRadioSound:
                         _unkeyQueue--;
@@ -399,6 +374,18 @@ namespace TopSpeed.Race
                 return;
 
             _elapsedTotal += elapsed;
+        }
+
+        protected override void OnRaceStartEvent()
+        {
+            base.OnRaceStartEvent();
+            if (_sentStart)
+                return;
+
+            _sentStart = true;
+            _currentState = PlayerState.Racing;
+            _session.SendPlayerStarted();
+            _session.SendPlayerState(_currentState);
         }
 
         public void Pause()

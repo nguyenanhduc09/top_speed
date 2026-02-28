@@ -1,0 +1,156 @@
+using System;
+using System.Collections.Generic;
+
+namespace TopSpeed.Menu
+{
+    [Flags]
+    internal enum DialogButtonFlags
+    {
+        None = 0,
+        Default = 1
+    }
+
+    internal sealed class DialogButton
+    {
+        public DialogButton(int id, string text, Action? onClick = null, DialogButtonFlags flags = DialogButtonFlags.None)
+        {
+            Id = id;
+            Text = text ?? string.Empty;
+            OnClick = onClick;
+            Flags = flags;
+        }
+
+        public int Id { get; }
+        public string Text { get; }
+        public Action? OnClick { get; }
+        public DialogButtonFlags Flags { get; }
+    }
+
+    internal sealed class DialogItem
+    {
+        public DialogItem(string text)
+        {
+            Text = text ?? string.Empty;
+        }
+
+        public string Text { get; }
+    }
+
+    internal sealed class Dialog
+    {
+        public Dialog(string title, IEnumerable<DialogItem>? items, Action<int>? onResult, params DialogButton[] buttons)
+            : this(title, null, QuestionId.Close, items, onResult, buttons)
+        {
+        }
+
+        public Dialog(string title, string? caption, int closeResultId, IEnumerable<DialogItem>? items, Action<int>? onResult, params DialogButton[] buttons)
+        {
+            Title = title ?? string.Empty;
+            Caption = caption ?? string.Empty;
+            CloseResultId = closeResultId;
+            OnResult = onResult;
+            Items = items == null ? Array.Empty<DialogItem>() : new List<DialogItem>(items);
+            Buttons = buttons ?? Array.Empty<DialogButton>();
+        }
+
+        public string Title { get; }
+        public string Caption { get; }
+        public int CloseResultId { get; }
+        public Action<int>? OnResult { get; }
+        public bool OpenAsOverlay { get; set; }
+        public IReadOnlyList<DialogItem> Items { get; }
+        public IReadOnlyList<DialogButton> Buttons { get; }
+    }
+
+    internal sealed class DialogManager
+    {
+        private const string MenuId = "dialog";
+        private readonly MenuManager _menu;
+        private Dialog? _activeDialog;
+
+        public DialogManager(MenuManager menu)
+        {
+            _menu = menu ?? throw new ArgumentNullException(nameof(menu));
+            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem("Dialog", MenuAction.None) }, string.Empty));
+            _menu.SetCloseHandler(MenuId, HandleDialogClose);
+        }
+
+        public bool IsDialogMenu(string? currentMenuId)
+        {
+            return string.Equals(currentMenuId, MenuId, StringComparison.Ordinal);
+        }
+
+        public bool HasActiveOverlayDialog => _activeDialog != null && _activeDialog.OpenAsOverlay;
+
+        public void Show(Dialog dialog)
+        {
+            if (dialog == null)
+                throw new ArgumentNullException(nameof(dialog));
+
+            _activeDialog = dialog;
+            var items = new List<MenuItem>
+            {
+                new MenuItem(dialog.Title, MenuAction.None)
+            };
+
+            if (!string.IsNullOrWhiteSpace(dialog.Caption))
+                items.Add(new MenuItem(dialog.Caption, MenuAction.None));
+
+            for (var i = 0; i < dialog.Items.Count; i++)
+            {
+                var item = dialog.Items[i];
+                items.Add(new MenuItem(item.Text, MenuAction.None));
+            }
+
+            var firstDialogItemIndex = string.IsNullOrWhiteSpace(dialog.Caption) ? 1 : 2;
+            var firstButtonIndex = items.Count;
+            var defaultIndex = dialog.Items.Count > 0 ? firstDialogItemIndex : firstButtonIndex;
+            var firstDefaultFound = false;
+            for (var i = 0; i < dialog.Buttons.Count; i++)
+            {
+                var button = dialog.Buttons[i];
+                if (dialog.Items.Count == 0 && !firstDefaultFound && (button.Flags & DialogButtonFlags.Default) != 0)
+                {
+                    defaultIndex = firstButtonIndex + i;
+                    firstDefaultFound = true;
+                }
+
+                var buttonCopy = button;
+                items.Add(new MenuItem(button.Text, MenuAction.None, onActivate: () => Complete(dialog, buttonCopy.Id, buttonCopy.OnClick)));
+            }
+
+            if (dialog.Buttons.Count == 0)
+                defaultIndex = 0;
+
+            _menu.UpdateItems(MenuId, items);
+
+            var announcement = string.IsNullOrWhiteSpace(dialog.Caption)
+                ? $"{dialog.Title} dialog"
+                : $"{dialog.Title} dialog {dialog.Caption}";
+            _menu.Push(MenuId, announcement, defaultIndex);
+        }
+
+        private bool HandleDialogClose(MenuCloseSource _)
+        {
+            if (_activeDialog == null)
+                return false;
+
+            Complete(_activeDialog, _activeDialog.CloseResultId, null);
+            return true;
+        }
+
+        private void Complete(Dialog dialog, int resultId, Action? buttonAction)
+        {
+            if (!ReferenceEquals(_activeDialog, dialog))
+                return;
+
+            _activeDialog = null;
+
+            if (IsDialogMenu(_menu.CurrentId) && _menu.CanPop)
+                _menu.PopToPrevious();
+
+            dialog.OnResult?.Invoke(resultId);
+            buttonAction?.Invoke();
+        }
+    }
+}

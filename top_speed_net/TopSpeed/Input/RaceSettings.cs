@@ -1,5 +1,4 @@
 using SharpDX.DirectInput;
-using TopSpeed.Common;
 using System;
 using System.Collections.Generic;
 
@@ -102,17 +101,15 @@ namespace TopSpeed.Input
         public int NrOfComputers { get; set; }
         public RaceDifficulty Difficulty { get; set; }
         public UnitSystem Units { get; set; }
-        public int ServerNumber { get; set; }
         public float MusicVolume { get; set; }
         public AudioVolumeSettings AudioVolumes { get; set; } = new AudioVolumeSettings();
-        public bool ThreeDSound { get; set; }
-        public bool ReverseStereo { get; set; }
+        public bool HrtfAudio { get; set; }
         public bool AutoDetectAudioDeviceFormat { get; set; }
         public bool RandomCustomTracks { get; set; }
         public bool RandomCustomVehicles { get; set; }
         public bool SingleRaceCustomVehicles { get; set; }
         public string LastServerAddress { get; set; } = string.Empty;
-        public int ServerPort { get; set; }
+        public int DefaultServerPort { get; set; }
         public float ScreenReaderRateMs { get; set; }
         public bool UsageHints { get; set; }
         public bool MenuWrapNavigation { get; set; }
@@ -177,20 +174,16 @@ namespace TopSpeed.Input
             NrOfComputers = 3;
             Difficulty = RaceDifficulty.Easy;
             Units = UnitSystem.Metric;
-            ServerNumber = Algorithm.RandomInt(4999) + 1000;
             MusicVolume = 0.6f;
             AudioVolumes = new AudioVolumeSettings();
             AudioVolumes.RestoreDefaults((int)Math.Round(MusicVolume * 100f));
-            ThreeDSound = true;
-            ReverseStereo = false;
+            HrtfAudio = true;
             AutoDetectAudioDeviceFormat = true;
             RandomCustomTracks = false;
             RandomCustomVehicles = false;
             SingleRaceCustomVehicles = false;
-            MusicVolume = 0.6f;
-            AudioVolumes.RestoreDefaults((int)Math.Round(MusicVolume * 100f));
             LastServerAddress = string.Empty;
-            ServerPort = 0;
+            DefaultServerPort = 28630;
             ScreenReaderRateMs = 0f;
             UsageHints = true;
             MenuWrapNavigation = true;

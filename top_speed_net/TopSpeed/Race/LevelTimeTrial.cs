@@ -49,50 +49,19 @@ namespace TopSpeed.Race
         {
             if (_elapsedTotal == 0.0f)
             {
-                PushEvent(RaceEventType.CarStart, 3.0f);
-                PushEvent(RaceEventType.RaceStart, 4.0f);
-                PushEvent(RaceEventType.PlaySound, 1.0f, _soundStart);
+                ScheduleDefaultStartSequence();
             }
 
             var dueEvents = CollectDueEvents();
             foreach (var e in dueEvents)
             {
+                if (HandleSharedLifecycleEvent(e))
+                    continue;
+
                 switch (e.Type)
                 {
-                    case RaceEventType.CarStart:
-                        // Manual start now
-                        break;
-                    case RaceEventType.RaceStart:
-                        _raceTime = 0;
-                        _stopwatch.Restart();
-                        _lap = 0;
-                        _started = true;
-                        break;
-                    case RaceEventType.RaceFinish:
-                        PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundYourTime);
-                        _sayTimeLength += _soundYourTime.GetLengthSeconds() + 0.5f;
-                        SayTime(_raceTime);
-                        _highscore = ReadHighScore();
-                        if ((_raceTime < _highscore) || (_highscore == 0))
-                        {
-                            WriteHighScore();
-                            PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundNewTime);
-                            _sayTimeLength += _soundNewTime.GetLengthSeconds();
-                        }
-                        else
-                        {
-                            PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundBestTime);
-                            _sayTimeLength += _soundBestTime.GetLengthSeconds() + 0.5f;
-                            SayTime(_highscore);
-                        }
-                        PushEvent(RaceEventType.RaceTimeFinalize, _sayTimeLength);
-                        break;
                     case RaceEventType.PlaySound:
                         QueueSound(e.Sound);
-                        break;
-                    case RaceEventType.RaceTimeFinalize:
-                        _sayTimeLength = 0.0f;
-                        RequestExitWhenQueueIdle();
                         break;
                     case RaceEventType.PlayRadioSound:
                         _unkeyQueue--;
@@ -162,6 +131,32 @@ namespace TopSpeed.Race
                 return;
 
             _elapsedTotal += elapsed;
+        }
+
+        protected override void OnRaceFinishEvent()
+        {
+            AppendDefaultRaceFinishAnnouncement();
+            _highscore = ReadHighScore();
+            if ((_raceTime < _highscore) || (_highscore == 0))
+            {
+                WriteHighScore();
+                PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundNewTime);
+                _sayTimeLength += _soundNewTime.GetLengthSeconds();
+            }
+            else
+            {
+                PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundBestTime);
+                _sayTimeLength += _soundBestTime.GetLengthSeconds() + 0.5f;
+                SayTime(_highscore);
+            }
+
+            PushEvent(RaceEventType.RaceTimeFinalize, _sayTimeLength);
+        }
+
+        protected override void OnRaceTimeFinalizeEvent()
+        {
+            base.OnRaceTimeFinalizeEvent();
+            RequestExitWhenQueueIdle();
         }
 
         public void Pause()

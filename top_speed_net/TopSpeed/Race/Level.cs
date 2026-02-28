@@ -23,6 +23,9 @@ namespace TopSpeed.Race
         protected const int MaxUnkeys = 12;
         protected const int RandomSoundGroups = 16;
         protected const int RandomSoundMax = 32;
+        protected const float DefaultCarStartDelaySeconds = 3.0f;
+        protected const float DefaultStartCueDelaySeconds = 1.0f;
+        protected const float DefaultRaceStartDelaySeconds = 4.0f;
         private const float KmToMiles = 0.621371f;
         private const float MetersPerMile = 1609.344f;
         private const float MetersToFeet = 3.28084f;
@@ -314,6 +317,13 @@ namespace TopSpeed.Race
             _exitWhenQueueIdle = true;
         }
 
+        protected void ScheduleDefaultStartSequence(float raceStartDelaySeconds = DefaultRaceStartDelaySeconds)
+        {
+            PushEvent(RaceEventType.CarStart, DefaultCarStartDelaySeconds);
+            PushEvent(RaceEventType.RaceStart, raceStartDelaySeconds);
+            PushEvent(RaceEventType.PlaySound, DefaultStartCueDelaySeconds, _soundStart);
+        }
+
         protected bool UpdateExitWhenQueueIdle()
         {
             if (!_exitWhenQueueIdle)
@@ -528,6 +538,61 @@ namespace TopSpeed.Race
             {
                 PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundSeconds);
                 _sayTimeLength += _soundSeconds.GetLengthSeconds();
+            }
+        }
+
+        protected void AppendDefaultRaceFinishAnnouncement()
+        {
+            PushEvent(RaceEventType.PlaySound, _sayTimeLength, _soundYourTime);
+            _sayTimeLength += _soundYourTime.GetLengthSeconds() + 0.5f;
+            SayTime(_raceTime);
+        }
+
+        protected virtual void OnCarStartEvent()
+        {
+            // Vehicle start is manual.
+        }
+
+        protected virtual void OnRaceStartEvent()
+        {
+            _raceTime = 0;
+            _stopwatch.Restart();
+            _lap = 0;
+            _started = true;
+        }
+
+        protected virtual void OnRaceFinishEvent()
+        {
+            AppendDefaultRaceFinishAnnouncement();
+            PushEvent(RaceEventType.RaceTimeFinalize, _sayTimeLength);
+        }
+
+        protected virtual void OnRaceTimeFinalizeEvent()
+        {
+            _sayTimeLength = 0.0f;
+        }
+
+        protected bool HandleSharedLifecycleEvent(RaceEvent e)
+        {
+            if (e == null)
+                return false;
+
+            switch (e.Type)
+            {
+                case RaceEventType.CarStart:
+                    OnCarStartEvent();
+                    return true;
+                case RaceEventType.RaceStart:
+                    OnRaceStartEvent();
+                    return true;
+                case RaceEventType.RaceFinish:
+                    OnRaceFinishEvent();
+                    return true;
+                case RaceEventType.RaceTimeFinalize:
+                    OnRaceTimeFinalizeEvent();
+                    return true;
+                default:
+                    return false;
             }
         }
 
