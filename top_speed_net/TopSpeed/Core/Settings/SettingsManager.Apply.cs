@@ -185,6 +185,8 @@ namespace TopSpeed.Core.Settings
             settings.JoystickReportSpeed = ReadJoystick(joystick.ReportSpeed, settings.JoystickReportSpeed, "input.joystick.reportSpeed", issues);
             settings.JoystickTrackName = ReadJoystick(joystick.TrackName, settings.JoystickTrackName, "input.joystick.trackName", issues);
             settings.JoystickPause = ReadJoystick(joystick.Pause, settings.JoystickPause, "input.joystick.pause", issues);
+            settings.JoystickThrottleInvertMode = ReadEnum(joystick.ThrottleInvertMode, settings.JoystickThrottleInvertMode, "input.joystick.throttleInvertMode", issues);
+            settings.JoystickBrakeInvertMode = ReadEnum(joystick.BrakeInvertMode, settings.JoystickBrakeInvertMode, "input.joystick.brakeInvertMode", issues);
 
             if (joystick.Center == null)
                 return;

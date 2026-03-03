@@ -54,10 +54,28 @@ namespace TopSpeed.Menu
 
         private MenuScreen BuildOptionsControlsJoystickMenu()
         {
-            return _menu.CreateMenu("options_controls_joystick", BuildMappingItems(InputMappingMode.Joystick));
+            var items = new List<MenuItem>
+            {
+                new RadioButton(
+                    "Throttle pedal direction",
+                    new[] { "Auto", "Normal", "Inverted" },
+                    () => (int)_settings.JoystickThrottleInvertMode,
+                    value => _settingsActions.UpdateSetting(() => _settings.JoystickThrottleInvertMode = (PedalInvertMode)value),
+                    hint: "Auto detects wheel pedal direction from resting position. Use LEFT or RIGHT to change."),
+                new RadioButton(
+                    "Brake pedal direction",
+                    new[] { "Auto", "Normal", "Inverted" },
+                    () => (int)_settings.JoystickBrakeInvertMode,
+                    value => _settingsActions.UpdateSetting(() => _settings.JoystickBrakeInvertMode = (PedalInvertMode)value),
+                    hint: "Auto detects wheel pedal direction from resting position. Use LEFT or RIGHT to change.")
+            };
+
+            items.AddRange(BuildMappingItems(InputMappingMode.Joystick, includeBack: false));
+            items.Add(BackItem());
+            return _menu.CreateMenu("options_controls_joystick", items);
         }
 
-        private List<MenuItem> BuildMappingItems(InputMappingMode mode)
+        private List<MenuItem> BuildMappingItems(InputMappingMode mode, bool includeBack = true)
         {
             var items = new List<MenuItem>();
             foreach (var action in _raceInput.KeyMap.Actions)
@@ -69,7 +87,8 @@ namespace TopSpeed.Menu
                     onActivate: () => _mapping.BeginMapping(mode, definition.Action)));
             }
 
-            items.Add(BackItem());
+            if (includeBack)
+                items.Add(BackItem());
             return items;
         }
     }

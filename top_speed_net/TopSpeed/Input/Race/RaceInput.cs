@@ -129,6 +129,9 @@ namespace TopSpeed.Input
         private bool _allowDrivingInput;
         private bool _allowAuxiliaryInput;
         private bool _overlayInputBlocked;
+        private bool _joystickIsRacingWheel;
+        private bool _hasPedalBaseline;
+        private JoystickStateSnapshot _pedalBaseline;
         private float _simThrottle;
         private float _simBrake;
         private float _simSteer;

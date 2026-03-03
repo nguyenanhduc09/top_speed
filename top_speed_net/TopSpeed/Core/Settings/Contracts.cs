@@ -134,6 +134,8 @@ namespace TopSpeed.Core.Settings
         [DataMember(Name = "reportSpeed")] public int? ReportSpeed { get; set; }
         [DataMember(Name = "trackName")] public int? TrackName { get; set; }
         [DataMember(Name = "pause")] public int? Pause { get; set; }
+        [DataMember(Name = "throttleInvertMode")] public int? ThrottleInvertMode { get; set; }
+        [DataMember(Name = "brakeInvertMode")] public int? BrakeInvertMode { get; set; }
         [DataMember(Name = "center")] public SettingsJoystickCenterDocument? Center { get; set; }
     }
 

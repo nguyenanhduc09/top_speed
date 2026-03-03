@@ -16,6 +16,13 @@ namespace TopSpeed.Input
         Slowest_1_00s = 4
     }
 
+    internal enum PedalInvertMode
+    {
+        Auto = 0,
+        Normal = 1,
+        Inverted = 2
+    }
+
     internal enum CopilotMode
     {
         Off = 0,

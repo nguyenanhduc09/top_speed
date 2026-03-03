@@ -33,6 +33,7 @@ namespace TopSpeed.Input
 
         public InputState Current => _current;
         public bool IgnoreJoystickAxesForMenuNavigation => _joystickEnabled && !_gamepad.IsAvailable && _activeJoystickIsRacingWheel;
+        public bool ActiveJoystickIsRacingWheel => _joystickEnabled && !_gamepad.IsAvailable && _activeJoystickIsRacingWheel;
 
         public event Action? JoystickScanTimedOut;
 

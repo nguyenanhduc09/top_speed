@@ -29,6 +29,9 @@ namespace TopSpeed.Input
             _allowDrivingInput = true;
             _allowAuxiliaryInput = true;
             _overlayInputBlocked = false;
+            _joystickIsRacingWheel = false;
+            _hasPedalBaseline = false;
+            _pedalBaseline = default;
 
             _kbPlayer1 = Key.F1;
             _kbPlayer2 = Key.F2;
@@ -52,13 +55,24 @@ namespace TopSpeed.Input
 
         public void Run(InputState input, float deltaSeconds)
         {
-            Run(input, null, deltaSeconds);
+            Run(input, null, deltaSeconds, joystickIsRacingWheel: false);
         }
 
         public void Run(InputState input, JoystickStateSnapshot? joystick, float deltaSeconds)
         {
+            Run(input, joystick, deltaSeconds, joystickIsRacingWheel: false);
+        }
+
+        public void Run(InputState input, JoystickStateSnapshot? joystick, float deltaSeconds, bool joystickIsRacingWheel)
+        {
             _prevState.CopyFrom(_lastState);
             _lastState.CopyFrom(input);
+
+            var wasJoystickAvailable = _joystickAvailable;
+            var nextWheelMode = joystick.HasValue && joystickIsRacingWheel;
+            var wheelModeChanged = _joystickIsRacingWheel != nextWheelMode;
+            _joystickIsRacingWheel = nextWheelMode;
+
             if (joystick.HasValue)
             {
                 if (_hasPrevJoystick)
@@ -75,7 +89,19 @@ namespace TopSpeed.Input
             }
             _joystickAvailable = joystick.HasValue;
             if (!joystick.HasValue)
+            {
                 _hasPrevJoystick = false;
+                _joystickIsRacingWheel = false;
+            }
+
+            if (!wasJoystickAvailable || !_joystickAvailable || wheelModeChanged)
+                ResetPedalBaseline();
+
+            if (_joystickAvailable && _joystickIsRacingWheel && !_hasPedalBaseline)
+            {
+                _pedalBaseline = _lastJoystick;
+                _hasPedalBaseline = true;
+            }
 
             UpdateSimulatedInputs(deltaSeconds);
         }
@@ -240,6 +266,12 @@ namespace TopSpeed.Input
                 default:
                     return 0.50f;
             }
+        }
+
+        private void ResetPedalBaseline()
+        {
+            _hasPedalBaseline = false;
+            _pedalBaseline = default;
         }
     }
 }

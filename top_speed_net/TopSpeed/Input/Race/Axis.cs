@@ -5,6 +5,18 @@ namespace TopSpeed.Input
 {
     internal sealed partial class RaceInput
     {
+        private enum AxisComponent
+        {
+            X,
+            Y,
+            Z,
+            Rx,
+            Ry,
+            Rz,
+            Slider1,
+            Slider2
+        }
+
         private int GetAxis(JoystickAxisOrButton axis)
         {
             return GetAxis(axis, _lastJoystick);
@@ -133,6 +145,190 @@ namespace TopSpeed.Input
             }
 
             return 0;
+        }
+
+        private int GetPedalAxis(JoystickAxisOrButton axis, PedalInvertMode mode)
+        {
+            if (!UseJoystick)
+                return 0;
+
+            if (!TryGetAxisComponent(axis, out var component, out var mappedPositive))
+                return GetAxis(axis);
+
+            if (!_joystickIsRacingWheel)
+                return GetAxis(axis);
+
+            if (!_hasPedalBaseline)
+            {
+                _pedalBaseline = _lastJoystick;
+                _hasPedalBaseline = true;
+            }
+
+            var baseline = GetAxisComponentValue(_pedalBaseline, component);
+            var current = GetAxisComponentValue(_lastJoystick, component);
+            var directionPositive = ResolvePedalDirectionPositive(mode, mappedPositive, baseline);
+            var useEndpointScaling = IsEndpointBaseline(baseline);
+            return ResolvePedalValue(component, current, baseline, directionPositive, useEndpointScaling);
+        }
+
+        private int ResolvePedalValue(AxisComponent component, int current, int baseline, bool directionPositive, bool useEndpointScaling)
+        {
+            if (useEndpointScaling && IsEndpointBaseline(baseline))
+            {
+                if (directionPositive)
+                {
+                    var maxTravel = 100 - baseline;
+                    if (maxTravel <= 0)
+                        return 0;
+                    var movement = current - baseline;
+                    if (movement <= 0)
+                        return 0;
+                    return ClampPercent((movement * 100) / maxTravel);
+                }
+
+                var negativeTravel = baseline + 100;
+                if (negativeTravel <= 0)
+                    return 0;
+                var reverseMovement = baseline - current;
+                if (reverseMovement <= 0)
+                    return 0;
+                return ClampPercent((reverseMovement * 100) / negativeTravel);
+            }
+
+            var center = GetAxisComponentValue(_center, component);
+            var delta = directionPositive ? (current - center) : (center - current);
+            if (delta <= 0)
+                return 0;
+            return ClampPercent(delta);
+        }
+
+        private static int ClampPercent(int value)
+        {
+            if (value <= 0)
+                return 0;
+            if (value >= 100)
+                return 100;
+            return value;
+        }
+
+        private static bool ResolvePedalDirectionPositive(PedalInvertMode mode, bool mappedPositive, int baseline)
+        {
+            switch (mode)
+            {
+                case PedalInvertMode.Normal:
+                    return mappedPositive;
+                case PedalInvertMode.Inverted:
+                    return !mappedPositive;
+                default:
+                    if (IsEndpointBaseline(baseline))
+                        return baseline < 0;
+                    return mappedPositive;
+            }
+        }
+
+        private static bool IsEndpointBaseline(int value)
+        {
+            return value >= 85 || value <= -85;
+        }
+
+        private static bool TryGetAxisComponent(JoystickAxisOrButton axis, out AxisComponent component, out bool mappedPositive)
+        {
+            switch (axis)
+            {
+                case JoystickAxisOrButton.AxisXNeg:
+                    component = AxisComponent.X;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisXPos:
+                    component = AxisComponent.X;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisYNeg:
+                    component = AxisComponent.Y;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisYPos:
+                    component = AxisComponent.Y;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisZNeg:
+                    component = AxisComponent.Z;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisZPos:
+                    component = AxisComponent.Z;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisRxNeg:
+                    component = AxisComponent.Rx;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisRxPos:
+                    component = AxisComponent.Rx;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisRyNeg:
+                    component = AxisComponent.Ry;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisRyPos:
+                    component = AxisComponent.Ry;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisRzNeg:
+                    component = AxisComponent.Rz;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisRzPos:
+                    component = AxisComponent.Rz;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisSlider1Neg:
+                    component = AxisComponent.Slider1;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisSlider1Pos:
+                    component = AxisComponent.Slider1;
+                    mappedPositive = true;
+                    return true;
+                case JoystickAxisOrButton.AxisSlider2Neg:
+                    component = AxisComponent.Slider2;
+                    mappedPositive = false;
+                    return true;
+                case JoystickAxisOrButton.AxisSlider2Pos:
+                    component = AxisComponent.Slider2;
+                    mappedPositive = true;
+                    return true;
+                default:
+                    component = AxisComponent.X;
+                    mappedPositive = false;
+                    return false;
+            }
+        }
+
+        private static int GetAxisComponentValue(JoystickStateSnapshot state, AxisComponent component)
+        {
+            switch (component)
+            {
+                case AxisComponent.X:
+                    return state.X;
+                case AxisComponent.Y:
+                    return state.Y;
+                case AxisComponent.Z:
+                    return state.Z;
+                case AxisComponent.Rx:
+                    return state.Rx;
+                case AxisComponent.Ry:
+                    return state.Ry;
+                case AxisComponent.Rz:
+                    return state.Rz;
+                case AxisComponent.Slider1:
+                    return state.Slider1;
+                case AxisComponent.Slider2:
+                    return state.Slider2;
+                default:
+                    return 0;
+            }
         }
 
         private bool AxisPressed(JoystickAxisOrButton axis)

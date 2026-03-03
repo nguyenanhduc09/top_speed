@@ -207,6 +207,8 @@ namespace TopSpeed.Core.Settings
                         ReportSpeed = (int)settings.JoystickReportSpeed,
                         TrackName = (int)settings.JoystickTrackName,
                         Pause = (int)settings.JoystickPause,
+                        ThrottleInvertMode = (int)settings.JoystickThrottleInvertMode,
+                        BrakeInvertMode = (int)settings.JoystickBrakeInvertMode,
                         Center = new SettingsJoystickCenterDocument
                         {
                             X = settings.JoystickCenter.X,

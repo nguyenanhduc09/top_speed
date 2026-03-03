@@ -152,7 +152,7 @@ namespace TopSpeed.Game
         {
             _input.Update();
             if (_input.TryGetJoystickState(out var joystick))
-                _raceInput.Run(_input.Current, joystick, deltaSeconds);
+                _raceInput.Run(_input.Current, joystick, deltaSeconds, _input.ActiveJoystickIsRacingWheel);
             else
                 _raceInput.Run(_input.Current, deltaSeconds);
 

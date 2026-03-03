@@ -33,7 +33,7 @@ namespace TopSpeed.Input
             if (!_allowDrivingInput || _overlayInputBlocked)
                 return 0;
 
-            var joystickThrottle = UseJoystick ? GetAxis(_throttle) : 0;
+            var joystickThrottle = UseJoystick ? GetPedalAxis(_throttle, _settings.JoystickThrottleInvertMode) : 0;
             if (!UseKeyboard)
                 return joystickThrottle;
 
@@ -49,7 +49,7 @@ namespace TopSpeed.Input
             if (!_allowDrivingInput || _overlayInputBlocked)
                 return 0;
 
-            var joystickBrake = UseJoystick ? -GetAxis(_brake) : 0;
+            var joystickBrake = UseJoystick ? -GetPedalAxis(_brake, _settings.JoystickBrakeInvertMode) : 0;
             if (!UseKeyboard)
                 return joystickBrake;
 
