@@ -106,10 +106,27 @@ namespace TopSpeed.Core.Settings
             if (!value.HasValue)
                 return fallback;
 
-            if (Enum.IsDefined(typeof(TEnum), value.Value))
-                return (TEnum)Enum.ToObject(typeof(TEnum), value.Value);
+            var enumType = typeof(TEnum);
+            object? converted = null;
+            try
+            {
+                var underlyingType = Enum.GetUnderlyingType(enumType);
+                converted = Convert.ChangeType(value.Value, underlyingType, CultureInfo.InvariantCulture);
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
 
-            issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value.Value}, which was replaced with {(int)(object)fallback}."));
+            if (converted != null && Enum.IsDefined(enumType, converted))
+                return (TEnum)Enum.ToObject(enumType, converted);
+
+            issues.Add(new SettingsIssue(
+                SettingsIssueSeverity.Warning,
+                field,
+                $"The key {field} has invalid value {value.Value}, which was replaced with {Enum.Format(enumType, fallback, "D")}."));
             return fallback;
         }
     }
