@@ -39,7 +39,7 @@ namespace TopSpeed.Core.Multiplayer
             var elapsed = TimeSpan.FromTicks(endTicks - _pingStartedAtMs).TotalMilliseconds;
             if (elapsed < 0)
                 elapsed = 0;
-            PlayNetworkSound("ping.ogg");
+            PlayNetworkSound("ping_stop.ogg");
             _speech.Speak($"The ping took {(int)Math.Round(elapsed)} milliseconds.");
         }
     }
