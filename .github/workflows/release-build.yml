@@ -139,6 +139,43 @@ jobs:
         git tag -fa release-build -m "Latest Release Build"
         git push -f origin release-build
 
+    - name: Clean Existing Release Assets
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const tag = "release-build";
+          let release;
+          try {
+            const releaseResponse = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag
+            });
+            release = releaseResponse.data;
+          } catch (error) {
+            if (error.status === 404) {
+              core.info(`Release '${tag}' does not exist yet. Skipping asset cleanup.`);
+              return;
+            }
+            throw error;
+          }
+
+          const assets = await github.paginate(github.rest.repos.listReleaseAssets, {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: release.id,
+            per_page: 100
+          });
+
+          for (const asset of assets) {
+            core.info(`Deleting old release asset: ${asset.name}`);
+            await github.rest.repos.deleteReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              asset_id: asset.id
+            });
+          }
+
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
