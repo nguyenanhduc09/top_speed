@@ -1,3 +1,4 @@
+using System;
 using SharpDX;
 using SharpDX.DirectInput;
 
@@ -63,6 +64,9 @@ namespace TopSpeed.Input
 
         private bool IsAnyKeyboardKeyHeld(bool ignoreModifiers = false)
         {
+            if (_disposed)
+                return false;
+
             try
             {
                 _keyboard.Acquire();
@@ -85,11 +89,22 @@ namespace TopSpeed.Input
             {
                 return false;
             }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
         }
 
         private bool TryGetKeyboardState(out KeyboardState state)
         {
             state = null!;
+            if (_disposed)
+                return false;
+
             try
             {
                 _keyboard.Acquire();
@@ -97,6 +112,14 @@ namespace TopSpeed.Input
                 return true;
             }
             catch (SharpDXException)
+            {
+                return false;
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
+            catch (NullReferenceException)
             {
                 return false;
             }
@@ -133,6 +156,9 @@ namespace TopSpeed.Input
 
         private bool IsMenuBackHeldImmediate()
         {
+            if (_disposed)
+                return false;
+
             try
             {
                 _keyboard.Acquire();
@@ -145,6 +171,14 @@ namespace TopSpeed.Input
             }
             catch (SharpDXException)
             {
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
+            catch (NullReferenceException)
+            {
+                return false;
             }
 
             if (_gamepad.IsAvailable)

@@ -1,3 +1,4 @@
+using System;
 using SharpDX;
 using SharpDX.DirectInput;
 
@@ -10,13 +11,11 @@ namespace TopSpeed.Input
             _previous.CopyFrom(_current);
             _current.Clear();
 
-            if (_suspended)
+            if (_suspended || _disposed)
                 return;
 
-            if (!TryAcquire())
+            if (!TryGetKeyboardState(out var state))
                 return;
-
-            var state = _keyboard.GetCurrentState();
             foreach (var key in state.PressedKeys)
             {
                 _current.Set(key, true);
@@ -91,12 +90,23 @@ namespace TopSpeed.Input
 
         private bool TryAcquire()
         {
+            if (_disposed)
+                return false;
+
             try
             {
                 _keyboard.Acquire();
                 return true;
             }
             catch (SharpDXException)
+            {
+                return false;
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
+            catch (NullReferenceException)
             {
                 return false;
             }
