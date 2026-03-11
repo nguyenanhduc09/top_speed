@@ -109,7 +109,9 @@ namespace TopSpeed.Protocol
         NotInRoom = 8,
         InvalidPlayersToStart = 9,
         ServerPlayerConnected = 10,
-        ServerPlayerDisconnected = 11
+        ServerPlayerDisconnected = 11,
+        Chat = 12,
+        RoomChat = 13
     }
 
     public enum GameRoomType : byte

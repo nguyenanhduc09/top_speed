@@ -33,7 +33,7 @@ namespace TopSpeed.Menu
             var opening = _openingAnnouncementOverride ?? Title;
             _openingAnnouncementOverride = null;
             if (!string.IsNullOrWhiteSpace(opening))
-                _speech.Speak(opening, SpeechService.SpeakFlag.Interruptable);
+                _speech.Speak(opening, ActiveView.TitleSpeakFlag);
 
             _index = NoSelection;
             _autoFocusPending = true;

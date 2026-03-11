@@ -26,6 +26,8 @@ namespace TopSpeed.Core.Multiplayer
         private const string MultiplayerLoadoutTransmissionMenuId = "multiplayer_loadout_transmission";
         private const string MultiplayerSavedServersMenuId = "multiplayer_saved_servers";
         private const string MultiplayerSavedServerFormMenuId = "multiplayer_saved_server_form";
+        private const string SharedLobbyChatScreenId = "shared_lobby_chat";
+        private const int MaxChatMessages = 100;
         private static readonly string[] RoomTypeOptions = { "Race with bots", "Race without bots", "One-on-one without bots" };
         private static readonly string[] RoomCapacityOptions = BuildNumericOptions(2, ProtocolConstants.MaxRoomPlayersToStart, "players");
         private static readonly string[] LapCountOptions = BuildNumericOptions(1, 16, "laps");
@@ -77,8 +79,12 @@ namespace TopSpeed.Core.Multiplayer
         private AudioSourceHandle? _roomCreatedSound;
         private AudioSourceHandle? _roomJoinSound;
         private AudioSourceHandle? _roomLeaveSound;
+        private AudioSourceHandle? _chatSound;
+        private AudioSourceHandle? _roomChatSound;
+        private AudioSourceHandle? _bufferSwitchSound;
         private bool _pingPending;
         private long _pingStartedAtMs;
+        private readonly Chat.HistoryBuffers _historyBuffers = new Chat.HistoryBuffers(MaxChatMessages);
         private SavedServerEntry _savedServerDraft = new SavedServerEntry();
         private SavedServerEntry? _savedServerOriginal;
         private int _savedServerEditIndex = -1;
@@ -177,6 +183,7 @@ namespace TopSpeed.Core.Multiplayer
             _pendingCompatibilityResult = default;
             _pingPending = false;
             _pingStartedAtMs = 0;
+            _historyBuffers.Clear();
             RebuildLobbyMenu();
             RebuildCreateRoomMenu();
             RebuildSavedServersMenu();
@@ -187,6 +194,7 @@ namespace TopSpeed.Core.Multiplayer
             RebuildLoadoutVehicleMenu();
             RebuildLoadoutTransmissionMenu();
             UpdateRoomBrowserMenu();
+            UpdateHistoryScreens();
         }
     }
 }

@@ -81,6 +81,12 @@ namespace TopSpeed.Core.Multiplayer
                 handle = GetNetworkSound(ref _roomJoinSound, fileName);
             else if (string.Equals(fileName, "room_leave.ogg", StringComparison.OrdinalIgnoreCase))
                 handle = GetNetworkSound(ref _roomLeaveSound, fileName);
+            else if (string.Equals(fileName, "chat.ogg", StringComparison.OrdinalIgnoreCase))
+                handle = GetNetworkSound(ref _chatSound, fileName);
+            else if (string.Equals(fileName, "room_chat.ogg", StringComparison.OrdinalIgnoreCase))
+                handle = GetNetworkSound(ref _roomChatSound, fileName);
+            else if (string.Equals(fileName, "buffer_switch.ogg", StringComparison.OrdinalIgnoreCase))
+                handle = GetNetworkSound(ref _bufferSwitchSound, fileName);
             else if (string.Equals(fileName, "connected.ogg", StringComparison.OrdinalIgnoreCase))
                 handle = GetNetworkSound(ref _connectedSound, fileName);
             else

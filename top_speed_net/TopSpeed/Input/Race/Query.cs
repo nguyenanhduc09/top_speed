@@ -86,6 +86,10 @@ namespace TopSpeed.Input
 
         public bool GetToggleRadioPlaybackRequest() => WasPressed(Key.P);
 
+        public bool GetRadioVolumeUpRequest() => WasPressed(Key.Up);
+
+        public bool GetRadioVolumeDownRequest() => WasPressed(Key.Down);
+
         private bool WasPressed(Key key)
         {
             if (_overlayInputBlocked)

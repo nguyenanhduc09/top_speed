@@ -45,6 +45,21 @@ namespace TopSpeed.Menu
             screen.ReplaceItems(items, preserveSelection);
         }
 
+        public void UpdateItems(string id, string screenId, IEnumerable<MenuItem> items, bool preserveSelection = false)
+        {
+            var screen = GetScreen(id);
+            if (screen.UpdateScreenItems(screenId, items, preserveSelection))
+                return;
+
+            throw new InvalidOperationException($"Screen '{screenId}' is not registered for menu '{id}'.");
+        }
+
+        public void SetScreens(string id, IEnumerable<MenuView> screens, string? initialScreenId = null)
+        {
+            var screen = GetScreen(id);
+            screen.SetScreens(screens, initialScreenId);
+        }
+
         public void SetShortcuts(string id, IEnumerable<MenuShortcut>? shortcuts)
         {
             var screen = GetScreen(id);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SharpDX.DirectInput;
 using TopSpeed.Core;
 using TopSpeed.Input;
 
@@ -19,6 +20,7 @@ namespace TopSpeed.Menu
         private readonly IMenuAudioActions _audio;
         private readonly IMenuMappingActions _mapping;
         private readonly IReadOnlyList<string> _menuSoundPresets;
+        private readonly MenuView _sharedLobbyChatScreen;
 
         public MenuRegistry(
             MenuManager menu,
@@ -45,6 +47,17 @@ namespace TopSpeed.Menu
             _audio = audio ?? throw new ArgumentNullException(nameof(audio));
             _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             _menuSoundPresets = LoadMenuSoundPresets();
+            _sharedLobbyChatScreen = new MenuView(
+                "shared_lobby_chat",
+                new[] { new MenuItem("No messages yet.", MenuAction.None) },
+                title: "History",
+                preserveSelection: true,
+                titleSpeakFlag: TopSpeed.Speech.SpeechService.SpeakFlag.None);
+            _sharedLobbyChatScreen.SetShortcuts(new[]
+            {
+                new MenuShortcut(Key.Left, _server.PreviousChatCategory),
+                new MenuShortcut(Key.Right, _server.NextChatCategory)
+            });
         }
 
         public void RegisterAll()

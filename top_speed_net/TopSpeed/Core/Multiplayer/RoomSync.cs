@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TopSpeed.Core.Multiplayer.Chat;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
@@ -18,6 +19,13 @@ namespace TopSpeed.Core.Multiplayer
             if (!string.Equals(_menu.CurrentId, MultiplayerLobbyMenuId, StringComparison.Ordinal))
                 return;
 
+            var rooms = _roomList.Rooms ?? Array.Empty<PacketRoomSummary>();
+            if (rooms.Length == 0)
+            {
+                _speech.Speak("No game rooms are currently available.");
+                return;
+            }
+
             UpdateRoomBrowserMenu();
             _menu.Push(MultiplayerRoomBrowserMenuId);
         }
@@ -33,12 +41,17 @@ namespace TopSpeed.Core.Multiplayer
             if (_roomState.InRoom)
             {
                 if (!wasInRoom || previousRoomId != _roomState.RoomId)
+                {
                     PlayNetworkSound("room_join.ogg");
+                    AddRoomEventMessage(HistoryText.JoinedRoom(_roomState.RoomName));
+                }
             }
             else if (wasInRoom)
             {
                 PlayNetworkSound("room_leave.ogg");
-                _speech.Speak("You left the game room.");
+                var leaveText = HistoryText.LeftRoom();
+                _speech.Speak(leaveText);
+                AddRoomEventMessage(leaveText);
             }
 
             _wasInRoom = _roomState.InRoom;
@@ -80,6 +93,10 @@ namespace TopSpeed.Core.Multiplayer
                     PlayNetworkSound("room_created.ogg");
             }
 
+            var roomEventText = HistoryText.FromRoomEvent(roomEvent);
+            if (!string.IsNullOrWhiteSpace(roomEventText))
+                AddRoomEventMessage(roomEventText);
+
             ApplyRoomListEvent(roomEvent);
 
             ApplyCurrentRoomEvent(roomEvent, out var beginLoadout, out var localHostChanged);
@@ -101,9 +118,29 @@ namespace TopSpeed.Core.Multiplayer
                 return;
 
             if (message.Code == ProtocolMessageCode.ServerPlayerConnected)
+            {
                 PlayNetworkSound("online.ogg");
+                AddConnectionMessage(message.Message);
+            }
             else if (message.Code == ProtocolMessageCode.ServerPlayerDisconnected)
+            {
                 PlayNetworkSound("offline.ogg");
+                AddConnectionMessage(message.Message);
+            }
+            else if (message.Code == ProtocolMessageCode.Chat)
+            {
+                PlayNetworkSound("chat.ogg");
+                AddGlobalChatMessage(message.Message);
+            }
+            else if (message.Code == ProtocolMessageCode.RoomChat)
+            {
+                PlayNetworkSound("room_chat.ogg");
+                AddRoomChatMessage(message.Message);
+            }
+            else
+            {
+                AddRoomEventMessage(message.Message);
+            }
 
             if (!string.IsNullOrWhiteSpace(message.Message))
                 _speech.Speak(message.Message);
@@ -182,7 +219,10 @@ namespace TopSpeed.Core.Multiplayer
             {
                 case RoomEventKind.ParticipantJoined:
                     if (roomEvent.SubjectPlayerId != 0 && roomEvent.SubjectPlayerId != localPlayerId)
+                    {
                         PlayNetworkSound("room_join.ogg");
+                        AddRoomEventMessage(HistoryText.ParticipantJoined(roomEvent));
+                    }
                     UpsertCurrentRoomParticipant(roomEvent);
                     break;
 
@@ -192,7 +232,10 @@ namespace TopSpeed.Core.Multiplayer
 
                 case RoomEventKind.ParticipantLeft:
                     if (roomEvent.SubjectPlayerId != 0 && roomEvent.SubjectPlayerId != localPlayerId)
+                    {
                         PlayNetworkSound("room_leave.ogg");
+                        AddRoomEventMessage(HistoryText.ParticipantLeft(roomEvent));
+                    }
                     RemoveCurrentRoomParticipant(roomEvent.SubjectPlayerId);
                     break;
 
@@ -215,7 +258,9 @@ namespace TopSpeed.Core.Multiplayer
                 (roomEvent.Kind == RoomEventKind.ParticipantLeft || roomEvent.Kind == RoomEventKind.HostChanged) &&
                 (roomEvent.PlayerCount <= 1 || (_roomState.Players?.Length ?? int.MaxValue) <= 1))
             {
-                _speech.Speak("You are now host of this game.");
+                var hostText = HistoryText.BecameHost();
+                _speech.Speak(hostText);
+                AddRoomEventMessage(hostText);
             }
 
             _wasHost = _roomState.IsHost;
@@ -262,5 +307,6 @@ namespace TopSpeed.Core.Multiplayer
             players.Sort((a, b) => a.PlayerNumber.CompareTo(b.PlayerNumber));
             _roomState.Players = players.ToArray();
         }
+
     }
 }

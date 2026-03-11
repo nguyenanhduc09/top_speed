@@ -8,6 +8,8 @@ namespace TopSpeed.Core.Multiplayer
         public bool IsInRoom => _roomState.InRoom;
 
         private const string MultiplayerPingShortcutActionId = "multiplayer_ping";
+        private const string MultiplayerChatShortcutActionId = "multiplayer_chat";
+        private const string MultiplayerRoomChatShortcutActionId = "multiplayer_room_chat";
 
         private static readonly string[] MultiplayerPingShortcutMenus =
         {
@@ -21,17 +23,39 @@ namespace TopSpeed.Core.Multiplayer
             MultiplayerLoadoutTransmissionMenuId
         };
 
+        private static readonly string[] MultiplayerRoomShortcutMenus =
+        {
+            MultiplayerRoomControlsMenuId,
+            MultiplayerRoomPlayersMenuId,
+            MultiplayerRoomOptionsMenuId,
+            MultiplayerLoadoutVehicleMenuId,
+            MultiplayerLoadoutTransmissionMenuId
+        };
+
         public void ConfigureMenuCloseHandlers()
         {
             _menu.RegisterSharedShortcutAction(
                 MultiplayerPingShortcutActionId,
                 new MenuShortcut(SharpDX.DirectInput.Key.F1, CheckCurrentPing));
+            _menu.RegisterSharedShortcutAction(
+                MultiplayerChatShortcutActionId,
+                new MenuShortcut(SharpDX.DirectInput.Key.Slash, OpenGlobalChatInput));
+            _menu.RegisterSharedShortcutAction(
+                MultiplayerRoomChatShortcutActionId,
+                new MenuShortcut(SharpDX.DirectInput.Key.Backslash, OpenRoomChatInput));
 
             for (var i = 0; i < MultiplayerPingShortcutMenus.Length; i++)
             {
                 _menu.SetSharedShortcutActions(
                     MultiplayerPingShortcutMenus[i],
-                    new[] { MultiplayerPingShortcutActionId });
+                    new[] { MultiplayerPingShortcutActionId, MultiplayerChatShortcutActionId });
+            }
+
+            for (var i = 0; i < MultiplayerRoomShortcutMenus.Length; i++)
+            {
+                _menu.SetSharedShortcutActions(
+                    MultiplayerRoomShortcutMenus[i],
+                    new[] { MultiplayerPingShortcutActionId, MultiplayerChatShortcutActionId, MultiplayerRoomChatShortcutActionId });
             }
 
             _menu.SetCloseHandler(MultiplayerLobbyMenuId, _ =>

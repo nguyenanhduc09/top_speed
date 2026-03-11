@@ -7,6 +7,8 @@ namespace TopSpeed.Menu
     {
         private bool TryHandleShortcut(InputManager input)
         {
+            if (TryHandleShortcutList(ActiveView.Shortcuts, input))
+                return true;
             if (TryHandleShortcutList(_shortcuts, input))
                 return true;
             return TryHandleShortcutList(_sharedShortcuts, input);

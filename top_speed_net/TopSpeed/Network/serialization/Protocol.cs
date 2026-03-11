@@ -43,6 +43,17 @@ namespace TopSpeed.Network
             return buffer;
         }
 
+        public static byte[] WriteProtocolMessage(PacketProtocolMessage packet)
+        {
+            var buffer = WritePacketHeader(Command.ProtocolMessage, 1 + ProtocolConstants.MaxProtocolMessageLength);
+            var writer = new PacketWriter(buffer);
+            writer.WriteByte(ProtocolConstants.Version);
+            writer.WriteByte((byte)Command.ProtocolMessage);
+            writer.WriteByte((byte)packet.Code);
+            writer.WriteFixedString(packet.Message ?? string.Empty, ProtocolConstants.MaxProtocolMessageLength);
+            return buffer;
+        }
+
         private static ProtocolVer ReadProtocolVer(ref PacketReader reader)
         {
             var year = reader.ReadUInt16();

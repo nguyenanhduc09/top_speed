@@ -7,6 +7,7 @@ namespace TopSpeed.Menu
     {
         public void ResetSelection(int? preferredSelectionIndex = null)
         {
+            SaveSelectionForActiveView();
             _index = NoSelection;
             _activeActionIndex = NoSelection;
             _pendingFocusIndex = preferredSelectionIndex;
@@ -17,16 +18,37 @@ namespace TopSpeed.Menu
 
         public void ReplaceItems(IEnumerable<MenuItem> items, bool preserveSelection = false)
         {
+            if (_viewIndex != 0)
+            {
+                PrimaryView.ReplaceItems(items);
+                if (PrimaryView.PreserveSelection && PrimaryView.SavedSelection >= 0)
+                    PrimaryView.SavedSelection = Math.Max(0, Math.Min(PrimaryView.SavedSelection, PrimaryView.Items.Count - 1));
+                return;
+            }
+
             var previousIndex = _index;
             var hadSelection = previousIndex != NoSelection;
+            SaveSelectionForActiveView();
 
-            _items.Clear();
-            AddVisibleItems(_items, items);
+            PrimaryView.ReplaceItems(items);
+            LoadActiveViewItems();
             CancelHint();
 
             if (preserveSelection && hadSelection && _items.Count > 0)
             {
                 _index = Math.Max(0, Math.Min(previousIndex, _items.Count - 1));
+                SaveSelectionForActiveView();
+                _activeActionIndex = NoSelection;
+                _pendingFocusIndex = null;
+                _justEntered = false;
+                _autoFocusPending = false;
+                return;
+            }
+
+            if (ActiveView.PreserveSelection && ActiveView.SavedSelection != NoSelection && _items.Count > 0)
+            {
+                _index = Math.Max(0, Math.Min(ActiveView.SavedSelection, _items.Count - 1));
+                SaveSelectionForActiveView();
                 _activeActionIndex = NoSelection;
                 _pendingFocusIndex = null;
                 _justEntered = false;
@@ -41,17 +63,14 @@ namespace TopSpeed.Menu
             _autoFocusPending = true;
         }
 
-        private static void AddVisibleItems(List<MenuItem> target, IEnumerable<MenuItem> items)
+        public bool SwitchToNextScreen()
         {
-            if (target == null || items == null)
-                return;
+            return SwitchScreen(+1);
+        }
 
-            foreach (var item in items)
-            {
-                if (item == null || item.IsHidden)
-                    continue;
-                target.Add(item);
-            }
+        public bool SwitchToPreviousScreen()
+        {
+            return SwitchScreen(-1);
         }
 
         private void HandleNavigation(UpdateInputState state)
@@ -142,6 +161,7 @@ namespace TopSpeed.Menu
             if (_index == NoSelection)
             {
                 _index = targetIndex;
+                SaveSelectionForActiveView();
                 PlayNavigateSound();
                 AnnounceCurrent(!_justEntered);
                 _justEntered = false;
@@ -153,6 +173,7 @@ namespace TopSpeed.Menu
                 return;
             }
             _index = targetIndex;
+            SaveSelectionForActiveView();
             PlayNavigateSound();
             AnnounceCurrent(!_justEntered);
             _justEntered = false;
@@ -176,6 +197,7 @@ namespace TopSpeed.Menu
                 if (next < 0 || next >= _items.Count)
                     wrapped = true;
                 _index = (next + _items.Count) % _items.Count;
+                SaveSelectionForActiveView();
                 return _index != previous;
             }
 
@@ -186,6 +208,7 @@ namespace TopSpeed.Menu
                 return false;
             }
             _index = nextIndex;
+            SaveSelectionForActiveView();
             return _index != previous;
         }
 
@@ -196,12 +219,79 @@ namespace TopSpeed.Menu
             var targetIndex = 0;
             if (_pendingFocusIndex.HasValue)
                 targetIndex = Math.Max(0, Math.Min(_items.Count - 1, _pendingFocusIndex.Value));
+            else if (ActiveView.PreserveSelection && ActiveView.SavedSelection != NoSelection)
+                targetIndex = Math.Max(0, Math.Min(_items.Count - 1, ActiveView.SavedSelection));
             _pendingFocusIndex = null;
             _index = targetIndex;
+            SaveSelectionForActiveView();
             _activeActionIndex = NoSelection;
             PlayNavigateSound();
             AnnounceCurrent(purge: false);
             _justEntered = false;
+        }
+
+        private bool SwitchScreen(int delta)
+        {
+            if (_views.Count <= 1)
+                return false;
+
+            SaveSelectionForActiveView();
+            _viewIndex = (_viewIndex + delta + _views.Count) % _views.Count;
+            LoadActiveViewItems();
+            _index = NoSelection;
+            _activeActionIndex = NoSelection;
+            _pendingFocusIndex = null;
+            _justEntered = true;
+            _autoFocusPending = true;
+            CancelHint();
+            _titlePending = false;
+            AnnounceTitle();
+            return true;
+        }
+
+        private void SaveSelectionForActiveView()
+        {
+            if (!ActiveView.PreserveSelection)
+                return;
+
+            ActiveView.SavedSelection = _index;
+        }
+
+        private void RefreshActiveViewItems(bool preserveSelection)
+        {
+            var previousIndex = _index;
+            var hadSelection = previousIndex != NoSelection;
+            SaveSelectionForActiveView();
+            LoadActiveViewItems();
+            CancelHint();
+
+            if (preserveSelection && hadSelection && _items.Count > 0)
+            {
+                _index = Math.Max(0, Math.Min(previousIndex, _items.Count - 1));
+                SaveSelectionForActiveView();
+                _activeActionIndex = NoSelection;
+                _pendingFocusIndex = null;
+                _justEntered = false;
+                _autoFocusPending = false;
+                return;
+            }
+
+            if (ActiveView.PreserveSelection && ActiveView.SavedSelection != NoSelection && _items.Count > 0)
+            {
+                _index = Math.Max(0, Math.Min(ActiveView.SavedSelection, _items.Count - 1));
+                SaveSelectionForActiveView();
+                _activeActionIndex = NoSelection;
+                _pendingFocusIndex = null;
+                _justEntered = false;
+                _autoFocusPending = false;
+                return;
+            }
+
+            _index = NoSelection;
+            _activeActionIndex = NoSelection;
+            _pendingFocusIndex = null;
+            _justEntered = true;
+            _autoFocusPending = true;
         }
     }
 }

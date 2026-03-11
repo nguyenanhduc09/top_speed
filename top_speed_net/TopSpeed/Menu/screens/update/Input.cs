@@ -20,6 +20,9 @@ namespace TopSpeed.Menu
 
         private UpdateInputState CaptureInputState(InputManager input)
         {
+            var tabPressed = input.WasPressed(Key.Tab);
+            var shiftHeld = input.IsDown(Key.LeftShift) || input.IsDown(Key.RightShift);
+
             var state = new UpdateInputState(
                 input.WasPressed(Key.Up),
                 input.WasPressed(Key.Down),
@@ -29,6 +32,8 @@ namespace TopSpeed.Menu
                 input.WasPressed(Key.Right),
                 input.WasPressed(Key.PageUp),
                 input.WasPressed(Key.PageDown),
+                tabPressed && !shiftHeld,
+                tabPressed && shiftHeld,
                 input.WasPressed(Key.Return) || input.WasPressed(Key.NumberPadEnter),
                 input.WasPressed(Key.Escape));
 
@@ -129,6 +134,8 @@ namespace TopSpeed.Menu
                 bool moveRight,
                 bool pageUp,
                 bool pageDown,
+                bool nextScreen,
+                bool previousScreen,
                 bool activate,
                 bool back)
             {
@@ -140,6 +147,8 @@ namespace TopSpeed.Menu
                 MoveRight = moveRight;
                 PageUp = pageUp;
                 PageDown = pageDown;
+                NextScreen = nextScreen;
+                PreviousScreen = previousScreen;
                 Activate = activate;
                 Back = back;
             }
@@ -152,6 +161,8 @@ namespace TopSpeed.Menu
             public bool MoveRight;
             public bool PageUp;
             public bool PageDown;
+            public bool NextScreen;
+            public bool PreviousScreen;
             public bool Activate;
             public bool Back;
         }

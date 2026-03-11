@@ -35,6 +35,21 @@ namespace TopSpeed.Game
                 return;
             }
 
+            if (!_textInputPromptActive && !_dialogs.HasActiveOverlayDialog && !_choices.HasActiveChoiceDialog)
+            {
+                if (_input.WasPressed(Key.Slash))
+                {
+                    _multiplayerCoordinator.OpenGlobalChatHotkey();
+                    return;
+                }
+
+                if (_input.WasPressed(Key.Backslash))
+                {
+                    _multiplayerCoordinator.OpenRoomChatHotkey();
+                    return;
+                }
+            }
+
             if (_input.WasPressed(Key.Escape))
                 OpenMultiplayerRaceQuitConfirmation();
         }

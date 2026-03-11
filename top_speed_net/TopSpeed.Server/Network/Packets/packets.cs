@@ -41,6 +41,7 @@ namespace TopSpeed.Server.Network
             RegisterMediaPackets();
             RegisterLivePackets();
             RegisterRoomPackets();
+            RegisterChatPackets();
         }
 
     }

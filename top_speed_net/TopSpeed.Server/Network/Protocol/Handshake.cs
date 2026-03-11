@@ -127,7 +127,10 @@ namespace TopSpeed.Server.Network
                 case ProtocolCompatStatus.Exact:
                     return "Protocol compatibility verified.";
                 case ProtocolCompatStatus.CompatibleDowngrade:
-                    return $"Your client version is out-of-date: {clientVersion}. This server supports versions {serverRange}. You can continue, but some features may behave differently or may not work at all.";
+                    if (clientVersion > serverRange.MaxSupported)
+                        return $"Your client version is newer than this server: {clientVersion}. This server supports versions {serverRange}. You can continue, but some features may behave differently or may not work at all.";
+
+                    return $"Your client version is older than this server: {clientVersion}. This server supports versions {serverRange}. You can continue, but some features may behave differently or may not work at all.";
                 case ProtocolCompatStatus.ClientTooOld:
                     return $"Your client version is out-of-date: {clientVersion}. This server supports versions {serverRange}. Please update your client.";
                 case ProtocolCompatStatus.ClientTooNew:

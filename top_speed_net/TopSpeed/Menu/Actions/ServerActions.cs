@@ -6,5 +6,7 @@ namespace TopSpeed.Menu
         void OpenSavedServersManager();
         void BeginManualServerEntry();
         void BeginServerPortEntry();
+        void NextChatCategory();
+        void PreviousChatCategory();
     }
 }

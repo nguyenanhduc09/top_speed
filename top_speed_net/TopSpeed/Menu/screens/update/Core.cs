@@ -12,15 +12,21 @@ namespace TopSpeed.Menu
             if (!TryHandlePendingTitle(input))
                 return MenuUpdateResult.None;
 
+            if (TryHandleShortcut(input))
+                return MenuUpdateResult.None;
+
             var state = CaptureInputState(input);
 
             if (input.ShouldIgnoreMenuBack())
                 return MenuUpdateResult.None;
 
-            if (TryHandleShortcut(input))
+            if (TryHandleLetterNavigation(input))
                 return MenuUpdateResult.None;
 
-            if (TryHandleLetterNavigation(input))
+            if (state.NextScreen && SwitchToNextScreen())
+                return MenuUpdateResult.None;
+
+            if (state.PreviousScreen && SwitchToPreviousScreen())
                 return MenuUpdateResult.None;
 
             if (TryHandleHeldInputGate(input, state, out var heldResult))

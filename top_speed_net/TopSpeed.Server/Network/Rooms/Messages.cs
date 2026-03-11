@@ -48,6 +48,64 @@ namespace TopSpeed.Server.Network
             }
         }
 
+        private void BroadcastGlobalChat(PlayerConnection sender, string message)
+        {
+            var trimmed = (message ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(trimmed))
+                return;
+
+            var senderName = string.IsNullOrWhiteSpace(sender.Name)
+                ? $"Player {sender.PlayerNumber + 1}"
+                : sender.Name.Trim();
+            var formatted = $"{senderName} says: {trimmed}";
+
+            var payload = PacketSerializer.WriteProtocolMessage(new PacketProtocolMessage
+            {
+                Code = ProtocolMessageCode.Chat,
+                Message = formatted
+            });
+
+            foreach (var player in _players.Values)
+            {
+                if (player.Handshake != HandshakeState.Complete)
+                    continue;
+                SendStream(player, payload, PacketStream.Chat);
+            }
+        }
+
+        private void BroadcastRoomChat(PlayerConnection sender, string message)
+        {
+            var trimmed = (message ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(trimmed))
+                return;
+
+            if (!sender.RoomId.HasValue || !_rooms.TryGetValue(sender.RoomId.Value, out var room))
+            {
+                SendProtocolMessage(sender, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                return;
+            }
+
+            var senderName = string.IsNullOrWhiteSpace(sender.Name)
+                ? $"Player {sender.PlayerNumber + 1}"
+                : sender.Name.Trim();
+            var formatted = $"[room]: {senderName} says: {trimmed}";
+
+            var payload = PacketSerializer.WriteProtocolMessage(new PacketProtocolMessage
+            {
+                Code = ProtocolMessageCode.RoomChat,
+                Message = formatted
+            });
+
+            foreach (var playerId in room.PlayerIds)
+            {
+                if (!_players.TryGetValue(playerId, out var player))
+                    continue;
+                if (player.Handshake != HandshakeState.Complete)
+                    continue;
+                SendStream(player, payload, PacketStream.Chat);
+            }
+        }
+
         private static string DescribePlayer(PlayerConnection player)
         {
             if (!string.IsNullOrWhiteSpace(player.Name))

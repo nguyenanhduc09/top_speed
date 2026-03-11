@@ -57,6 +57,22 @@ namespace TopSpeed.Server.Protocol
             return true;
         }
 
+        public static bool TryReadProtocolMessage(byte[] data, out PacketProtocolMessage packet)
+        {
+            packet = new PacketProtocolMessage();
+            if (data.Length < 2 + 1 + ProtocolConstants.MaxProtocolMessageLength)
+                return false;
+            if (data[0] != ProtocolConstants.Version || data[1] != (byte)Command.ProtocolMessage)
+                return false;
+
+            var reader = new PacketReader(data);
+            reader.ReadByte();
+            reader.ReadByte();
+            packet.Code = (ProtocolMessageCode)reader.ReadByte();
+            packet.Message = reader.ReadFixedString(ProtocolConstants.MaxProtocolMessageLength);
+            return true;
+        }
+
         public static byte[] WritePacketHeader(Command command, int payloadSize)
         {
             var buffer = new byte[2 + payloadSize];

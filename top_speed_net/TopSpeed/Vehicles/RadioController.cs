@@ -16,7 +16,7 @@ namespace TopSpeed.Vehicles
         private string? _mediaPath;
         private string? _ownedTempFile;
         private uint _mediaId;
-        private int _volumePercent = 90;
+        private int _volumePercent = 100;
 
         public VehicleRadioController(AudioManager audio)
         {
@@ -28,6 +28,7 @@ namespace TopSpeed.Vehicles
         public bool IsPlaying => _source != null && _source.IsPlaying;
         public bool DesiredPlaying => _desiredPlaying;
         public string? MediaPath => _mediaPath;
+        public int VolumePercent => _volumePercent;
 
         public void SetVolumePercent(int volumePercent)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TopSpeed.Speech;
 
 namespace TopSpeed.Menu
 {
@@ -34,7 +35,13 @@ namespace TopSpeed.Menu
                 new MenuItem("Options", MenuAction.None, nextMenuId: "options_main"),
                 new MenuItem("Disconnect", MenuAction.None, flags: MenuItemFlags.Close)
             };
-            return _menu.CreateMenu("multiplayer_lobby", items, string.Empty);
+            var menu = _menu.CreateMenu("multiplayer_lobby", items, "Multiplayer lobby");
+            menu.SetScreens(new[]
+            {
+                new MenuView("lobby_main", items, "Multiplayer lobby", titleSpeakFlag: SpeechService.SpeakFlag.None),
+                _sharedLobbyChatScreen
+            }, "lobby_main");
+            return menu;
         }
 
         private MenuScreen BuildMultiplayerSavedServersMenu()
@@ -83,7 +90,13 @@ namespace TopSpeed.Menu
                 new MenuItem("Join a game room first", MenuAction.None),
                 BackItem()
             };
-            return _menu.CreateMenu("multiplayer_room_controls", items, "Room controls");
+            var menu = _menu.CreateMenu("multiplayer_room_controls", items, "Room controls");
+            menu.SetScreens(new[]
+            {
+                new MenuView("room_controls_main", items, "Room controls", titleSpeakFlag: SpeechService.SpeakFlag.None),
+                _sharedLobbyChatScreen
+            }, "room_controls_main");
+            return menu;
         }
 
         private MenuScreen BuildMultiplayerRoomPlayersMenu()

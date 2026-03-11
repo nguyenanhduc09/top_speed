@@ -19,6 +19,8 @@ namespace TopSpeed.Menu
         private const int NoSelection = -1;
 
         private readonly List<MenuItem> _items;
+        private readonly List<MenuView> _views;
+        private readonly string _defaultViewId;
         private readonly List<MenuShortcut> _shortcuts;
         private readonly List<MenuShortcut> _sharedShortcuts;
         private readonly AudioManager _audio;
@@ -27,11 +29,10 @@ namespace TopSpeed.Menu
         private readonly string _defaultMenuSoundRoot;
         private readonly string _legacySoundRoot;
         private readonly string _musicRoot;
-        private readonly string _title;
-        private readonly Func<string>? _titleProvider;
 
         private bool _initialized;
         private int _index;
+        private int _viewIndex;
         private AudioSourceHandle? _music;
         private float _musicVolume;
         private float _musicCurrentVolume;
@@ -79,6 +80,13 @@ namespace TopSpeed.Menu
 
         public Action<float>? MusicVolumeChanged { get; set; }
         public Func<MenuCloseSource, bool>? CloseHandler { get; set; }
+        public SpeechService.SpeakFlag TitleSpeakFlag
+        {
+            get => ActiveView.TitleSpeakFlag;
+            set => ActiveView.TitleSpeakFlag = value;
+        }
+
+        public int ScreenCount => _views.Count;
         internal bool HasMusic => !string.IsNullOrWhiteSpace(MusicFile);
         internal bool IsMusicPlaying => _music != null && _music.IsPlaying;
         internal void CancelPendingHint() => CancelHint();
@@ -98,18 +106,20 @@ namespace TopSpeed.Menu
             _speech = speech;
             _usageHintsEnabled = usageHintsEnabled ?? (() => false);
             _items = new List<MenuItem>();
-            AddVisibleItems(_items, items);
+            _views = new List<MenuView>();
+            _defaultViewId = $"{id}:main";
+            var defaultView = new MenuView(_defaultViewId, items, title, titleProvider);
+            _views.Add(defaultView);
+            LoadActiveViewItems();
             _shortcuts = new List<MenuShortcut>();
             _sharedShortcuts = new List<MenuShortcut>();
             _defaultMenuSoundRoot = Path.Combine(AssetPaths.SoundsRoot, "En", "Menu");
             _legacySoundRoot = Path.Combine(AssetPaths.SoundsRoot, "Legacy");
             _musicRoot = Path.Combine(AssetPaths.SoundsRoot, "En", "Music");
             _musicVolume = 0.0f;
-            _title = title ?? string.Empty;
-            _titleProvider = titleProvider;
         }
 
-        public string Title => _titleProvider?.Invoke() ?? _title;
+        public string Title => ActiveView.DisplayTitle;
 
         public void SetShortcuts(IEnumerable<MenuShortcut>? shortcuts)
         {
@@ -127,6 +137,45 @@ namespace TopSpeed.Menu
                 return;
 
             _sharedShortcuts.AddRange(shortcuts);
+        }
+
+        public void SetScreens(IEnumerable<MenuView>? screens, string? initialScreenId = null)
+        {
+            _views.Clear();
+            if (screens != null)
+            {
+                foreach (var screen in screens)
+                {
+                    if (screen == null)
+                        continue;
+                    if (_views.Exists(existing => string.Equals(existing.Id, screen.Id, StringComparison.Ordinal)))
+                        continue;
+                    _views.Add(screen);
+                }
+            }
+
+            if (_views.Count == 0)
+                _views.Add(new MenuView(_defaultViewId, _items));
+
+            _viewIndex = ResolveScreenIndex(initialScreenId);
+            LoadActiveViewItems();
+            ResetSelection();
+        }
+
+        public bool UpdateScreenItems(string screenId, IEnumerable<MenuItem> items, bool preserveSelection = false)
+        {
+            if (string.IsNullOrWhiteSpace(screenId))
+                return false;
+
+            var index = FindScreenIndex(screenId);
+            if (index < 0)
+                return false;
+
+            _views[index].ReplaceItems(items);
+            if (index == _viewIndex)
+                RefreshActiveViewItems(preserveSelection);
+
+            return true;
         }
 
         public void Initialize()
@@ -161,6 +210,42 @@ namespace TopSpeed.Menu
             _menuSoundPathCache.Clear();
             if (_initialized)
                 ReloadMenuSounds();
+        }
+
+        private MenuView ActiveView => _views[_viewIndex];
+        private MenuView PrimaryView => _views[0];
+
+        private int ResolveScreenIndex(string? screenId)
+        {
+            if (string.IsNullOrWhiteSpace(screenId))
+                return 0;
+
+            var index = FindScreenIndex(screenId!);
+            return index >= 0 ? index : 0;
+        }
+
+        private int FindScreenIndex(string screenId)
+        {
+            for (var i = 0; i < _views.Count; i++)
+            {
+                if (string.Equals(_views[i].Id, screenId, StringComparison.Ordinal))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private void LoadActiveViewItems()
+        {
+            _items.Clear();
+            var source = ActiveView.Items;
+            for (var i = 0; i < source.Count; i++)
+            {
+                var item = source[i];
+                if (item == null || item.IsHidden)
+                    continue;
+                _items.Add(item);
+            }
         }
     }
 }

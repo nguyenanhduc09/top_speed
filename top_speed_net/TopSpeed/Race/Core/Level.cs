@@ -164,7 +164,7 @@ namespace TopSpeed.Race
             _panelManager = new VehiclePanelManager(new IVehicleRacePanel[]
             {
                 new ControlVehiclePanel(),
-                new RadioVehiclePanel(_input, _localRadio, NextLocalMediaId, SpeakText, HandleLocalRadioMediaLoaded, HandleLocalRadioPlaybackChanged)
+                new RadioVehiclePanel(_input, _audio, _settings, _localRadio, NextLocalMediaId, SpeakText, HandleLocalRadioMediaLoaded, HandleLocalRadioPlaybackChanged)
             });
             ApplyActivePanelInputAccess();
             RefreshCategoryVolumes();
