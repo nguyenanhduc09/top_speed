@@ -49,6 +49,8 @@ namespace TopSpeed.Vehicles
                     PositionX = _positionX,
                     PositionY = _positionY,
                     SpeedKph = _speed,
+                    LateralVelocityMps = _lateralVelocityMps,
+                    YawRateRad = _yawRateRad,
                     Gear = _gear,
                     AutoShiftCooldownSeconds = _autoShiftCooldown
                 };
@@ -58,6 +60,8 @@ namespace TopSpeed.Vehicles
                 _positionX = physicsState.PositionX;
                 _positionY = physicsState.PositionY;
                 _speed = physicsState.SpeedKph;
+                _lateralVelocityMps = physicsState.LateralVelocityMps;
+                _yawRateRad = physicsState.YawRateRad;
                 _gear = physicsState.Gear;
                 _autoShiftCooldown = physicsState.AutoShiftCooldownSeconds;
                 _speedDiff = _speed - beforeSpeed;

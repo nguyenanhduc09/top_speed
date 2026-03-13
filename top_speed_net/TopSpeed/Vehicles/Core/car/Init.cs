@@ -82,8 +82,11 @@ namespace TopSpeed.Vehicles
             _currentBrake = 0;
             _currentSurfaceTractionFactor = 0;
             _currentDeceleration = 0;
+            _currentSurfaceLateralMultiplier = 1f;
             _speedDiff = 0;
             _factor1 = 100;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
         }
 
         private VehicleDefinition LoadDefinition(int vehicleIndex, string? vehicleFile, TrackWeather weather)
@@ -137,6 +140,22 @@ namespace TopSpeed.Vehicles
             _highSpeedStability = Math.Max(0f, Math.Min(1.0f, SanitizeFinite(definition.HighSpeedStability, 0f)));
             _wheelbaseM = Math.Max(0.5f, SanitizeFinite(definition.WheelbaseM, 0.5f));
             _maxSteerDeg = Math.Max(5f, Math.Min(60f, SanitizeFinite(definition.MaxSteerDeg, 35f)));
+            _highSpeedSteerGain = Math.Max(0.7f, Math.Min(1.6f, SanitizeFinite(definition.HighSpeedSteerGain, 1.08f)));
+            _highSpeedSteerStartKph = Math.Max(60f, Math.Min(260f, SanitizeFinite(definition.HighSpeedSteerStartKph, 140f)));
+            _highSpeedSteerFullKph = Math.Max(100f, Math.Min(350f, SanitizeFinite(definition.HighSpeedSteerFullKph, 240f)));
+            if (_highSpeedSteerFullKph <= _highSpeedSteerStartKph)
+                _highSpeedSteerFullKph = _highSpeedSteerStartKph + 1f;
+            _combinedGripPenalty = Math.Max(0f, Math.Min(1f, SanitizeFinite(definition.CombinedGripPenalty, 0.72f)));
+            _slipAnglePeakDeg = Math.Max(0.5f, Math.Min(20f, SanitizeFinite(definition.SlipAnglePeakDeg, 8f)));
+            _slipAngleFalloff = Math.Max(0.01f, Math.Min(5f, SanitizeFinite(definition.SlipAngleFalloff, 1.25f)));
+            _turnResponse = Math.Max(0.2f, Math.Min(2.5f, SanitizeFinite(definition.TurnResponse, 1f)));
+            _massSensitivity = Math.Max(0f, Math.Min(1f, SanitizeFinite(definition.MassSensitivity, 0.75f)));
+            _downforceGripGain = Math.Max(0f, Math.Min(1f, SanitizeFinite(definition.DownforceGripGain, 0.05f)));
+            _cornerStiffnessFront = Math.Max(0.2f, Math.Min(3f, SanitizeFinite(definition.CornerStiffnessFront, 1f)));
+            _cornerStiffnessRear = Math.Max(0.2f, Math.Min(3f, SanitizeFinite(definition.CornerStiffnessRear, 1f)));
+            _yawInertiaScale = Math.Max(0.5f, Math.Min(2f, SanitizeFinite(definition.YawInertiaScale, 1f)));
+            _steeringCurve = Math.Max(0.5f, Math.Min(2f, SanitizeFinite(definition.SteeringCurve, 1f)));
+            _transientDamping = Math.Max(0f, Math.Min(6f, SanitizeFinite(definition.TransientDamping, 1.0f)));
             _widthM = Math.Max(0.5f, SanitizeFinite(definition.WidthM, 0.5f));
             _lengthM = Math.Max(0.5f, SanitizeFinite(definition.LengthM, 0.5f));
             _idleFreq = definition.IdleFreq;

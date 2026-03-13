@@ -1,13 +1,11 @@
 using System;
-using TopSpeed.Data;
+using TopSpeed.Physics.Surface;
+using TopSpeed.Physics.Tires;
 
 namespace TopSpeed.Bots
 {
     public static partial class BotPhysics
     {
-        private const float BaseLateralSpeed = 7.0f;
-        private const float StabilitySpeedRef = 45.0f;
-
         public static void Step(BotPhysicsConfig config, ref BotPhysicsState state, in BotPhysicsInput input)
         {
             if (config == null)
@@ -18,26 +16,9 @@ namespace TopSpeed.Bots
             if (state.Gear < 1 || state.Gear > config.Gears)
                 state.Gear = 1;
 
-            var surfaceTraction = config.SurfaceTractionFactor;
-            var surfaceDecel = config.Deceleration;
-            switch (input.Surface)
-            {
-                case TrackSurface.Gravel:
-                    surfaceTraction = (surfaceTraction * 2f) / 3f;
-                    surfaceDecel = (surfaceDecel * 2f) / 3f;
-                    break;
-                case TrackSurface.Water:
-                    surfaceTraction = (surfaceTraction * 3f) / 5f;
-                    surfaceDecel = (surfaceDecel * 3f) / 5f;
-                    break;
-                case TrackSurface.Sand:
-                    surfaceTraction = surfaceTraction / 2f;
-                    surfaceDecel = (surfaceDecel * 3f) / 2f;
-                    break;
-                case TrackSurface.Snow:
-                    surfaceDecel = surfaceDecel / 2f;
-                    break;
-            }
+            var surface = SurfaceModel.Resolve(input.Surface, config.SurfaceTractionFactor, config.Deceleration);
+            var surfaceTraction = surface.Traction;
+            var surfaceDecel = surface.Deceleration;
 
             var thrust = 0f;
             if (input.Throttle == 0)
@@ -54,19 +35,12 @@ namespace TopSpeed.Bots
             var surfaceTractionMod = surfaceTraction / config.SurfaceTractionFactor;
             var longitudinalGripFactor = 1.0f;
             var speedDiffKph = 0f;
+            var tireState = new TireModelState(state.LateralVelocityMps, state.YawRateRad);
 
             if (thrust > 10f)
             {
-                var steeringCommandAccel = (steeringInput / 100.0f) * config.Steering;
-                steeringCommandAccel = Clamp(steeringCommandAccel, -1f, 1f);
-                var steerRadAccel = DegToRad(config.MaxSteerDeg * steeringCommandAccel);
-                var curvatureAccel = (float)Math.Tan(steerRadAccel) / config.WheelbaseM;
-                var desiredLatAccel = curvatureAccel * speedMpsCurrent * speedMpsCurrent;
-                var desiredLatAccelAbs = Math.Abs(desiredLatAccel);
-                var grip = config.TireGripCoefficient * surfaceTractionMod * config.LateralGripCoefficient;
-                var maxLatAccel = grip * 9.80665f;
-                var lateralRatio = maxLatAccel > 0f ? Math.Min(1.0f, desiredLatAccelAbs / maxLatAccel) : 0f;
-                longitudinalGripFactor = (float)Math.Sqrt(Math.Max(0.0, 1.0 - (lateralRatio * lateralRatio)));
+                var tireOutput = SolveTireModel(config, input.ElapsedSeconds, speedMpsCurrent, steeringInput, surfaceTractionMod, 1f, tireState);
+                longitudinalGripFactor = tireOutput.LongitudinalGripFactor;
 
                 var driveRpm = CalculateDriveRpm(config, state.Gear, speedMpsCurrent, throttle);
                 var engineTorque = CalculateEngineTorqueNm(config, driveRpm) * throttle * config.PowerFactor;
@@ -111,32 +85,11 @@ namespace TopSpeed.Bots
             state.PositionY += speedMps * input.ElapsedSeconds;
             state.SpeedKph = speedKph;
 
-            var surfaceMultiplier = input.Surface == TrackSurface.Snow ? 1.44f : 1.0f;
-            var steeringCommandLat = (steeringInput / 100.0f) * config.Steering;
-            steeringCommandLat = Clamp(steeringCommandLat, -1f, 1f);
-            var steerRadLat = DegToRad(config.MaxSteerDeg * steeringCommandLat);
-            var curvatureLat = (float)Math.Tan(steerRadLat) / config.WheelbaseM;
             var surfaceTractionModLat = surfaceTraction / config.SurfaceTractionFactor;
-            var gripLat = config.TireGripCoefficient * surfaceTractionModLat * config.LateralGripCoefficient;
-            var maxLatAccelLat = gripLat * 9.80665f;
-            var desiredLatAccelLat = curvatureLat * speedMps * speedMps;
-            var massFactor = (float)Math.Sqrt(1500f / config.MassKg);
-            if (massFactor > 3.0f)
-                massFactor = 3.0f;
-            var stabilityScale = 1.0f - (config.HighSpeedStability * (speedMps / StabilitySpeedRef) * massFactor);
-            if (stabilityScale < 0.2f)
-                stabilityScale = 0.2f;
-            else if (stabilityScale > 1.0f)
-                stabilityScale = 1.0f;
-            var responseTime = BaseLateralSpeed / 20.0f;
-            var maxLatSpeed = maxLatAccelLat * responseTime * stabilityScale;
-            var desiredLatSpeed = desiredLatAccelLat * responseTime;
-            if (desiredLatSpeed > maxLatSpeed)
-                desiredLatSpeed = maxLatSpeed;
-            else if (desiredLatSpeed < -maxLatSpeed)
-                desiredLatSpeed = -maxLatSpeed;
-            var lateralSpeed = desiredLatSpeed * surfaceMultiplier;
-            state.PositionX += lateralSpeed * input.ElapsedSeconds;
+            var lateralOutput = SolveTireModel(config, input.ElapsedSeconds, speedMps, steeringInput, surfaceTractionModLat, surface.LateralSpeedMultiplier, tireState);
+            state.PositionX += lateralOutput.LateralSpeedMps * input.ElapsedSeconds;
+            state.LateralVelocityMps = lateralOutput.State.LateralVelocityMps;
+            state.YawRateRad = lateralOutput.State.YawRateRad;
         }
     }
 }

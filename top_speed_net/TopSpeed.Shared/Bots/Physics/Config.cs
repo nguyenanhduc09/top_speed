@@ -31,8 +31,24 @@ namespace TopSpeed.Bots
             float lateralGripCoefficient,
             float highSpeedStability,
             float wheelbaseM,
+            float widthM,
+            float lengthM,
             float maxSteerDeg,
             float steering,
+            float highSpeedSteerGain,
+            float highSpeedSteerStartKph,
+            float highSpeedSteerFullKph,
+            float combinedGripPenalty,
+            float slipAnglePeakDeg,
+            float slipAngleFalloff,
+            float turnResponse,
+            float massSensitivity,
+            float downforceGripGain,
+            float cornerStiffnessFront,
+            float cornerStiffnessRear,
+            float yawInertiaScale,
+            float steeringCurve,
+            float transientDamping,
             int gears,
             float[]? gearRatios = null,
             TransmissionPolicy? transmissionPolicy = null)
@@ -62,8 +78,26 @@ namespace TopSpeed.Bots
             LateralGripCoefficient = Math.Max(0.1f, lateralGripCoefficient);
             HighSpeedStability = Math.Max(0f, Math.Min(1.0f, highSpeedStability));
             WheelbaseM = Math.Max(0.5f, wheelbaseM);
+            WidthM = Math.Max(0.5f, widthM);
+            LengthM = Math.Max(0.5f, lengthM);
             MaxSteerDeg = Math.Max(5f, Math.Min(60f, maxSteerDeg));
             Steering = steering;
+            HighSpeedSteerGain = Math.Max(0.7f, Math.Min(1.6f, highSpeedSteerGain));
+            HighSpeedSteerStartKph = Math.Max(60f, Math.Min(260f, highSpeedSteerStartKph));
+            HighSpeedSteerFullKph = Math.Max(100f, Math.Min(350f, highSpeedSteerFullKph));
+            if (HighSpeedSteerFullKph <= HighSpeedSteerStartKph)
+                HighSpeedSteerFullKph = HighSpeedSteerStartKph + 1f;
+            CombinedGripPenalty = Math.Max(0f, Math.Min(1f, combinedGripPenalty));
+            SlipAnglePeakDeg = Math.Max(0.5f, Math.Min(20f, slipAnglePeakDeg));
+            SlipAngleFalloff = Math.Max(0.01f, Math.Min(5f, slipAngleFalloff));
+            TurnResponse = Math.Max(0.2f, Math.Min(2.5f, turnResponse));
+            MassSensitivity = Math.Max(0f, Math.Min(1f, massSensitivity));
+            DownforceGripGain = Math.Max(0f, Math.Min(1f, downforceGripGain));
+            CornerStiffnessFront = Math.Max(0.2f, Math.Min(3f, cornerStiffnessFront));
+            CornerStiffnessRear = Math.Max(0.2f, Math.Min(3f, cornerStiffnessRear));
+            YawInertiaScale = Math.Max(0.5f, Math.Min(2f, yawInertiaScale));
+            SteeringCurve = Math.Max(0.5f, Math.Min(2f, steeringCurve));
+            TransientDamping = Math.Max(0f, Math.Min(6f, transientDamping));
             Gears = Math.Max(1, gears);
             GearRatios = BuildRatios(Gears, gearRatios);
             TransmissionPolicy = transmissionPolicy ?? TransmissionPolicy.Default;
@@ -94,8 +128,24 @@ namespace TopSpeed.Bots
         public float LateralGripCoefficient { get; }
         public float HighSpeedStability { get; }
         public float WheelbaseM { get; }
+        public float WidthM { get; }
+        public float LengthM { get; }
         public float MaxSteerDeg { get; }
         public float Steering { get; }
+        public float HighSpeedSteerGain { get; }
+        public float HighSpeedSteerStartKph { get; }
+        public float HighSpeedSteerFullKph { get; }
+        public float CombinedGripPenalty { get; }
+        public float SlipAnglePeakDeg { get; }
+        public float SlipAngleFalloff { get; }
+        public float TurnResponse { get; }
+        public float MassSensitivity { get; }
+        public float DownforceGripGain { get; }
+        public float CornerStiffnessFront { get; }
+        public float CornerStiffnessRear { get; }
+        public float YawInertiaScale { get; }
+        public float SteeringCurve { get; }
+        public float TransientDamping { get; }
         public int Gears { get; }
         public float[] GearRatios { get; }
         public TransmissionPolicy TransmissionPolicy { get; }

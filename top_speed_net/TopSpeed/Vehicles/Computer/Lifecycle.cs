@@ -10,6 +10,8 @@ namespace TopSpeed.Vehicles
         {
             _positionX = positionX;
             _positionY = Math.Max(0f, positionY);
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _trackLength = trackLength;
             _laneWidth = _track.LaneWidth;
             _remoteNetInit = false;
@@ -57,6 +59,8 @@ namespace TopSpeed.Vehicles
             PushEvent(BotEventType.CarStart, delay);
             _soundStart.Play(loop: false);
             _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _prevFrequency = _idleFreq;
             _frequency = _idleFreq;
             _prevBrakeFrequency = 0;
@@ -73,6 +77,8 @@ namespace TopSpeed.Vehicles
             _crashLateralAnchored = true;
 
             _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _soundCrash.Play(loop: false);
             _soundEngine.Stop();
             _soundEngine.SeekToStart();
@@ -90,6 +96,8 @@ namespace TopSpeed.Vehicles
         public void MiniCrash(float newPosition)
         {
             _speed /= 4;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _positionX = newPosition;
             _soundMiniCrash.Play(loop: false);
         }
@@ -117,6 +125,8 @@ namespace TopSpeed.Vehicles
 
             if (_speed < 0)
                 _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _soundBump.Play(loop: false);
             Horn();
         }

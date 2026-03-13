@@ -50,7 +50,17 @@
       <Link>Sounds\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <TargetPath>Sounds\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
     </Content>
+    <Content Include="..\..\docs\**\*"
+             Exclude="..\..\docs\**\*.md;..\..\docs\render_docs.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>docs\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>docs\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
   </ItemGroup>
+
+  <Target Name="RenderDocsHtml" BeforeTargets="Build" Condition="Exists('$(MSBuildThisFileDirectory)..\..\docs\render_docs.py')">
+    <Exec Command="python &quot;$(MSBuildThisFileDirectory)..\..\docs\render_docs.py&quot;" ContinueOnError="WarnAndContinue" />
+  </Target>
 
   <Target Name="CopyUpdater" AfterTargets="Build">
     <MSBuild Projects="..\Updater\Updater.csproj" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)" />

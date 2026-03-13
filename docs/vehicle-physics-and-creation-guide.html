@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vehicle Physics And Creation Guide</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0e1117;
+      --panel: #161b22;
+      --text: #e6edf3;
+      --muted: #9da7b3;
+      --link: #58a6ff;
+      --border: #30363d;
+      --code: #11161d;
+      --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+      --sans: "Segoe UI", "Noto Sans", Tahoma, sans-serif;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f8fa;
+        --panel: #ffffff;
+        --text: #1f2328;
+        --muted: #59636e;
+        --link: #0969da;
+        --border: #d0d7de;
+        --code: #f6f8fa;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.55;
+      font-size: 16px;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 18px 28px;
+    }
+    .doc {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      box-sizing: border-box;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4 { line-height: 1.25; }
+    h1 { margin-top: 0; }
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: var(--mono);
+      font-size: 0.95em;
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.1em 0.35em;
+    }
+    pre {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      overflow: auto;
+    }
+    pre code {
+      border: 0;
+      background: transparent;
+      padding: 0;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0;
+      font-size: 0.95em;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: color-mix(in srgb, var(--panel) 75%, var(--border));
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
+    blockquote {
+      border-left: 4px solid var(--border);
+      margin: 12px 0;
+      padding: 4px 12px;
+      color: var(--muted);
+    }
+    .footer {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <article class="doc">
+<h1 id="top-speed-vehicle-creation-and-physics-guide">Top Speed Vehicle Creation and Physics Guide</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#sec-1-introduction">1. Introduction</a></li>
+<li><a href="#sec-2-how-vehicle-physics-works-in-top-speed">2. How Vehicle Physics Works in Top Speed</a></li>
+<li><a href="#sec-2-1-the-big-picture">2.1 The Big Picture</a></li>
+<li><a href="#sec-2-2-units-used-by-the-game">2.2 Units Used by the Game</a></li>
+<li><a href="#sec-2-3-the-main-acceleration-flow-plain-language">2.3 The Main Acceleration Flow (Plain Language)</a></li>
+<li><a href="#sec-2-4-rpm-torque-and-why-some-gears-feel-stronger-than-others">2.4 RPM, Torque, and Why Some Gears Feel Stronger Than Others</a></li>
+<li><a href="#sec-2-4-1-rpm">2.4.1 RPM</a></li>
+<li><a href="#sec-2-4-2-torque">2.4.2 Torque</a></li>
+<li><a href="#sec-2-5-torque-curve-shape-and-shift-recovery">2.5 Torque Curve Shape and Shift Recovery</a></li>
+<li><a href="#sec-2-6-gears-final-drive-and-effective-ratio">2.6 Gears, Final Drive, and Effective Ratio</a></li>
+<li><a href="#sec-2-7-drag-and-rolling-resistance">2.7 Drag and Rolling Resistance</a></li>
+<li><a href="#sec-2-8-braking-and-coasting">2.8 Braking and Coasting</a></li>
+<li><a href="#sec-2-9-steering-grip-and-stability">2.9 Steering, Grip, and Stability</a></li>
+<li><a href="#sec-2-10-surface-behavior">2.10 Surface Behavior</a></li>
+<li><a href="#sec-2-11-manual-vs-automatic-transmission">2.11 Manual vs Automatic Transmission</a></li>
+<li><a href="#sec-3-creating-a-custom-vehicle-package">3. Creating a Custom Vehicle Package</a></li>
+<li><a href="#sec-3-1-folder-layout-and-discovery">3.1 Folder Layout and Discovery</a></li>
+<li><a href="#sec-3-2-strict-file-format-rules-very-important">3.2 Strict File Format Rules (Very Important)</a></li>
+<li><a href="#sec-3-3-required-and-optional-sections">3.3 Required and Optional Sections</a></li>
+<li><a href="#sec-3-4-example-tsv-vehicle-file-full-sectioned-format">3.4 Example <code>.tsv</code> Vehicle File (Full Sectioned Format)</a></li>
+<li><a href="#sec-3-5-sound-path-rules-and-safety-rules">3.5 Sound Path Rules and Safety Rules</a></li>
+<li><a href="#sec-3-6-validation-behavior-and-error-messages">3.6 Validation Behavior and Error Messages</a></li>
+<li><a href="#sec-3-7-practical-tuning-workflow-for-beginners">3.7 Practical Tuning Workflow for Beginners</a></li>
+<li><a href="#sec-4-parameter-reference-grouped-by-section">4. Parameter Reference (Grouped by Section)</a></li>
+<li><a href="#sec-4-1-meta-section">4.1 <code>[meta]</code> Section</a></li>
+<li><a href="#sec-4-2-sounds-section">4.2 <code>[sounds]</code> Section</a></li>
+<li><a href="#sec-4-3-general-section">4.3 <code>[general]</code> Section</a></li>
+<li><a href="#sec-4-4-engine-section">4.4 <code>[engine]</code> Section</a></li>
+<li><a href="#sec-4-5-drivetrain-section">4.5 <code>[drivetrain]</code> Section</a></li>
+<li><a href="#sec-4-6-gears-section">4.6 <code>[gears]</code> Section</a></li>
+<li><a href="#sec-4-7-steering-section">4.7 <code>[steering]</code> Section</a></li>
+<li><a href="#sec-4-8-tire-model-section">4.8 <code>[tire_model]</code> Section</a></li>
+<li><a href="#sec-4-9-dynamics-section">4.9 <code>[dynamics]</code> Section</a></li>
+<li><a href="#sec-4-10-dimensions-section">4.10 <code>[dimensions]</code> Section</a></li>
+<li><a href="#sec-4-11-tires-section">4.11 <code>[tires]</code> Section</a></li>
+<li><a href="#sec-4-12-policy-section">4.12 <code>[policy]</code> Section (Optional, Automatic Transmission Only)</a></li>
+<li><a href="#sec-5-class-baseline-presets">5. Class Baseline Presets (Steering, Tire Model, Dynamics)</a></li>
+<li><a href="#sec-6-what-was-removed-from-the-old-format">6. What Was Removed From the Old Format</a></li>
+<li><a href="#sec-7-tuning-advice-and-common-problems">7. Tuning Advice and Common Problems</a></li>
+<li><a href="#sec-8-final-notes-for-authors">8. Final Notes for Authors</a></li>
+</ul>
+<p><a id="sec-1-introduction"></a></p>
+<h2 id="1-introduction">1. Introduction</h2>
+<p>This guide explains how vehicles work in the current Top Speed rewrite and how to create custom vehicles using the new strict <code>.tsv</code> vehicle package format (TopSpeedVehicle). It is written for beginners, especially blind players and modders using screen readers, and it assumes only basic knowledge of acceleration, braking, and gears.</p>
+<p>The main goal is practical understanding. You should be able to read this document, understand what the game is simulating, create a valid vehicle file, and tune the vehicle so it feels good in gameplay without needing advanced math or real-world engineering training.</p>
+<p>Top Speed now uses a force-based driving model. The game calculates acceleration from engine torque, gearing, drivetrain efficiency, tire circumference, traction, drag, rolling resistance, and braking forces. Some parameter names are inherited from older versions of the game, but the custom vehicle format itself is now fully redesigned and strict. There is no backward compatibility with old vehicle files.</p>
+<p>That means three important things for authors. First, all values are entered directly as real numbers, not encoded legacy numbers that get divided by 100. Second, every parameter must be inside a supported section. Third, invalid or extreme values are rejected with line-aware error messages instead of being silently accepted.</p>
+<p>This guide is split into five parts. It starts with the physics model used by the game, then explains how to create a custom vehicle package and file, then explains the parser and validation rules, then gives a detailed parameter reference grouped by section with allowed value ranges and tuning advice, and finally provides class baseline presets for the modern steering and tire dynamics model.</p>
+<p><a id="sec-2-how-vehicle-physics-works-in-top-speed"></a></p>
+<h2 id="2-how-vehicle-physics-works-in-top-speed">2. How Vehicle Physics Works in Top Speed</h2>
+<p><a id="sec-2-1-the-big-picture"></a></p>
+<h2 id="21-the-big-picture">2.1 The Big Picture</h2>
+<p>When a vehicle accelerates in Top Speed, the game is not simply adding a fixed speed amount. It builds acceleration from forces. The engine produces torque, the torque is multiplied by the current gear and final drive, that torque becomes wheel force, and the wheel force is limited by traction. After that, the game subtracts forces that resist motion, mainly rolling resistance and aerodynamic drag. The remaining force is converted into acceleration by dividing by vehicle mass.</p>
+<p>This is why two vehicles with similar top speed caps can feel very different. If one vehicle is heavy, tall-geared, and has low torque at the RPM where it lands after a shift, it can feel lazy even if its <code>max_speed</code> is high. Another vehicle can feel very quick with a lower top speed if it has short gearing, stronger midrange torque, and lower mass.</p>
+<p>The game also runs a separate steering and lateral movement model. Steering is influenced by <code>steering_response</code>, <code>max_steer_deg</code>, <code>wheelbase</code>, and high-speed gain window values, while actual sideways response is limited and shaped by <code>[tire_model]</code> and <code>[dynamics]</code> values. This allows tuning high-speed cars to keep strong straight-line performance while reducing or increasing cornering authority in a controlled way.</p>
+<p>Automatic transmission behavior is also part of the overall physics feel. The game now uses a transmission policy system. The policy decides shift timing, delays in certain gears, and anti-hunting behavior. Policy can improve shift decisions, but it cannot create engine power that is not there.</p>
+<p><a id="sec-2-2-units-used-by-the-game"></a></p>
+<h2 id="22-units-used-by-the-game">2.2 Units Used by the Game</h2>
+<p>Most gameplay speed values are expressed in kilometers per hour. Physics calculations internally use SI-style units in many places, especially meters, seconds, kilograms, and Newton-meters.</p>
+<p>As a vehicle author, you do not need to convert everything manually, but it is important to enter values in the expected units. Examples include <code>mass_kg</code> in kilograms, <code>peak_torque</code> in Newton-meters, <code>wheelbase</code> in meters, <code>max_steer_deg</code> in degrees, and <code>frontal_area</code> in square meters.</p>
+<p>The new custom vehicle format does not use encoded legacy values. You write the actual value directly. For example, <code>max_speed=170</code> means 170 km/h. <code>steering_response=1.8</code> means 1.8, not 180. <code>surface_traction_factor=0.10</code> means 0.10, not 10.</p>
+<p><a id="sec-2-3-the-main-acceleration-flow-plain-language"></a></p>
+<h2 id="23-the-main-acceleration-flow-plain-language">2.3 The Main Acceleration Flow (Plain Language)</h2>
+<p>The game uses a sequence of calculations each frame while throttle is applied.</p>
+<p>The first step is determining the engine RPM for the current vehicle speed and gear. RPM depends on road speed, tire circumference, current gear ratio, and final drive ratio. At low speed under throttle, a launch RPM floor can help prevent the engine from dropping too low and feeling weak right off the line.</p>
+<p>The next step is reading engine torque from the engine torque curve. The torque curve is built from four core values: <code>idle_torque</code>, <code>peak_torque</code>, <code>peak_torque_rpm</code>, and <code>redline_torque</code>, then combined with the RPM range between <code>idle_rpm</code> and <code>rev_limiter</code>.</p>
+<p>That engine torque is multiplied by the current gear ratio and the <code>final_drive</code> ratio, then reduced by <code>drivetrain_efficiency</code>. This gives wheel torque. Wheel torque is then converted into wheel force using tire radius derived from tire circumference.</p>
+<p>The wheel force is capped by grip. Even if the engine could theoretically push harder, the tires can only transmit so much force to the road. That is where <code>tire_grip</code>, surface behavior, and related handling values matter.</p>
+<p>Finally, the game subtracts resistance forces. Rolling resistance acts all the time and is noticeable at lower speeds. Aerodynamic drag grows rapidly with speed and becomes dominant near top speed. The remaining force becomes acceleration after dividing by <code>mass_kg</code>.</p>
+<p>The result is a system where low-speed acceleration, mid-speed pull, and high-speed pull can all be tuned differently using different parameters.</p>
+<p><a id="sec-2-4-rpm-torque-and-why-some-gears-feel-stronger-than-others"></a></p>
+<h2 id="24-rpm-torque-and-why-some-gears-feel-stronger-than-others">2.4 RPM, Torque, and Why Some Gears Feel Stronger Than Others</h2>
+<p><a id="sec-2-4-1-rpm"></a></p>
+<h2 id="241-rpm">2.4.1 RPM</h2>
+<p>RPM is engine speed in revolutions per minute. RPM is not power by itself, but it controls where the engine is on the torque curve. If a shift drops RPM too far below the strong part of the curve, the next gear can feel weak even if the vehicle has a high torque peak on paper.</p>
+<p>This is why RPM drop after an upshift is normal but must be usable. A good upshift causes RPM to drop and then recover. A bad upshift drops RPM into a weak zone and the vehicle feels flat or stalls in that gear.</p>
+<p><a id="sec-2-4-2-torque"></a></p>
+<h2 id="242-torque">2.4.2 Torque</h2>
+<p>Torque is twisting force at the engine. In the game, torque becomes acceleration only after gearing and drivetrain efficiency are applied, and then after traction and resistance are considered.</p>
+<p>If a vehicle feels too strong everywhere, reducing <code>peak_torque</code> can help, but it is not the only option. <code>power_factor</code>, gear ratios, final drive, and mass are often better gameplay-balance controls because they can shape the feel without destroying the engine character.</p>
+<p>If a vehicle is fine in lower gears but too strong at high speed, lowering <code>redline_torque</code> or increasing drag is usually more targeted than lowering <code>peak_torque</code>.</p>
+<p><a id="sec-2-5-torque-curve-shape-and-shift-recovery"></a></p>
+<h2 id="25-torque-curve-shape-and-shift-recovery">2.5 Torque Curve Shape and Shift Recovery</h2>
+<p><code>idle_torque</code>, <code>peak_torque</code>, <code>peak_torque_rpm</code>, and <code>redline_torque</code> together define the shape of the engine curve.</p>
+<p>Lower <code>peak_torque_rpm</code> generally makes a vehicle easier to pull in taller gears because the strong torque band starts earlier. Higher <code>peak_torque_rpm</code> makes the vehicle feel more high-rev and can punish early upshifts if the next gear lands too low.</p>
+<p>Higher <code>redline_torque</code> makes the vehicle continue pulling strongly near the top of each gear. Lower <code>redline_torque</code> creates a more obvious fade near the rev limiter and can be used to calm high-gear acceleration without heavily changing launch.</p>
+<p><a id="sec-2-6-gears-final-drive-and-effective-ratio"></a></p>
+<h2 id="26-gears-final-drive-and-effective-ratio">2.6 Gears, Final Drive, and Effective Ratio</h2>
+<p>Each forward gear has its own ratio. The game multiplies that ratio by <code>final_drive</code> to get the effective ratio for wheel torque and RPM mapping.</p>
+<p>A higher effective ratio means stronger torque multiplication but more RPM at the same road speed. A lower effective ratio means lower RPM at the same road speed and less wheel torque.</p>
+<p>Changing <code>final_drive</code> affects every forward gear at once. This makes it one of the strongest tuning controls in the game. A small <code>final_drive</code> increase can fix weak high gears, but it can also make lower gears too aggressive and cause the vehicle to reach the rev limiter earlier. A <code>final_drive</code> decrease can calm acceleration, but it can also make upper gears feel dead if the engine does not have enough torque at the resulting RPM.</p>
+<p>Because of this, high-gear tuning is often a combination of final drive, torque curve shape, drag, and transmission policy.</p>
+<p><a id="sec-2-7-drag-and-rolling-resistance"></a></p>
+<h2 id="27-drag-and-rolling-resistance">2.7 Drag and Rolling Resistance</h2>
+<p>Rolling resistance is a constant-like force that always fights motion. It is influenced by <code>rolling_resistance</code> and affects low, medium, and high speed, though it is usually most noticeable before aerodynamic drag becomes large.</p>
+<p>For beginners, the easiest way to think about rolling resistance is this: it is the \"always-on drag\" from tires and road contact. Even at moderate speed, the vehicle has to spend some engine force just to keep moving. If you raise <code>rolling_resistance</code>, the vehicle may feel heavier and more reluctant to gain speed in almost every gear, not just near top speed. If you lower it too much, the vehicle may coast for too long and feel unrealistically free-rolling.</p>
+<p>Aerodynamic drag depends on <code>drag_coefficient</code> and <code>frontal_area</code>, and it grows much more rapidly with speed. This is why a vehicle may accelerate quickly up to a point and then slowly crawl toward top speed.</p>
+<p>This difference matters when tuning. If a vehicle feels weak from launch, through mid speed, and also near top speed, the problem is usually not aerodynamic drag alone. It is more often a combination of <code>power_factor</code>, torque curve shape, <code>mass_kg</code>, gearing, and possibly rolling resistance. If a vehicle feels fine in lower gears but loses pull mainly at high speed, then drag-related parameters (<code>drag_coefficient</code>, <code>frontal_area</code>) and high-RPM torque (<code>redline_torque</code>) become the first places to inspect.</p>
+<p>In other words, rolling resistance mostly shapes the \"general heaviness\" of motion, while aerodynamic drag mostly shapes the \"top-speed wall\" feeling. You usually get better tuning results by deciding which of those two feelings is wrong before changing values.</p>
+<p>This behavior is often exactly what you want for game balance. If a vehicle is too strong near top speed, increasing drag or lowering <code>redline_torque</code> is usually a clean fix. If it feels weak at all speeds, look first at <code>power_factor</code>, <code>mass_kg</code>, and gearing before blaming drag.</p>
+<p><a id="sec-2-8-braking-and-coasting"></a></p>
+<h2 id="28-braking-and-coasting">2.8 Braking and Coasting</h2>
+<p>Top Speed separates active braking from lift-off slowing.</p>
+<p>Active braking happens when the player presses the brake. The result depends mainly on <code>brake_strength</code>, grip, and the current surface.</p>
+<p>Lift-off slowing happens when the player releases throttle. That is engine braking, controlled by <code>engine_braking</code> and <code>engine_braking_torque</code>, along with RPM, gearing, and drivetrain efficiency.</p>
+<p>If a vehicle feels like it slows too hard when the player stops accelerating, reduce engine braking values rather than brake strength. If the actual brake button feels weak, tune <code>brake_strength</code> instead.</p>
+<p><a id="sec-2-9-steering-grip-and-stability"></a></p>
+<h2 id="29-steering-grip-and-stability">2.9 Steering, Grip, and Stability</h2>
+<p>Steering response in Top Speed is built from several parameters working together. <code>steering_response</code> acts like steering strength. <code>max_steer_deg</code> limits absolute steering angle. <code>wheelbase</code> changes how steering angle maps to path curvature. High-speed window values (<code>high_speed_steer_gain</code>, <code>high_speed_steer_start_kph</code>, <code>high_speed_steer_full_kph</code>) shape how much authority is available at speed. Grip and dynamics parameters then decide how much of the request can actually become lateral motion.</p>
+<p>This means handling balance should not be tuned by one value alone. If a vehicle is unrealistically agile at high speed, lowering <code>high_speed_steer_gain</code>, lowering <code>max_steer_deg</code>, or increasing <code>high_speed_stability</code> is usually the first step. If it still corners too well, lower <code>lateral_grip</code> or reduce <code>corner_stiffness_front</code> and <code>corner_stiffness_rear</code>. If it loses traction too easily under power or braking, inspect <code>tire_grip</code> and <code>combined_grip_penalty</code>.</p>
+<p><a id="sec-2-10-surface-behavior"></a></p>
+<h2 id="210-surface-behavior">2.10 Surface Behavior</h2>
+<p>The game applies surface-specific modifiers for asphalt, gravel, water, sand, and snow. Those modifiers interact with the vehicle baseline values.</p>
+<p>The <code>surface_traction_factor</code> and <code>deceleration</code> parameters still exist in the format because they affect baseline behavior and some surface-related calculations, but they are not your main modern tuning tools for a vehicle's overall handling quality. In most cases, the most meaningful tuning for traction and cornering feel comes from <code>tire_grip</code>, <code>lateral_grip</code>, <code>brake_strength</code>, <code>engine_braking</code>, and the engine/drivetrain setup.</p>
+<p>For beginners, this is an important trap to avoid: if a vehicle slips too much on asphalt, do not immediately start changing <code>surface_traction_factor</code>. That parameter sounds like the obvious fix, but in the current model it is more of a baseline reference than a simple \"more grip\" slider. Start with <code>tire_grip</code> for forward traction and braking grip, and use <code>lateral_grip</code> for cornering feel.</p>
+<p>Also remember that surfaces amplify or expose weaknesses in your tune. A vehicle with too much torque and weak traction may feel acceptable on asphalt but become almost impossible to manage on gravel or wet surfaces. A vehicle with very strong engine braking may feel responsive on asphalt but feel too abrupt on low-grip surfaces. This is why surface testing is useful after the basic asphalt tune is finished.</p>
+<p><a id="sec-2-11-manual-vs-automatic-transmission"></a></p>
+<h2 id="211-manual-vs-automatic-transmission">2.11 Manual vs Automatic Transmission</h2>
+<p>Manual mode allows the player to shift whenever they choose. RPM dropping after an upshift is normal. The important question is whether the next gear still has enough pull to recover speed and continue accelerating.</p>
+<p>Automatic mode now uses a policy-driven system. It looks at RPM, predicted acceleration in neighboring gears, shift cooldowns, and special rules for high gears and top-speed pursuit. This improves behavior in vehicles with many gears, especially 7-speed and 8-speed vehicles with overdrive gears.</p>
+<p>Policy improves shift decisions, but it does not fix weak physics. If a gear cannot physically pull because torque, drag, or gearing are wrong, policy can only avoid that gear or delay entry into it.</p>
+<p>For tuning work, manual mode is usually the best diagnostic tool because it exposes the raw powertrain behavior. If a vehicle stalls after a manual upshift, that is a physics or gearing problem. If manual mode feels good but automatic mode shifts too early, hunts between gears, or enters overdrive too soon, that is usually a policy problem.</p>
+<p>A practical workflow is to tune the vehicle so manual shifting feels healthy first, especially in the upper gears. After that, use <code>[policy]</code> to control automatic timing, overdrive behavior, and anti-hunting. This order prevents you from using policy to hide a powertrain problem that will still exist underneath.</p>
+<p><a id="sec-3-creating-a-custom-vehicle-package"></a></p>
+<h2 id="3-creating-a-custom-vehicle-package">3. Creating a Custom Vehicle Package</h2>
+<p><a id="sec-3-1-folder-layout-and-discovery"></a></p>
+<h2 id="31-folder-layout-and-discovery">3.1 Folder Layout and Discovery</h2>
+<p>Custom vehicles are discovered from subfolders under the <code>Vehicles</code> folder, similar to track discovery. The game searches recursively and picks the first <code>.tsv</code> file it finds in each vehicle folder (sorted by file name). The file does not need to be named <code>vehicle.tsv</code>; any <code>.tsv</code> filename is valid.</p>
+<p>A simple example structure might look like this:</p>
+<pre><code class="language-text">Vehicles/
+  TouringSedan/
+    touring_sedan.tsv
+    engine.wav
+    start.wav
+    horn.wav
+    crash1.wav
+    crash2.wav
+    brake.wav
+    backfire1.wav
+    backfire2.wav
+</code></pre>
+<p>The vehicle selection menu uses the custom vehicle metadata name from the file (<code>[meta] name</code>) for display. The <code>version</code> and <code>description</code> values are loaded and stored, but the menu item text is based on the name.</p>
+<p><a id="sec-3-2-strict-file-format-rules-very-important"></a></p>
+<h2 id="32-strict-file-format-rules-very-important">3.2 Strict File Format Rules (Very Important)</h2>
+<p>The new custom vehicle format is strict by design. There is no backward compatibility mode for legacy vehicle files.</p>
+<p>Every parameter must be inside a supported section. Top-level parameters are rejected. Unknown sections are rejected. Unknown keys are rejected. Duplicate sections are rejected. Duplicate keys inside a section are rejected.</p>
+<p>Errors are line-aware and explain what is wrong, which makes debugging much easier for screen-reader users than silent fallback behavior.</p>
+<p>The format uses <code>key=value</code> lines inside sections, and comments start with <code>;</code> or <code>#</code>.</p>
+<p><a id="sec-3-3-required-and-optional-sections"></a></p>
+<h2 id="33-required-and-optional-sections">3.3 Required and Optional Sections</h2>
+<p>The following sections are supported by the parser.</p>
+<p><code>[meta]</code>, <code>[sounds]</code>, <code>[general]</code>, <code>[engine]</code>, <code>[drivetrain]</code>, <code>[gears]</code>, <code>[steering]</code>, <code>[tire_model]</code>, <code>[dynamics]</code>, <code>[dimensions]</code>, and <code>[tires]</code> are required. <code>[policy]</code> is optional.</p>
+<p>If a required section is missing, the file fails to load and the vehicle is skipped from custom vehicle discovery.</p>
+<p><a id="sec-3-4-example-tsv-vehicle-file-full-sectioned-format"></a></p>
+<h2 id="34-example-tsv-vehicle-file-full-sectioned-format">3.4 Example <code>.tsv</code> Vehicle File (Full Sectioned Format)</h2>
+<p>This example uses direct values, grouped sections, and an optional policy. It also demonstrates multi-sound lists for <code>crash</code> and <code>backfire</code>.</p>
+<pre><code class="language-ini">; Example custom vehicle package file for Top Speed
+; File extension: .tsv (TopSpeedVehicle)
+
+[meta]
+name=Example Touring Sedan
+version=1.0
+description=Balanced front-engine touring sedan with usable 8-speed overdrive gears.
+
+[sounds]
+engine=builtin6
+start=builtin1
+horn=builtin4
+throttle=
+crash=builtin3,crash1.wav,crash2.wav
+brake=brake.wav
+backfire=backfire1.wav,backfire2.wav
+idle_freq=9000
+top_freq=42000
+shift_freq=30000
+
+[general]
+surface_traction_factor=0.10
+deceleration=0.40
+max_speed=170
+has_wipers=1
+
+[engine]
+idle_rpm=700
+max_rpm=5600
+rev_limiter=5000
+auto_shift_rpm=4600
+engine_braking=0.35
+mass_kg=1500
+drivetrain_efficiency=0.88
+engine_braking_torque=220
+peak_torque=260
+peak_torque_rpm=3800
+idle_torque=110
+redline_torque=220
+drag_coefficient=0.27
+frontal_area=2.20
+rolling_resistance=0.014
+launch_rpm=1800
+power_factor=0.64
+
+[drivetrain]
+final_drive=3.20
+reverse_max_speed=35
+reverse_power_factor=0.55
+reverse_gear_ratio=3.20
+brake_strength=1.00
+
+[gears]
+number_of_gears=8
+gear_ratios=5.20,3.00,1.95,1.45,1.20,1.00,0.95,0.90
+
+[steering]
+steering_response=1.80
+wheelbase=2.80
+max_steer_deg=32
+high_speed_stability=0.15
+high_speed_steer_gain=1.18
+high_speed_steer_start_kph=150
+high_speed_steer_full_kph=240
+
+[tire_model]
+tire_grip=0.92
+lateral_grip=1.00
+combined_grip_penalty=0.72
+slip_angle_peak_deg=8.0
+slip_angle_falloff=1.25
+turn_response=1.05
+mass_sensitivity=0.75
+downforce_grip_gain=0.10
+
+[dynamics]
+corner_stiffness_front=1.05
+corner_stiffness_rear=0.98
+yaw_inertia_scale=1.05
+steering_curve=1.00
+transient_damping=1.10
+
+[dimensions]
+vehicle_width=1.84
+vehicle_length=4.85
+
+[tires]
+tire_width=215
+tire_aspect=55
+tire_rim=17
+; Or provide tire_circumference directly instead of width/aspect/rim.
+
+[policy]
+top_speed_gear=6
+allow_overdrive_above_game_top_speed=true
+auto_upshift_rpm_fraction=0.88
+auto_downshift_rpm_fraction=0.35
+base_auto_shift_cooldown=0.15
+upshift_delay_default=0.15
+upshift_delay_5_6=0.18
+upshift_delay_6_7=0.24
+upshift_delay_7_8=0.30
+upshift_hysteresis=0.05
+min_upshift_net_accel_mps2=-0.15
+top_speed_pursuit_speed_fraction=0.97
+prefer_intended_top_speed_gear_near_limit=true
+</code></pre>
+<p><a id="sec-3-5-sound-path-rules-and-safety-rules"></a></p>
+<h2 id="35-sound-path-rules-and-safety-rules">3.5 Sound Path Rules and Safety Rules</h2>
+<p>Custom vehicle sound paths are sandboxed to the custom vehicle folder. That means normal sound file paths must be relative paths inside the same folder as the <code>.tsv</code> file (or a subfolder under it). Paths that try to escape the folder, such as <code>..\\outside.wav</code>, are rejected. Absolute paths are also rejected for custom sound files.</p>
+<p>This rule is important for both safety and portability. A vehicle package should be self-contained so it can be shared with other players and still work. If a sound path points to a random file elsewhere on your computer, the vehicle may work only on your machine and fail for everyone else. The folder sandbox prevents that class of problem.</p>
+<p>The exception is built-in sound references using <code>builtinN</code>, such as <code>builtin1</code>, <code>builtin6</code>, and so on. Built-in references are allowed because they do not bypass the sandbox or access user file paths. They are useful for rapid prototyping and for authors who want to focus on physics first.</p>
+<p>In practice, a very good beginner workflow is to build the vehicle with <code>builtinN</code> sounds first, tune the physics until it feels correct, and only then replace the sounds with custom files. This reduces the number of things you are debugging at the same time.</p>
+<p><code>crash</code> and <code>backfire</code> support comma-separated lists. All listed sounds are initialized when the vehicle loads, and the game randomizes among them at runtime when a crash or backfire event is played. This gives better variety without changing any physics behavior.</p>
+<p><a id="sec-3-6-validation-behavior-and-error-messages"></a></p>
+<h2 id="36-validation-behavior-and-error-messages">3.6 Validation Behavior and Error Messages</h2>
+<p>The custom vehicle parser is intentionally strict because earlier versions of the game allowed unrealistic and extreme values that made vehicles impossible to balance. The new parser validates both structure and value ranges.</p>
+<p>If a file has a mistake, the parser produces line-aware errors. For example, it can report that a key is unknown, that <code>gear_ratios</code> does not match <code>number_of_gears</code>, or that <code>max_speed</code> is outside the allowed range. This makes it much easier to fix configuration problems without guessing.</p>
+<p>\"Line-aware\" means the error points at the line where the problem was found, not just a generic failure message. This is especially helpful when a file is large or when a screen reader user wants to move directly to the problem area and correct one value at a time.</p>
+<p>The parser also validates cross-parameter relationships. For example, <code>rev_limiter</code> must be between <code>idle_rpm</code> and <code>max_rpm</code>, and <code>peak_torque_rpm</code> must be between <code>idle_rpm</code> and <code>rev_limiter</code>. <code>shift_freq</code> must stay between <code>idle_freq</code> and <code>top_freq</code>. <code>gear_ratios</code> must be non-increasing from gear 1 to the last gear.</p>
+<p>This is important because many configuration errors are not \"bad numbers\" by themselves. A value can look valid in isolation and still be invalid when compared to another value. For example, a <code>peak_torque_rpm</code> of <code>7000</code> is not wrong by itself, but it becomes wrong if the <code>rev_limiter</code> is <code>6500</code>.</p>
+<p>This strict behavior is not a restriction for its own sake. It exists to protect creators from invalid setups and to keep the game physics within reasonable, testable ranges.</p>
+<p><a id="sec-3-7-practical-tuning-workflow-for-beginners"></a></p>
+<h2 id="37-practical-tuning-workflow-for-beginners">3.7 Practical Tuning Workflow for Beginners</h2>
+<p>The easiest way to build a good custom vehicle is to start from a clear gameplay role. Decide whether the vehicle should be a slow beginner car, a balanced sedan, a fast but hard-to-turn supercar, a van, or a bike-like high-rev vehicle. This decision helps you avoid creating a vehicle that is accidentally strong at everything.</p>
+<p>Start by making the vehicle load and drive. Use built-in sounds if needed. Confirm it starts, moves, brakes, and shifts. After that, tune top speed and overall acceleration feel with <code>max_speed</code>, <code>power_factor</code>, mass, drag, and basic gearing. Then tune the torque curve for how it feels before and after shifts. After that, tune handling in three passes: <code>[steering]</code> for command and speed window, <code>[tire_model]</code> for grip budget and slip shape, and <code>[dynamics]</code> for transient rotation behavior. After the physics feels correct, use <code>[policy]</code> to improve automatic shifting.</p>
+<p>Always test manual and automatic modes separately. Manual testing tells you whether the powertrain can physically pull the gears. Automatic testing tells you whether the policy is making good choices.</p>
+<p>When something feels wrong, change one major parameter at a time. If you change power, torque, gears, drag, and steering at once, it becomes very hard to know which change actually solved the problem.</p>
+<p><a id="sec-4-parameter-reference-grouped-by-section"></a></p>
+<h2 id="4-parameter-reference-grouped-by-section">4. Parameter Reference (Grouped by Section)</h2>
+<p><a id="sec-4-1-meta-section"></a></p>
+<h2 id="41-meta-section">4.1 <code>[meta]</code> Section</h2>
+<p>The <code>[meta]</code> section describes the vehicle package for discovery and display. All three keys are required and must be non-empty text.</p>
+<h3 id="name"><code>name</code></h3>
+<p>This is the display name shown in the vehicle menu for the custom vehicle. Use a clear and human-friendly name because this is what players will hear through the menu system.</p>
+<p>There is no numeric range because this is text, but it must not be empty.</p>
+<h3 id="version"><code>version</code></h3>
+<p>This is the package version string. It is not currently shown in the vehicle menu item text, but it is stored and available for future display or tooling. It is useful for managing updates to your vehicle package.</p>
+<p>There is no numeric range because this is text, but it must not be empty.</p>
+<h3 id="description"><code>description</code></h3>
+<p>This is a longer text description of the vehicle package. It is not currently the menu label, but it is stored and is useful for documentation, future UI improvements, and collaboration.</p>
+<p>There is no numeric range because this is text, but it must not be empty.</p>
+<p><a id="sec-4-2-sounds-section"></a></p>
+<h2 id="42-sounds-section">4.2 <code>[sounds]</code> Section</h2>
+<p>This section controls vehicle audio assets and audio pitch behavior. It does not directly change acceleration, braking, or handling. However, good sound setup is important in Top Speed because the game is audio-heavy and relies on sound feedback for gameplay clarity.</p>
+<h3 id="engine"><code>engine</code></h3>
+<p>Main engine sound. This is required. The value may be a relative path inside the vehicle folder or a built-in reference such as <code>builtin6</code>.</p>
+<p>There is no numeric range because this is a sound reference. The path must resolve safely inside the vehicle folder unless it is a <code>builtinN</code> reference.</p>
+<p>This sound usually carries most of the vehicle identity for blind players, so it is worth choosing carefully. If the physics feels right but the vehicle still feels \"wrong\" in gameplay, the engine sound pitch behavior (<code>idle_freq</code>, <code>top_freq</code>, <code>shift_freq</code>) is often the missing part.</p>
+<h3 id="start"><code>start</code></h3>
+<p>Engine start sound. Required. Used when the vehicle is started.</p>
+<p>There is no numeric range because this is a sound reference. The same path safety rules apply as <code>engine</code>.</p>
+<h3 id="horn"><code>horn</code></h3>
+<p>Horn sound. Required. Used when the horn is triggered.</p>
+<p>There is no numeric range because this is a sound reference. The same path safety rules apply as <code>engine</code>.</p>
+<h3 id="throttle"><code>throttle</code></h3>
+<p>Optional additional throttle layer sound. This can be left empty. When present, it adds audio richness but does not change physics.</p>
+<p>There is no numeric range because this is a sound reference. If you provide a non-empty value, it must resolve successfully.</p>
+<p>This is often useful for vehicles that need a clearer sense of throttle application, turbo-like texture, or intake-style character. If your vehicle already sounds busy, leaving this empty is fine.</p>
+<h3 id="crash"><code>crash</code></h3>
+<p>Crash sound or crash sound list. This key is required. You may provide a single sound or a comma-separated list. If you provide multiple sounds, all are initialized and one is chosen randomly at runtime for each crash event.</p>
+<p>There is no numeric range because this is a sound reference or list of references. Each entry must be valid and must follow the same path safety rules. <code>builtinN</code> entries are allowed.</p>
+<h3 id="brake"><code>brake</code></h3>
+<p>Brake sound. Required. Used for brake feedback and related tire/braking audio cues.</p>
+<p>There is no numeric range because this is a sound reference. The same path safety rules apply as <code>engine</code>.</p>
+<h3 id="backfire"><code>backfire</code></h3>
+<p>Optional backfire sound or backfire sound list. If multiple entries are provided as a comma-separated list, the game randomizes among them when a backfire event is played.</p>
+<p>There is no numeric range because this is a sound reference or list of references. If you provide entries, each must resolve successfully and follow path safety rules.</p>
+<h3 id="idle_freq"><code>idle_freq</code></h3>
+<p>Low engine audio pitch frequency anchor. This affects how the engine sound is pitched in low-speed and idle-like conditions.</p>
+<p>Allowed range is 100 to 200000.</p>
+<p>It does not change physics, but it strongly changes how slow or relaxed the vehicle sounds. If this is set too high, the vehicle may sound unnaturally \"busy\" even when moving slowly. If it is set too low, the engine may sound dull or too deep.</p>
+<h3 id="top_freq"><code>top_freq</code></h3>
+<p>High engine audio pitch frequency anchor. This affects how the engine sound is pitched near the upper part of the RPM/speed range.</p>
+<p>Allowed range is 100 to 200000, and it must be greater than or equal to <code>idle_freq</code>.</p>
+<p>It does not change physics, but it strongly affects the perceived character of the engine. A very high <code>top_freq</code> can make a vehicle sound sharp, high-rev, or aggressive. A lower <code>top_freq</code> can make it sound heavier or less sporty.</p>
+<h3 id="shift_freq"><code>shift_freq</code></h3>
+<p>Intermediate audio frequency anchor used in engine pitch/shift-related sound behavior.</p>
+<p>Allowed range is 100 to 200000, and it must be between <code>idle_freq</code> and <code>top_freq</code>.</p>
+<p>It does not change acceleration or top speed, but poor values can make the vehicle sound inconsistent or unnatural. As a beginner rule, keep <code>shift_freq</code> somewhere between the other two values in a way that matches the vehicle character, then adjust by listening during real shifts.</p>
+<p><a id="sec-4-3-general-section"></a></p>
+<h2 id="43-general-section">4.3 <code>[general]</code> Section</h2>
+<p>The <code>[general]</code> section contains general gameplay-facing values that do not fit cleanly into the engine or handling groups.</p>
+<h3 id="surface_traction_factor"><code>surface_traction_factor</code></h3>
+<p>Baseline surface traction factor used by parts of the surface interaction logic.</p>
+<p>Allowed range is 0.0 to 5.0.</p>
+<p>This value is entered directly. Do not multiply by 100. For example, use <code>0.10</code>, not <code>10</code>.</p>
+<p>In the current physics model this is not usually the strongest tuning lever for everyday grip feel. For meaningful traction and handling changes, <code>tire_grip</code> and <code>lateral_grip</code> are usually more important.</p>
+<h3 id="deceleration"><code>deceleration</code></h3>
+<p>Baseline deceleration factor used by some surface-related behavior and legacy-style deceleration baselines.</p>
+<p>Allowed range is 0.0 to 5.0.</p>
+<p>This value is entered directly. Do not multiply by 100. For example, use <code>0.40</code>, not <code>40</code>.</p>
+<p>If you need to change braking feel, tune <code>brake_strength</code>. If you need to change lift-off slowing, tune <code>engine_braking</code> and <code>engine_braking_torque</code>.</p>
+<h3 id="max_speed"><code>max_speed</code></h3>
+<p>Forward speed cap in km/h for gameplay.</p>
+<p>Allowed range is 10 to 500.</p>
+<p>This is a hard cap. Even if the powertrain could continue accelerating, the vehicle speed is clamped. Because this cap interacts with automatic transmission policy, it is often paired with <code>top_speed_gear</code> and overdrive settings in <code>[policy]</code>.</p>
+<p>For beginners, this should be treated as a gameplay target, not a realism promise. A real vehicle may be capable of more speed, but you can intentionally set a lower <code>max_speed</code> to protect game balance while preserving the vehicle's identity through torque, gearing, sound, and handling.</p>
+<h3 id="has_wipers"><code>has_wipers</code></h3>
+<p>Boolean-like flag for wiper behavior and related weather audio behavior.</p>
+<p>This key is parsed as a boolean integer (<code>0</code> or <code>1</code>).</p>
+<p>There is no numeric tuning range beyond that. It does not affect physics.</p>
+<p>This is still worth setting correctly because weather audio feedback is important in an audio-based game. A road car or van will usually use <code>1</code>. Many bikes and open or non-wiper vehicles may use <code>0</code>.</p>
+<p><a id="sec-4-4-engine-section"></a></p>
+<h2 id="44-engine-section">4.4 <code>[engine]</code> Section</h2>
+<p>The <code>[engine]</code> section contains engine RPM limits, torque curve shape, engine braking, mass, resistance values used in acceleration calculations, and overall power scaling.</p>
+<h3 id="idle_rpm"><code>idle_rpm</code></h3>
+<p>Engine idle RPM baseline.</p>
+<p>Allowed range is 300 to 3000.</p>
+<p>This value affects the low end of the RPM range, torque curve calculations, and how RPM-based policy fractions convert into absolute RPM. Raising it changes the meaning of some policy thresholds and can change low-speed feel.</p>
+<h3 id="max_rpm"><code>max_rpm</code></h3>
+<p>Maximum RPM ceiling used by the engine model for RPM handling and reporting.</p>
+<p>Allowed range is 1000 to 20000, and it must be greater than or equal to <code>idle_rpm</code>.</p>
+<p>This is not the same as <code>rev_limiter</code>. <code>max_rpm</code> is the overall ceiling, while <code>rev_limiter</code> is the main usable limit for power and shifting behavior.</p>
+<h3 id="rev_limiter"><code>rev_limiter</code></h3>
+<p>Usable upper RPM limit for engine power and gear pulling.</p>
+<p>Allowed range is 800 to 18000, and it must be between <code>idle_rpm</code> and <code>max_rpm</code>.</p>
+<p>Lower values shorten each gear and can make high gears easier to reach but may reduce flexibility. Higher values extend each gear, but only help if the torque curve stays strong at high RPM.</p>
+<h3 id="auto_shift_rpm"><code>auto_shift_rpm</code></h3>
+<p>Preferred automatic shift RPM anchor.</p>
+<p>Allowed range is 0 to 18000. It must be <code>0</code> or between <code>idle_rpm</code> and <code>rev_limiter</code>.</p>
+<p>A value of <code>0</code> means policy/default logic derives behavior from other values. A real value gives a direct automatic shift target and is also used when policy derives defaults.</p>
+<h3 id="engine_braking"><code>engine_braking</code></h3>
+<p>Engine braking strength multiplier.</p>
+<p>Allowed range is 0.0 to 1.5.</p>
+<p>This affects lift-off deceleration, not active brake-button stopping. Too high can make the vehicle feel like it drags unnaturally when the player releases throttle.</p>
+<h3 id="mass_kg"><code>mass_kg</code></h3>
+<p>Vehicle mass in kilograms.</p>
+<p>Allowed range is 20 to 10000.</p>
+<p>Higher mass reduces acceleration for the same net force and usually makes the vehicle feel calmer but heavier. Lower mass increases responsiveness and acceleration. Mass also influences some handling feel indirectly.</p>
+<h3 id="drivetrain_efficiency"><code>drivetrain_efficiency</code></h3>
+<p>Drivetrain efficiency multiplier representing power loss through the drivetrain.</p>
+<p>Allowed range is 0.1 to 1.0.</p>
+<p>Higher values send more torque to the wheels. Lower values reduce acceleration and engine braking transfer. This is useful but usually not the first tuning lever for gameplay balance.</p>
+<h3 id="engine_braking_torque"><code>engine_braking_torque</code></h3>
+<p>Base engine braking torque in Newton-meters.</p>
+<p>Allowed range is 0 to 3000.</p>
+<p>This works together with <code>engine_braking</code> to determine lift-off slowing. If off-throttle slowing is wrong, tune these two together.</p>
+<h3 id="peak_torque"><code>peak_torque</code></h3>
+<p>Peak engine torque in Newton-meters.</p>
+<p>Allowed range is 10 to 3000.</p>
+<p>This is one of the main acceleration parameters. Larger values usually increase acceleration across much of the speed range, especially where the engine spends time near <code>peak_torque_rpm</code>.</p>
+<h3 id="peak_torque_rpm"><code>peak_torque_rpm</code></h3>
+<p>RPM where peak torque occurs.</p>
+<p>Allowed range is 500 to 18000, and it must be between <code>idle_rpm</code> and <code>rev_limiter</code>.</p>
+<p>Lower values improve midrange and recovery after upshifts. Higher values create a more high-rev character and can make tall gears harder to pull if shifts land too low.</p>
+<h3 id="idle_torque"><code>idle_torque</code></h3>
+<p>Torque near idle RPM.</p>
+<p>Allowed range is 0 to 3000.</p>
+<p>Higher values improve launch and low-RPM response. Too high can make the vehicle unrealistically strong in tall gears at low RPM.</p>
+<h3 id="redline_torque"><code>redline_torque</code></h3>
+<p>Torque near the rev limiter.</p>
+<p>Allowed range is 0 to 3000.</p>
+<p>This is one of the best targeted controls for high-gear pull. Lower it to calm upper-gear acceleration without heavily affecting low-speed launch. Raise it to let the engine continue pulling harder at high RPM.</p>
+<h3 id="drag_coefficient"><code>drag_coefficient</code></h3>
+<p>Aerodynamic drag coefficient used in the drag force calculation.</p>
+<p>Allowed range is 0.01 to 1.5.</p>
+<p>Lower values improve high-speed pull and top-speed reach. Higher values reduce high-speed acceleration and can be used to balance fast vehicles while keeping low-speed behavior more intact than a large torque reduction would.</p>
+<h3 id="frontal_area"><code>frontal_area</code></h3>
+<p>Frontal area in square meters used in the drag calculation.</p>
+<p>Allowed range is 0.05 to 10.0.</p>
+<p>This works together with <code>drag_coefficient</code>. Larger values increase aerodynamic drag, especially at higher speeds.</p>
+<h3 id="rolling_resistance"><code>rolling_resistance</code></h3>
+<p>Rolling resistance coefficient.</p>
+<p>Allowed range is 0.001 to 0.1.</p>
+<p>This affects resistance across the speed range and is especially noticeable at low and medium speed. If a vehicle feels weak everywhere, inspect this along with mass and power settings.</p>
+<p>For road vehicles, realistic values are usually much lower than the top end of the allowed range. In practice, many normal road-vehicle tunes will sit roughly in the low hundredths. The <code>0.1</code> maximum is an intentionally generous upper limit for gameplay safety and experimentation, not a recommended target for normal cars or motorcycles.</p>
+<p>A useful beginner test is coasting behavior. If the vehicle loses speed too quickly even when the engine and brakes are not the main issue, <code>rolling_resistance</code> may be too high. If the vehicle seems to glide too easily and never feels like it settles, it may be too low.</p>
+<h3 id="launch_rpm"><code>launch_rpm</code></h3>
+<p>Launch RPM assist floor under throttle at low speed.</p>
+<p>Allowed range is 0 to 18000, and it must not exceed <code>rev_limiter</code>.</p>
+<p>Higher values can make launch feel stronger and reduce bogging. Lower values can calm launches.</p>
+<h3 id="power_factor"><code>power_factor</code></h3>
+<p>Global power scaling multiplier for throttle-driven acceleration calculations.</p>
+<p>Allowed range is 0.05 to 2.0.</p>
+<p>This is one of the best gameplay-balance controls in the entire format. It lets you adjust acceleration without fully rebuilding the torque curve. If a vehicle is too dominant, lowering <code>power_factor</code> is often the cleanest first step.</p>
+<p><a id="sec-4-5-drivetrain-section"></a></p>
+<h2 id="45-drivetrain-section">4.5 <code>[drivetrain]</code> Section</h2>
+<p>The <code>[drivetrain]</code> section contains gearing and braking controls that are not part of the engine torque curve itself.</p>
+<h3 id="final_drive"><code>final_drive</code></h3>
+<p>Final drive ratio applied to all forward gears.</p>
+<p>Allowed range is 0.3 to 8.0.</p>
+<p>This is one of the strongest tuning controls because it changes effective gearing in every forward gear. Increasing it makes all gears shorter and usually improves pull. Decreasing it makes all gears taller and can reduce acceleration or make upper gears harder to use.</p>
+<p>Because it affects every gear, <code>final_drive</code> is often the fastest way to move a vehicle in the right direction, but it can also create side effects very quickly. A change that fixes weak 7th gear might make 1st and 2nd gear too aggressive. A change that calms launch might make top-speed gears impossible to pull.</p>
+<p>For beginners, a good rule is to use <code>final_drive</code> for broad changes and <code>gear_ratios</code> for fine shaping. If the whole vehicle feels too short or too tall, change <code>final_drive</code>. If only one or two gears feel wrong, adjust the gear ratio list.</p>
+<h3 id="reverse_max_speed"><code>reverse_max_speed</code></h3>
+<p>Maximum reverse speed in km/h.</p>
+<p>Allowed range is 1 to 100.</p>
+<p>The game clamps reverse speed separately from forward speed. This gives you direct control over how fast the vehicle can back up.</p>
+<h3 id="reverse_power_factor"><code>reverse_power_factor</code></h3>
+<p>Reverse acceleration scaling multiplier.</p>
+<p>Allowed range is 0.05 to 2.0.</p>
+<p>This is a gameplay tuning value. Most vehicles should use a lower reverse power value than forward power to keep reverse behavior controllable.</p>
+<h3 id="reverse_gear_ratio"><code>reverse_gear_ratio</code></h3>
+<p>Reverse gear ratio.</p>
+<p>Allowed range is 0.5 to 8.0.</p>
+<p>This affects reverse RPM and reverse torque multiplication together with <code>final_drive</code> and <code>reverse_power_factor</code>.</p>
+<h3 id="brake_strength"><code>brake_strength</code></h3>
+<p>Active braking strength multiplier used when the brake input is pressed.</p>
+<p>Allowed range is 0.1 to 5.0.</p>
+<p>This works with grip and surface behavior. If brake input feels weak, increase this. If braking is too harsh or difficult to control, reduce it.</p>
+<p><a id="sec-4-6-gears-section"></a></p>
+<h2 id="46-gears-section">4.6 <code>[gears]</code> Section</h2>
+<p>This section defines the number of forward gears and the exact gear ratio list. Both keys are required.</p>
+<h3 id="number_of_gears"><code>number_of_gears</code></h3>
+<p>Number of forward gears.</p>
+<p>Allowed range is 1 to 10.</p>
+<p>This value must match the number of entries in <code>gear_ratios</code>. The parser hard-fails if they do not match.</p>
+<h3 id="gear_ratios"><code>gear_ratios</code></h3>
+<p>Comma-separated list of forward gear ratios, one value per gear from 1st to last.</p>
+<p>This key is required. There is no fallback or auto-generation in the custom vehicle format.</p>
+<p>Each individual ratio must be between 0.20 and 8.00. The list must be non-increasing, which means each later gear must be the same or lower ratio than the previous one.</p>
+<p>Higher values make shorter gears with stronger torque multiplication. Lower values make taller gears with less pull and lower RPM at the same speed. Gear ratios always interact with <code>final_drive</code>, so tune them together.</p>
+<p>For beginner tuning, think of the gear list as the shape of the acceleration experience. Early gears control launch and low-speed response. Middle gears control the most common acceleration feel during normal driving and racing. Late gears control high-speed pull and overdrive behavior.</p>
+<p>If an upshift causes the engine to drop into a weak RPM zone, the next gear may be too tall, the previous gear may be too short, the final drive may be too low, or the torque curve may not support that RPM. The fix is not always \"change that one ratio only.\" Always test the effect on the gears before and after it.</p>
+<p><a id="sec-4-7-steering-section"></a></p>
+<h2 id="47-steering-section">4.7 <code>[steering]</code> Section</h2>
+<p>The <code>[steering]</code> section controls steering command generation and speed-window behavior before tire-force and yaw dynamics are applied.</p>
+<h3 id="steering_response"><code>steering_response</code></h3>
+<p>Steering strength multiplier.</p>
+<p>Allowed range is 0.1 to 5.0.</p>
+<p>This is one of the main first-pass handling controls. Raising it increases steering authority in the full speed range. Lowering it makes steering calmer and less immediate.</p>
+<p>If steering feels weak at low and medium speed, this is usually the first value to increase. If steering feels nervous at all speeds, reduce this before touching advanced parameters.</p>
+<h3 id="high_speed_stability"><code>high_speed_stability</code></h3>
+<p>High-speed stability damping factor for lateral response.</p>
+<p>Allowed range is 0.0 to 1.0.</p>
+<p>Higher values calm the vehicle at speed and reduce twitchiness, especially when combined with high grip and short wheelbase setups. Too high can make the vehicle feel reluctant to rotate in fast corners.</p>
+<p>This value should not be used as a complete substitute for proper grip and dynamics tuning. It is best used as a speed-domain stabilizer, not as a universal "fix steering" knob.</p>
+<h3 id="high_speed_steer_gain"><code>high_speed_steer_gain</code></h3>
+<p>Steering gain multiplier blended in at high speed.</p>
+<p>Allowed range is 0.7 to 1.6.</p>
+<p>Values above <code>1.0</code> increase steering command at high speed and can make performance cars feel more alive at 160 to 240 km/h. Values below <code>1.0</code> reduce high-speed steering authority and are useful for heavy or unstable classes.</p>
+<p>This value is intentionally powerful. If high-speed steering is too aggressive, reduce this first before reducing <code>max_steer_deg</code>.</p>
+<h3 id="high_speed_steer_start_kph"><code>high_speed_steer_start_kph</code></h3>
+<p>Speed where high-speed steering gain starts blending in.</p>
+<p>Allowed range is 60 to 260.</p>
+<p>Below this speed, high-speed steer gain is not applied. Lower start values make the high-speed gain influence normal driving sooner.</p>
+<h3 id="high_speed_steer_full_kph"><code>high_speed_steer_full_kph</code></h3>
+<p>Speed where high-speed steering gain is fully applied.</p>
+<p>Allowed range is 100 to 350, and must be greater than <code>high_speed_steer_start_kph</code>.</p>
+<p>Between start and full speed, the game blends smoothly from base steering to high-speed steering gain. A narrow window creates faster transition. A wide window creates a more gradual transition.</p>
+<h3 id="wheelbase"><code>wheelbase</code></h3>
+<p>Wheelbase in meters.</p>
+<p>Allowed range is 0.3 to 8.0.</p>
+<p>Shorter wheelbase usually feels more responsive and more willing to rotate. Longer wheelbase usually feels calmer and less agile. It interacts strongly with <code>steering_response</code>, <code>max_steer_deg</code>, and corner stiffness balance.</p>
+<p>For beginners, wheelbase is easy to misunderstand because it does not feel like a direct \"more turning\" or \"less turning\" knob. Instead, it changes how strongly the same steering angle bends the vehicle path. That means it changes the character of steering, not only the amount.</p>
+<h3 id="max_steer_deg"><code>max_steer_deg</code></h3>
+<p>Maximum steering angle in degrees.</p>
+<p>Allowed range is 5 to 60.</p>
+<p>This is one of the most direct handling controls. Lower values are useful for limiting the agility of high-speed vehicles. Higher values improve maneuverability but can make the vehicle unstable if grip and stability are too high.</p>
+<p><a id="sec-4-8-tire-model-section"></a></p>
+<h2 id="48-tire_model-section">4.8 <code>[tire_model]</code> Section</h2>
+<p>The <code>[tire_model]</code> section controls grip budget sharing, slip-angle shape, and mass/aero influence. These values define steady-state cornering behavior and how much traction remains while turning.</p>
+<h3 id="tire_grip"><code>tire_grip</code></h3>
+<p>Base tire grip coefficient for traction and braking, with influence on overall grip behavior.</p>
+<p>Allowed range is 0.1 to 3.0.</p>
+<p>This primarily affects acceleration traction and braking authority, but it also contributes to total grip behavior under combined load. If vehicles spin wheels too easily or feel weak under braking, this is a primary parameter.</p>
+<h3 id="lateral_grip"><code>lateral_grip</code></h3>
+<p>Additional lateral grip tuning for turning behavior.</p>
+<p>Allowed range is 0.1 to 3.0.</p>
+<p>This is the main cornering-grip scalar. Raise for stronger corner hold, lower for more drift/slip character. If turning feels too weak while traction feels fine, tune this before torque values.</p>
+<h3 id="combined_grip_penalty"><code>combined_grip_penalty</code></h3>
+<p>How strongly lateral demand reduces available longitudinal traction.</p>
+<p>Allowed range is 0.0 to 1.0.</p>
+<p>Higher values create stronger trade-off between turning and acceleration/braking. Lower values allow stronger acceleration while cornering. This is a core realism-versus-arcade balance control.</p>
+<h3 id="slip_angle_peak_deg"><code>slip_angle_peak_deg</code></h3>
+<p>Slip-angle peak reference in degrees for the simplified tire response.</p>
+<p>Allowed range is 0.5 to 20.0.</p>
+<p>Lower values reach the peak earlier and can feel sharp but unforgiving. Higher values make slip build more gradually and can feel easier to control.</p>
+<h3 id="slip_angle_falloff"><code>slip_angle_falloff</code></h3>
+<p>Falloff scale after the peak slip angle.</p>
+<p>Allowed range is 0.01 to 5.0.</p>
+<p>Higher falloff values drop force faster after the peak, which increases punishment for over-driving steering input. Lower values keep more force after peak and feel more forgiving.</p>
+<h3 id="turn_response"><code>turn_response</code></h3>
+<p>Lateral response-time scaling.</p>
+<p>Allowed range is 0.2 to 2.5.</p>
+<p>This scales how quickly lateral output follows the steering/lateral state. Low values can feel delayed or heavy. High values feel immediate but may become twitchy if damping is too low.</p>
+<h3 id="mass_sensitivity"><code>mass_sensitivity</code></h3>
+<p>How much vehicle mass influences turn agility.</p>
+<p>Allowed range is 0.0 to 1.0.</p>
+<p>At higher values, heavy vehicles lose agility more clearly while light vehicles preserve responsiveness. At lower values, classes feel closer together regardless of mass.</p>
+<h3 id="downforce_grip_gain"><code>downforce_grip_gain</code></h3>
+<p>Speed-dependent grip gain factor.</p>
+<p>Allowed range is 0.0 to 1.0.</p>
+<p>Higher values add more grip as speed increases. This is useful for high-performance classes but can make high-speed behavior too dominant if combined with high <code>high_speed_steer_gain</code>.</p>
+<p>If high-speed cornering is too strong, reduce this or reduce high-speed steering gain before reducing low-speed steering values.</p>
+<p><a id="sec-4-9-dynamics-section"></a></p>
+<h2 id="49-dynamics-section">4.9 <code>[dynamics]</code> Section</h2>
+<p>The <code>[dynamics]</code> section controls transient behavior: how quickly yaw builds, how steering input is shaped, and how front/rear axle authority is balanced. These values are required.</p>
+<h3 id="corner_stiffness_front"><code>corner_stiffness_front</code></h3>
+<p>Front axle cornering stiffness scale.</p>
+<p>Allowed range is 0.2 to 3.0.</p>
+<p>Higher values increase front lateral force build-up and can improve turn-in authority. Too high can create front-end bite that feels abrupt.</p>
+<p>Relative balance matters more than absolute value. Front greater than rear generally favors stable turn-in with mild understeer tendency at the limit.</p>
+<h3 id="corner_stiffness_rear"><code>corner_stiffness_rear</code></h3>
+<p>Rear axle cornering stiffness scale.</p>
+<p>Allowed range is 0.2 to 3.0.</p>
+<p>Higher values increase rear lateral authority and can help rotation. Too high relative to front can create oversteer-like rotation that is hard to recover.</p>
+<p>For safe baseline tuning, keep rear slightly below front. For more rotation-oriented setups, narrow the gap carefully.</p>
+<h3 id="yaw_inertia_scale"><code>yaw_inertia_scale</code></h3>
+<p>Yaw inertia multiplier applied to rotational response.</p>
+<p>Allowed range is 0.5 to 2.0.</p>
+<p>Higher values make yaw build and change more slowly, which feels heavier and more stable. Lower values make yaw change faster, which feels agile but can become nervous.</p>
+<p>This parameter is especially important for class identity. Bikes and lightweight vehicles usually need lower values than heavy trucks and buses.</p>
+<h3 id="steering_curve"><code>steering_curve</code></h3>
+<p>Input shaping exponent for steering command.</p>
+<p>Allowed range is 0.5 to 2.0.</p>
+<p>Values below <code>1.0</code> make early input stronger and feel more aggressive around small steering taps. Values above <code>1.0</code> make early input softer and reserve more authority for larger inputs.</p>
+<p>If players report that light taps cause too much response, increase this value slightly. If small taps feel dead, reduce this value slightly.</p>
+<h3 id="transient_damping"><code>transient_damping</code></h3>
+<p>Damping factor for lateral/yaw transients.</p>
+<p>Allowed range is 0.0 to 6.0.</p>
+<p>Higher values suppress oscillation and reduce overshoot after steering changes. Lower values allow freer response and stronger immediate rotation.</p>
+<p>If vehicles keep rotating after steering release, increase this value. If vehicles feel slow to rotate or "stuck," reduce it carefully and retest with <code>turn_response</code>.</p>
+<p><a id="sec-4-10-dimensions-section"></a></p>
+<h2 id="410-dimensions-section">4.10 <code>[dimensions]</code> Section</h2>
+<p>The <code>[dimensions]</code> section defines physical size values used for spatial behavior and representation.</p>
+<h3 id="vehicle_width"><code>vehicle_width</code></h3>
+<p>Vehicle width in meters.</p>
+<p>Allowed range is 0.2 to 5.0.</p>
+<p>This affects spatial/audio placement and vehicle size behavior, not engine power or top speed directly.</p>
+<p>Even though it is not a power parameter, it still matters for how the vehicle feels in an audio game. Width contributes to spatial presence and how wide the vehicle seems relative to lanes and nearby traffic or objects.</p>
+<h3 id="vehicle_length"><code>vehicle_length</code></h3>
+<p>Vehicle length in meters.</p>
+<p>Allowed range is 0.3 to 20.0.</p>
+<p>This also affects spatial representation and presence rather than direct acceleration physics.</p>
+<p>For beginners, this should generally reflect the actual body length of the vehicle type you are creating, even if you are not trying to be perfectly realistic. A value that is far too short or far too long can make the vehicle feel spatially \"wrong\" even when the engine and handling are tuned well.</p>
+<p><a id="sec-4-11-tires-section"></a></p>
+<h2 id="411-tires-section">4.11 <code>[tires]</code> Section</h2>
+<p>The <code>[tires]</code> section defines tire circumference directly or provides the size triplet needed to calculate it.</p>
+<p>You must provide either a valid <code>tire_circumference</code> or all three of <code>tire_width</code>, <code>tire_aspect</code>, and <code>tire_rim</code>. The parser hard-fails if neither form is complete and valid.</p>
+<h3 id="tire_circumference"><code>tire_circumference</code></h3>
+<p>Tire circumference in meters.</p>
+<p>If provided and greater than zero, it is used directly. Allowed range is 0.2 to 5.0 meters.</p>
+<p>This value affects the speed-to-RPM relationship. Incorrect tire circumference can make gearing and RPM behavior feel wrong even when other parameters are correct.</p>
+<p>This is one of the easiest hidden causes of confusing tuning problems. If tire circumference is too small, the engine RPM will appear higher than expected at a given speed, which can make gears seem shorter than they really are. If it is too large, RPM may seem too low and gears may feel too tall.</p>
+<h3 id="tire_width"><code>tire_width</code></h3>
+<p>Tire width in millimeters used for circumference calculation when direct circumference is not provided.</p>
+<p>Allowed range is 20 to 450.</p>
+<p>This value is only used when circumference is being calculated from tire size. It does not act as a direct grip parameter in the current custom format. Use <code>tire_grip</code> and <code>lateral_grip</code> for actual handling tuning.</p>
+<h3 id="tire_aspect"><code>tire_aspect</code></h3>
+<p>Tire aspect ratio (sidewall height percentage of tire width) used for circumference calculation fallback.</p>
+<p>Allowed range is 5 to 150.</p>
+<p>This is also used only for circumference calculation fallback, not as a direct handling-physics grip knob.</p>
+<h3 id="tire_rim"><code>tire_rim</code></h3>
+<p>Rim diameter in inches used for circumference calculation fallback.</p>
+<p>Allowed range is 4 to 30.</p>
+<p>This is also used only for circumference calculation fallback. If you already know tire circumference, providing <code>tire_circumference</code> directly is usually simpler and reduces mistakes.</p>
+<p>If you provide the size triplet, the game calculates tire circumference automatically after validation.</p>
+<p><a id="sec-4-12-policy-section"></a></p>
+<h2 id="412-policy-section-optional-automatic-transmission-only">4.12 <code>[policy]</code> Section (Optional, Automatic Transmission Only)</h2>
+<p>The <code>[policy]</code> section controls automatic shifting behavior. It does not change engine power, grip, or drag directly. Policy should be used after the vehicle can physically pull the gears you intend it to use.</p>
+<p>The parser accepts normal policy keys and also wildcard delay keys such as <code>upshift_delay_6_7</code> and <code>upshift_delay_g6</code>.</p>
+<h3 id="top_speed_gear"><code>top_speed_gear</code></h3>
+<p>Intended forward gear for reaching the game-world top speed.</p>
+<p>Allowed range is 1 to <code>number_of_gears</code>.</p>
+<p>This is especially important for 7-speed and 8-speed vehicles with overdrive gears. It tells automatic mode which gear should usually be treated as the main top-speed gear.</p>
+<p>For example, an 8-speed vehicle may be designed to reach the game top speed in 6th gear, while 7th and 8th are calmer cruising or overdrive gears. Declaring that intention in policy helps automatic mode avoid entering those higher gears too early.</p>
+<h3 id="allow_overdrive_above_game_top_speed"><code>allow_overdrive_above_game_top_speed</code></h3>
+<p>Boolean policy flag for allowing gears above <code>top_speed_gear</code> near or above the top-speed region.</p>
+<p>This key has no numeric range because it is boolean. Use <code>true</code> or <code>false</code>.</p>
+<p>If <code>true</code>, automatic mode can use higher gears as overdrives when appropriate. If <code>false</code>, it avoids them while pursuing top speed.</p>
+<p>This setting does not make the overdrive gear physically usable by itself. It only changes whether automatic mode is allowed to choose it. If overdrive gears still feel dead in manual mode, fix torque, drag, or gearing first.</p>
+<h3 id="base_auto_shift_cooldown"><code>base_auto_shift_cooldown</code></h3>
+<p>Base automatic shift cooldown in seconds.</p>
+<p>Allowed range is 0.0 to 2.0.</p>
+<p>Higher values make automatic mode calmer and less likely to shift rapidly. Too high can make the transmission feel lazy.</p>
+<p>This is a good first control for automatic behavior because it improves stability without changing the underlying powertrain. If the automatic mode feels nervous or chatters between gears, try a small increase here before changing several other policy values.</p>
+<h3 id="upshift_delay_default"><code>upshift_delay_default</code></h3>
+<p>Default automatic upshift delay in seconds.</p>
+<p>Allowed range is 0.0 to 2.0.</p>
+<p>This is a useful way to make upshifts slower in general before adding special delays for high gears.</p>
+<h3 id="upshift_delay_x_y"><code>upshift_delay_X_Y</code></h3>
+<p>Per-transition upshift delay in seconds for a specific adjacent upshift.</p>
+<p>Allowed range is 0.0 to 2.0.</p>
+<p>Use keys such as <code>upshift_delay_5_6=0.18</code> or <code>upshift_delay_6_7=0.24</code>. This is the best way to make high-gear upshifts slower without affecting lower gears.</p>
+<h3 id="upshift_delay_gx"><code>upshift_delay_gX</code></h3>
+<p>Per-source-gear shorthand upshift delay in seconds.</p>
+<p>Allowed range is 0.0 to 2.0.</p>
+<p>For example, <code>upshift_delay_g6=0.24</code> applies to upshifts out of 6th gear. Explicit transition keys are more specific and should be preferred when you need exact behavior.</p>
+<h3 id="auto_upshift_rpm_fraction"><code>auto_upshift_rpm_fraction</code></h3>
+<p>Automatic upshift threshold as a fraction of the RPM span from idle to rev limiter.</p>
+<p>Allowed range is 0.05 to 1.0.</p>
+<p>This is convenient because it stays meaningful even if you later retune <code>idle_rpm</code> or <code>rev_limiter</code>.</p>
+<h3 id="auto_upshift_rpm"><code>auto_upshift_rpm</code></h3>
+<p>Automatic upshift threshold in absolute RPM.</p>
+<p>Allowed range is 0 to the vehicle RPM limits used by validation. In practice it must be <code>0</code> or between <code>idle_rpm</code> and <code>rev_limiter</code>.</p>
+<p>This overrides the fraction-style threshold when present.</p>
+<h3 id="auto_downshift_rpm_fraction"><code>auto_downshift_rpm_fraction</code></h3>
+<p>Automatic downshift threshold as a fraction of the RPM span from idle to rev limiter.</p>
+<p>Allowed range is 0.05 to 0.95.</p>
+<p>Higher values make the transmission more eager to downshift. Lower values make it hold higher gears longer.</p>
+<h3 id="auto_downshift_rpm"><code>auto_downshift_rpm</code></h3>
+<p>Automatic downshift threshold in absolute RPM.</p>
+<p>Allowed range is 0 or a valid RPM between <code>idle_rpm</code> and <code>rev_limiter</code>.</p>
+<p>This overrides the fraction-style downshift threshold when present.</p>
+<h3 id="top_speed_pursuit_speed_fraction"><code>top_speed_pursuit_speed_fraction</code></h3>
+<p>Threshold for when the automatic logic considers the vehicle near the top-speed region, expressed as a fraction of game <code>max_speed</code>.</p>
+<p>Allowed range is 0.50 to 1.20.</p>
+<p>Values below <code>1.0</code> let the policy begin top-speed behavior before the vehicle reaches the cap. This is useful for stable high-gear behavior near terminal speed.</p>
+<h3 id="upshift_hysteresis"><code>upshift_hysteresis</code></h3>
+<p>Extra hysteresis for automatic upshift decisions.</p>
+<p>Allowed range is 0.0 to 2.0.</p>
+<p>Higher values reduce gear hunting but can delay good shifts. Lower values make shifting more responsive but can increase oscillation.</p>
+<h3 id="min_upshift_net_accel_mps2"><code>min_upshift_net_accel_mps2</code></h3>
+<p>Minimum acceptable net acceleration in the next gear before an upshift is allowed, unless top-speed pursuit logic decides otherwise.</p>
+<p>Allowed range is -20.0 to 20.0.</p>
+<p>This is an important anti-stall protection for high gears. It helps prevent automatic mode from shifting into a gear that would immediately decelerate or feel dead.</p>
+<p>For beginners, the exact unit (<code>m/s²</code>) is less important than the effect: it is a \"do not upshift if the next gear is too weak\" rule. If automatic mode enters high gears too early and the vehicle falls flat, this parameter is one of the most useful policy controls to review.</p>
+<h3 id="prefer_intended_top_speed_gear_near_limit"><code>prefer_intended_top_speed_gear_near_limit</code></h3>
+<p>Boolean policy flag for preferring the intended top-speed gear near the speed limit region.</p>
+<p>This key has no numeric range because it is boolean. Use <code>true</code> or <code>false</code>.</p>
+<p>When enabled, automatic mode tries to stay in or below the intended top-speed gear until it is appropriate to use overdrives.</p>
+<p><a id="sec-5-class-baseline-presets"></a></p>
+<h2 id="5-class-baseline-presets-steering-tire-model-dynamics">5. Class Baseline Presets (Steering, Tire Model, Dynamics)</h2>
+<p>This section provides practical starting presets by class for the modern handling model. These are not hard rules. They are baseline values that should produce a stable first drive and then be refined for each specific vehicle.</p>
+<p>The values below intentionally use only <code>[steering]</code>, <code>[tire_model]</code>, and <code>[dynamics]</code> fields.</p>
+<p>Recommended classes in this guide:</p>
+<ul>
+<li>Sports Car: fast, responsive, strong high-speed steering authority.</li>
+<li>Sedan/Hatchback: balanced daily-driver behavior.</li>
+<li>SUV/Truck/Van: heavier and calmer directional behavior.</li>
+<li>Motorcycle: agile but less forgiving, especially at speed.</li>
+</ul>
+<h3 id="steering-baselines-steering">Steering Baselines (<code>[steering]</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th style="text-align: right;">steering_response</th>
+<th style="text-align: right;">high_speed_stability</th>
+<th style="text-align: right;">high_speed_steer_gain</th>
+<th style="text-align: right;">high_speed_steer_start_kph</th>
+<th style="text-align: right;">high_speed_steer_full_kph</th>
+<th style="text-align: right;">wheelbase</th>
+<th style="text-align: right;">max_steer_deg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sports Car</td>
+<td style="text-align: right;">1.45 to 1.90</td>
+<td style="text-align: right;">0.10 to 0.20</td>
+<td style="text-align: right;">1.03 to 1.12</td>
+<td style="text-align: right;">145 to 165</td>
+<td style="text-align: right;">235 to 260</td>
+<td style="text-align: right;">2.50 to 2.90</td>
+<td style="text-align: right;">30 to 35</td>
+</tr>
+<tr>
+<td>Sedan/Hatchback</td>
+<td style="text-align: right;">1.20 to 1.60</td>
+<td style="text-align: right;">0.14 to 0.24</td>
+<td style="text-align: right;">0.96 to 1.05</td>
+<td style="text-align: right;">125 to 150</td>
+<td style="text-align: right;">210 to 240</td>
+<td style="text-align: right;">2.55 to 2.95</td>
+<td style="text-align: right;">30 to 36</td>
+</tr>
+<tr>
+<td>SUV/Truck/Van</td>
+<td style="text-align: right;">0.95 to 1.35</td>
+<td style="text-align: right;">0.24 to 0.40</td>
+<td style="text-align: right;">0.88 to 0.98</td>
+<td style="text-align: right;">85 to 120</td>
+<td style="text-align: right;">150 to 200</td>
+<td style="text-align: right;">2.80 to 3.50</td>
+<td style="text-align: right;">28 to 36</td>
+</tr>
+<tr>
+<td>Motorcycle</td>
+<td style="text-align: right;">1.10 to 1.60</td>
+<td style="text-align: right;">0.28 to 0.38</td>
+<td style="text-align: right;">1.12 to 1.32</td>
+<td style="text-align: right;">140 to 160</td>
+<td style="text-align: right;">225 to 245</td>
+<td style="text-align: right;">1.35 to 1.55</td>
+<td style="text-align: right;">34 to 42</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tire-model-baselines-tire_model">Tire Model Baselines (<code>[tire_model]</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th style="text-align: right;">tire_grip</th>
+<th style="text-align: right;">lateral_grip</th>
+<th style="text-align: right;">combined_grip_penalty</th>
+<th style="text-align: right;">slip_angle_peak_deg</th>
+<th style="text-align: right;">slip_angle_falloff</th>
+<th style="text-align: right;">turn_response</th>
+<th style="text-align: right;">mass_sensitivity</th>
+<th style="text-align: right;">downforce_grip_gain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sports Car</td>
+<td style="text-align: right;">0.95 to 1.15</td>
+<td style="text-align: right;">0.98 to 1.12</td>
+<td style="text-align: right;">0.64 to 0.72</td>
+<td style="text-align: right;">7.5 to 8.8</td>
+<td style="text-align: right;">1.12 to 1.28</td>
+<td style="text-align: right;">0.95 to 1.15</td>
+<td style="text-align: right;">0.60 to 0.75</td>
+<td style="text-align: right;">0.06 to 0.12</td>
+</tr>
+<tr>
+<td>Sedan/Hatchback</td>
+<td style="text-align: right;">0.88 to 1.02</td>
+<td style="text-align: right;">0.92 to 1.02</td>
+<td style="text-align: right;">0.66 to 0.74</td>
+<td style="text-align: right;">8.3 to 9.6</td>
+<td style="text-align: right;">1.22 to 1.40</td>
+<td style="text-align: right;">0.90 to 1.08</td>
+<td style="text-align: right;">0.68 to 0.82</td>
+<td style="text-align: right;">0.03 to 0.08</td>
+</tr>
+<tr>
+<td>SUV/Truck/Van</td>
+<td style="text-align: right;">0.75 to 0.92</td>
+<td style="text-align: right;">0.78 to 0.92</td>
+<td style="text-align: right;">0.50 to 0.65</td>
+<td style="text-align: right;">9.5 to 11.5</td>
+<td style="text-align: right;">1.40 to 1.70</td>
+<td style="text-align: right;">0.80 to 0.98</td>
+<td style="text-align: right;">0.80 to 0.95</td>
+<td style="text-align: right;">0.00 to 0.05</td>
+</tr>
+<tr>
+<td>Motorcycle</td>
+<td style="text-align: right;">1.04 to 1.20</td>
+<td style="text-align: right;">0.76 to 0.90</td>
+<td style="text-align: right;">0.74 to 0.84</td>
+<td style="text-align: right;">6.0 to 7.2</td>
+<td style="text-align: right;">0.90 to 1.08</td>
+<td style="text-align: right;">1.05 to 1.28</td>
+<td style="text-align: right;">0.40 to 0.62</td>
+<td style="text-align: right;">0.05 to 0.11</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dynamics-baselines-dynamics">Dynamics Baselines (<code>[dynamics]</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th style="text-align: right;">corner_stiffness_front</th>
+<th style="text-align: right;">corner_stiffness_rear</th>
+<th style="text-align: right;">yaw_inertia_scale</th>
+<th style="text-align: right;">steering_curve</th>
+<th style="text-align: right;">transient_damping</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sports Car</td>
+<td style="text-align: right;">1.08 to 1.25</td>
+<td style="text-align: right;">1.00 to 1.15</td>
+<td style="text-align: right;">0.90 to 1.08</td>
+<td style="text-align: right;">0.90 to 1.00</td>
+<td style="text-align: right;">0.85 to 1.15</td>
+</tr>
+<tr>
+<td>Sedan/Hatchback</td>
+<td style="text-align: right;">0.94 to 1.08</td>
+<td style="text-align: right;">0.90 to 1.02</td>
+<td style="text-align: right;">1.05 to 1.25</td>
+<td style="text-align: right;">1.02 to 1.18</td>
+<td style="text-align: right;">1.30 to 1.90</td>
+</tr>
+<tr>
+<td>SUV/Truck/Van</td>
+<td style="text-align: right;">0.72 to 0.92</td>
+<td style="text-align: right;">0.65 to 0.85</td>
+<td style="text-align: right;">1.35 to 1.70</td>
+<td style="text-align: right;">1.12 to 1.30</td>
+<td style="text-align: right;">2.00 to 2.90</td>
+</tr>
+<tr>
+<td>Motorcycle</td>
+<td style="text-align: right;">1.30 to 1.55</td>
+<td style="text-align: right;">0.90 to 1.05</td>
+<td style="text-align: right;">0.52 to 0.70</td>
+<td style="text-align: right;">0.72 to 0.88</td>
+<td style="text-align: right;">0.80 to 1.05</td>
+</tr>
+</tbody>
+</table>
+<h3 id="how-to-apply-baselines-safely">How to Apply Baselines Safely</h3>
+<ol>
+<li>Pick one class baseline and apply all three groups (<code>[steering]</code>, <code>[tire_model]</code>, <code>[dynamics]</code>) together.</li>
+<li>Run low-speed checks first (30 to 80 km/h) to verify direction, turn-in, and release behavior.</li>
+<li>Run high-speed checks (160 to 240 km/h) and adjust <code>high_speed_steer_gain</code>, <code>high_speed_stability</code>, and <code>downforce_grip_gain</code> first.</li>
+<li>If response is too weak, increase <code>steering_response</code> or <code>turn_response</code> slightly before raising grip.</li>
+<li>If response is too aggressive, raise <code>transient_damping</code> or <code>steering_curve</code> slightly before reducing grip.</li>
+</ol>
+<h3 id="quick-class-correction-guide">Quick Class Correction Guide</h3>
+<ul>
+<li>Sports Car corners too hard at high speed: lower <code>high_speed_steer_gain</code>, reduce <code>downforce_grip_gain</code>, or slightly raise <code>high_speed_stability</code>.</li>
+<li>Sedan feels dead in normal turns: raise <code>steering_response</code> by a small amount, then raise <code>turn_response</code> only if needed.</li>
+<li>SUV rotates too quickly: raise <code>yaw_inertia_scale</code> and <code>transient_damping</code>, then reduce <code>corner_stiffness_rear</code>.</li>
+<li>Motorcycle feels too safe and planted: reduce <code>high_speed_stability</code> slightly and lower <code>yaw_inertia_scale</code> toward class baseline.</li>
+</ul>
+<p><a id="sec-6-what-was-removed-from-the-old-format"></a></p>
+<h2 id="6-what-was-removed-from-the-old-format">6. What Was Removed From the Old Format</h2>
+<p>The new custom format removes several legacy behaviors on purpose.</p>
+<p><code>mono_crash</code> sound support is removed and is not a valid parameter. <code>steering_factor</code> is also removed and is not supported. If either appears in a custom <code>.tsv</code> file, the parser will reject the file as unknown-key input.</p>
+<p>The old divide-by-100 convention is also removed. Do not write encoded values such as <code>17000</code> for 170 km/h or <code>180</code> for <code>steering_response=1.8</code>. Use direct values everywhere.</p>
+<p>Top-level parameters are no longer supported. Every key must be inside a valid section.</p>
+<p><a id="sec-7-tuning-advice-and-common-problems"></a></p>
+<h2 id="7-tuning-advice-and-common-problems">7. Tuning Advice and Common Problems</h2>
+<p>If a vehicle is too fast in every gear, lowering only <code>max_speed</code> will not fix the real problem. The vehicle will still accelerate too hard and just hit the cap earlier. In that case, reduce <code>power_factor</code>, reduce torque values, increase mass, adjust gearing, or increase drag depending on which part of the speed range is too strong.</p>
+<p>If a vehicle feels fine at launch but weak after an upshift, inspect where the new gear lands on the torque curve. Lowering <code>peak_torque_rpm</code>, increasing <code>idle_torque</code>, shortening gearing, increasing final drive, or reducing drag can all improve shift recovery. Policy can help avoid bad automatic shifts, but it cannot make a weak gear physically stronger.</p>
+<p>If a vehicle turns too well for its class, reduce <code>high_speed_steer_gain</code>, <code>max_steer_deg</code>, or <code>steering_response</code> first. If it is still too strong in corners, reduce <code>lateral_grip</code>, reduce corner stiffness values, or increase <code>high_speed_stability</code>. If it becomes hard to control under braking or acceleration, revisit <code>tire_grip</code>, <code>combined_grip_penalty</code>, and braking values.</p>
+<p>If automatic mode feels worse than manual mode, the physics may already be good. In that case, tune <code>[policy]</code> instead of rebuilding the engine and gears. Use <code>top_speed_gear</code>, <code>upshift_delay_*</code>, and acceleration-protection policy values to stabilize behavior.</p>
+<p><a id="sec-8-final-notes-for-authors"></a></p>
+<h2 id="8-final-notes-for-authors">8. Final Notes for Authors</h2>
+<p>The new <code>.tsv</code> format is strict because strictness improves quality, debugging, and fairness. It prevents accidental bad values, catches mistakes early, and makes custom vehicles much easier to maintain.</p>
+<p>The best results come from clear goals and methodical tuning. Decide the vehicle role first, make sure the powertrain can physically pull the intended gears, then refine balance with <code>power_factor</code>, drag, handling limits, and automatic transmission policy. Test in manual and automatic modes, and pay close attention to what happens immediately after each shift. That moment usually reveals whether your tune is healthy.</p>
+      <div class="footer">Rendered from vehicle-physics-and-creation-guide.md on 2026-03-13 01:02 UTC</div>
+    </article>
+  </main>
+</body>
+</html>

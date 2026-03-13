@@ -99,6 +99,20 @@ namespace TopSpeed.Vehicles.Parsing
         public float HighSpeedStability { get; set; }
         public float WheelbaseM { get; set; }
         public float MaxSteerDeg { get; set; }
+        public float HighSpeedSteerGain { get; set; }
+        public float HighSpeedSteerStartKph { get; set; }
+        public float HighSpeedSteerFullKph { get; set; }
+        public float CombinedGripPenalty { get; set; }
+        public float SlipAnglePeakDeg { get; set; }
+        public float SlipAngleFalloff { get; set; }
+        public float TurnResponse { get; set; }
+        public float MassSensitivity { get; set; }
+        public float DownforceGripGain { get; set; }
+        public float CornerStiffnessFront { get; set; }
+        public float CornerStiffnessRear { get; set; }
+        public float YawInertiaScale { get; set; }
+        public float SteeringCurve { get; set; }
+        public float TransientDamping { get; set; }
 
         public float WidthM { get; set; }
         public float LengthM { get; set; }

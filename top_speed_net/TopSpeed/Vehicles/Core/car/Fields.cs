@@ -16,8 +16,6 @@ namespace TopSpeed.Vehicles
     internal partial class Car
     {
         private const int MaxSurfaceFreq = 100000;
-        private const float BaseLateralSpeed = 7.0f;
-        private const float StabilitySpeedRef = 45.0f;
         private const float CrashVibrationSeconds = 1.5f;
         private const float BumpVibrationSeconds = 0.2f;
         private const int ReverseGear = 0;
@@ -88,6 +86,20 @@ namespace TopSpeed.Vehicles
         private float _highSpeedStability;
         private float _wheelbaseM;
         private float _maxSteerDeg;
+        private float _highSpeedSteerGain;
+        private float _highSpeedSteerStartKph;
+        private float _highSpeedSteerFullKph;
+        private float _combinedGripPenalty;
+        private float _slipAnglePeakDeg;
+        private float _slipAngleFalloff;
+        private float _turnResponse;
+        private float _massSensitivity;
+        private float _downforceGripGain;
+        private float _cornerStiffnessFront;
+        private float _cornerStiffnessRear;
+        private float _yawInertiaScale;
+        private float _steeringCurve;
+        private float _transientDamping;
         private float _widthM;
         private float _lengthM;
         private int _idleFreq;
@@ -110,6 +122,7 @@ namespace TopSpeed.Vehicles
         private int _currentBrake;
         private float _currentSurfaceTractionFactor;
         private float _currentDeceleration;
+        private float _currentSurfaceLateralMultiplier;
         private float _speedDiff;
         private int _factor1;
         private int _frame;
@@ -119,6 +132,8 @@ namespace TopSpeed.Vehicles
         private float _lastAudioY;
         private bool _audioInitialized;
         private float _lastAudioElapsed;
+        private float _lateralVelocityMps;
+        private float _yawRateRad;
 
         private AudioSourceHandle _soundEngine = default!;
         private AudioSourceHandle? _soundThrottle;

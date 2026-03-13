@@ -56,6 +56,8 @@ namespace TopSpeed.Vehicles
             _currentThrottle = 0;
             _currentBrake = 0;
             _speedDiff = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _speed = 0;
             _frame = 1;
             _finished = false;
@@ -144,8 +146,24 @@ namespace TopSpeed.Vehicles
                 _lateralGripCoefficient,
                 _highSpeedStability,
                 _wheelbaseM,
+                _widthM,
+                _lengthM,
                 _maxSteerDeg,
                 _steering,
+                definition.HighSpeedSteerGain,
+                definition.HighSpeedSteerStartKph,
+                definition.HighSpeedSteerFullKph,
+                definition.CombinedGripPenalty,
+                definition.SlipAnglePeakDeg,
+                definition.SlipAngleFalloff,
+                definition.TurnResponse,
+                definition.MassSensitivity,
+                definition.DownforceGripGain,
+                definition.CornerStiffnessFront,
+                definition.CornerStiffnessRear,
+                definition.YawInertiaScale,
+                definition.SteeringCurve,
+                definition.TransientDamping,
                 _gears,
                 definition.GearRatios,
                 definition.TransmissionPolicy);

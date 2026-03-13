@@ -18,7 +18,9 @@ namespace TopSpeed.Vehicles.Parsing
             var engine = sections["engine"];
             var drivetrain = sections["drivetrain"];
             var gears = sections["gears"];
-            var handling = sections["handling"];
+            var steeringSection = sections["steering"];
+            var tireModelSection = sections["tire_model"];
+            var dynamicsSection = sections["dynamics"];
             var dimensions = sections["dimensions"];
             var tires = sections["tires"];
             sections.TryGetValue("policy", out var policy);
@@ -71,12 +73,28 @@ namespace TopSpeed.Vehicles.Parsing
             var reverseGearRatio = RequireFloatRange(drivetrain, "reverse_gear_ratio", 0.5f, 8f, issues);
             var brakeStrength = RequireFloatRange(drivetrain, "brake_strength", 0.1f, 5f, issues);
 
-            var steering = RequireFloatRange(handling, "steering", 0.1f, 5f, issues);
-            var tireGrip = RequireFloatRange(handling, "tire_grip", 0.1f, 3f, issues);
-            var lateralGrip = RequireFloatRange(handling, "lateral_grip", 0.1f, 3f, issues);
-            var highSpeedStability = RequireFloatRange(handling, "high_speed_stability", 0f, 1f, issues);
-            var wheelbase = RequireFloatRange(handling, "wheelbase", 0.3f, 8f, issues);
-            var maxSteerDeg = RequireFloatRange(handling, "max_steer_deg", 5f, 60f, issues);
+            var steeringResponse = RequireFloatRange(steeringSection, "steering_response", 0.1f, 5f, issues);
+            var wheelbase = RequireFloatRange(steeringSection, "wheelbase", 0.3f, 8f, issues);
+            var maxSteerDeg = RequireFloatRange(steeringSection, "max_steer_deg", 5f, 60f, issues);
+            var highSpeedStability = RequireFloatRange(steeringSection, "high_speed_stability", 0f, 1f, issues);
+            var highSpeedSteerGain = RequireFloatRange(steeringSection, "high_speed_steer_gain", 0.7f, 1.6f, issues);
+            var highSpeedSteerStartKph = RequireFloatRange(steeringSection, "high_speed_steer_start_kph", 60f, 260f, issues);
+            var highSpeedSteerFullKph = RequireFloatRange(steeringSection, "high_speed_steer_full_kph", 100f, 350f, issues);
+
+            var tireGrip = RequireFloatRange(tireModelSection, "tire_grip", 0.1f, 3f, issues);
+            var lateralGrip = RequireFloatRange(tireModelSection, "lateral_grip", 0.1f, 3f, issues);
+            var combinedGripPenalty = RequireFloatRange(tireModelSection, "combined_grip_penalty", 0f, 1f, issues);
+            var slipAnglePeakDeg = RequireFloatRange(tireModelSection, "slip_angle_peak_deg", 0.5f, 20f, issues);
+            var slipAngleFalloff = RequireFloatRange(tireModelSection, "slip_angle_falloff", 0.01f, 5f, issues);
+            var turnResponse = RequireFloatRange(tireModelSection, "turn_response", 0.2f, 2.5f, issues);
+            var massSensitivity = RequireFloatRange(tireModelSection, "mass_sensitivity", 0f, 1f, issues);
+            var downforceGripGain = RequireFloatRange(tireModelSection, "downforce_grip_gain", 0f, 1f, issues);
+
+            var cornerStiffnessFront = RequireFloatRange(dynamicsSection, "corner_stiffness_front", 0.2f, 3f, issues);
+            var cornerStiffnessRear = RequireFloatRange(dynamicsSection, "corner_stiffness_rear", 0.2f, 3f, issues);
+            var yawInertiaScale = RequireFloatRange(dynamicsSection, "yaw_inertia_scale", 0.5f, 2f, issues);
+            var steeringCurve = RequireFloatRange(dynamicsSection, "steering_curve", 0.5f, 2f, issues);
+            var transientDamping = RequireFloatRange(dynamicsSection, "transient_damping", 0f, 6f, issues);
 
             var widthM = RequireFloatRange(dimensions, "vehicle_width", 0.2f, 5f, issues);
             var lengthM = RequireFloatRange(dimensions, "vehicle_length", 0.3f, 20f, issues);
@@ -126,6 +144,8 @@ namespace TopSpeed.Vehicles.Parsing
                 issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, sounds.Entries["top_freq"].Line, "top_freq must be greater than or equal to idle_freq."));
             if (shiftFreq < idleFreq || shiftFreq > topFreq)
                 issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, sounds.Entries["shift_freq"].Line, "shift_freq must be between idle_freq and top_freq."));
+            if (highSpeedSteerFullKph <= highSpeedSteerStartKph)
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, steeringSection.Entries["high_speed_steer_full_kph"].Line, "high_speed_steer_full_kph must be greater than high_speed_steer_start_kph."));
 
             float tireCircumferenceResolved = 0f;
             if (tireCircumference.HasValue && tireCircumference.Value > 0f)
@@ -206,12 +226,26 @@ namespace TopSpeed.Vehicles.Parsing
                 ReversePowerFactor = reversePowerFactor,
                 ReverseGearRatio = reverseGearRatio,
                 BrakeStrength = brakeStrength,
-                Steering = steering,
+                Steering = steeringResponse,
                 TireGripCoefficient = tireGrip,
                 LateralGripCoefficient = lateralGrip,
                 HighSpeedStability = highSpeedStability,
                 WheelbaseM = wheelbase,
                 MaxSteerDeg = maxSteerDeg,
+                HighSpeedSteerGain = highSpeedSteerGain,
+                HighSpeedSteerStartKph = highSpeedSteerStartKph,
+                HighSpeedSteerFullKph = highSpeedSteerFullKph,
+                CombinedGripPenalty = combinedGripPenalty,
+                SlipAnglePeakDeg = slipAnglePeakDeg,
+                SlipAngleFalloff = slipAngleFalloff,
+                TurnResponse = turnResponse,
+                MassSensitivity = massSensitivity,
+                DownforceGripGain = downforceGripGain,
+                CornerStiffnessFront = cornerStiffnessFront,
+                CornerStiffnessRear = cornerStiffnessRear,
+                YawInertiaScale = yawInertiaScale,
+                SteeringCurve = steeringCurve,
+                TransientDamping = transientDamping,
                 WidthM = widthM,
                 LengthM = lengthM,
                 TireCircumferenceM = tireCircumferenceResolved,

@@ -1,6 +1,6 @@
 using System;
 using TopSpeed.Common;
-using TopSpeed.Data;
+using TopSpeed.Physics.Surface;
 
 namespace TopSpeed.Vehicles
 {
@@ -20,28 +20,11 @@ namespace TopSpeed.Vehicles
 
         private void ApplySurfaceModifiers()
         {
-            _currentSurfaceTractionFactor = _surfaceTractionFactor;
-            _currentDeceleration = _deceleration;
+            var modifiers = SurfaceModel.Resolve(_surface, _surfaceTractionFactor, _deceleration);
+            _currentSurfaceTractionFactor = modifiers.Traction;
+            _currentDeceleration = modifiers.Deceleration;
+            _currentSurfaceLateralMultiplier = modifiers.LateralSpeedMultiplier;
             _speedDiff = 0f;
-
-            switch (_surface)
-            {
-                case TrackSurface.Gravel:
-                    _currentSurfaceTractionFactor = (_currentSurfaceTractionFactor * 2f) / 3f;
-                    _currentDeceleration = (_currentDeceleration * 2f) / 3f;
-                    break;
-                case TrackSurface.Water:
-                    _currentSurfaceTractionFactor = (_currentSurfaceTractionFactor * 3f) / 5f;
-                    _currentDeceleration = (_currentDeceleration * 3f) / 5f;
-                    break;
-                case TrackSurface.Sand:
-                    _currentSurfaceTractionFactor *= 0.5f;
-                    _currentDeceleration = (_currentDeceleration * 3f) / 2f;
-                    break;
-                case TrackSurface.Snow:
-                    _currentDeceleration *= 0.5f;
-                    break;
-            }
         }
 
         private int ResolveThrust()
@@ -69,20 +52,8 @@ namespace TopSpeed.Vehicles
                 return;
             }
 
-            var steeringCommandAccel = (_currentSteering / 100.0f) * _steering;
-            if (steeringCommandAccel > 1.0f)
-                steeringCommandAccel = 1.0f;
-            else if (steeringCommandAccel < -1.0f)
-                steeringCommandAccel = -1.0f;
-
-            var steerRadAccel = (float)(Math.PI / 180.0) * (_maxSteerDeg * steeringCommandAccel);
-            var curvatureAccel = (float)Math.Tan(steerRadAccel) / _wheelbaseM;
-            var desiredLatAccel = curvatureAccel * speedMpsCurrent * speedMpsCurrent;
-            var desiredLatAccelAbs = Math.Abs(desiredLatAccel);
-            var grip = _tireGripCoefficient * surfaceTractionMod * _lateralGripCoefficient;
-            var maxLatAccel = grip * 9.80665f;
-            var lateralRatio = maxLatAccel > 0f ? Math.Min(1.0f, desiredLatAccelAbs / maxLatAccel) : 0f;
-            longitudinalGripFactor = (float)Math.Sqrt(Math.Max(0.0, 1.0 - (lateralRatio * lateralRatio)));
+            var tireOutput = SolveTireModel(elapsed, speedMpsCurrent, _currentSteering, surfaceTractionMod, 1f, commitState: false);
+            longitudinalGripFactor = tireOutput.LongitudinalGripFactor;
 
             var driveRpm = CalculateDriveRpm(speedMpsCurrent, throttle);
             var engineTorque = CalculateEngineTorqueNm(driveRpm) * throttle * _powerFactor;
@@ -206,35 +177,9 @@ namespace TopSpeed.Vehicles
                 _positionY += longitudinalDelta;
             }
 
-            var surfaceMultiplier = _surface == TrackSurface.Snow ? 1.44f : 1.0f;
-            var steeringCommandLat = (_currentSteering / 100.0f) * _steering;
-            if (steeringCommandLat > 1.0f)
-                steeringCommandLat = 1.0f;
-            else if (steeringCommandLat < -1.0f)
-                steeringCommandLat = -1.0f;
-            var steerRadLat = (float)(Math.PI / 180.0) * (_maxSteerDeg * steeringCommandLat);
-            var curvatureLat = (float)Math.Tan(steerRadLat) / _wheelbaseM;
             var surfaceTractionModLat = _surfaceTractionFactor > 0f ? _currentSurfaceTractionFactor / _surfaceTractionFactor : 1.0f;
-            var gripLat = _tireGripCoefficient * surfaceTractionModLat * _lateralGripCoefficient;
-            var maxLatAccelLat = gripLat * 9.80665f;
-            var desiredLatAccelLat = curvatureLat * speedMps * speedMps;
-            var massFactor = (float)Math.Sqrt(1500f / _massKg);
-            if (massFactor > 3.0f)
-                massFactor = 3.0f;
-            var stabilityScale = 1.0f - (_highSpeedStability * (speedMps / StabilitySpeedRef) * massFactor);
-            if (stabilityScale < 0.2f)
-                stabilityScale = 0.2f;
-            else if (stabilityScale > 1.0f)
-                stabilityScale = 1.0f;
-            var responseTime = BaseLateralSpeed / 20.0f;
-            var maxLatSpeed = maxLatAccelLat * responseTime * stabilityScale;
-            var desiredLatSpeed = desiredLatAccelLat * responseTime;
-            if (desiredLatSpeed > maxLatSpeed)
-                desiredLatSpeed = maxLatSpeed;
-            else if (desiredLatSpeed < -maxLatSpeed)
-                desiredLatSpeed = -maxLatSpeed;
-            var lateralSpeed = desiredLatSpeed * surfaceMultiplier;
-            _positionX += lateralSpeed * elapsed;
+            var tireOutput = SolveTireModel(elapsed, speedMps, _currentSteering, surfaceTractionModLat, _currentSurfaceLateralMultiplier);
+            _positionX += tireOutput.LateralSpeedMps * elapsed;
         }
     }
 }

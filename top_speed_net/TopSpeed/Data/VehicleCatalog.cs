@@ -48,6 +48,20 @@ namespace TopSpeed.Data
         public float HighSpeedStability { get; }
         public float WheelbaseM { get; }
         public float MaxSteerDeg { get; }
+        public float HighSpeedSteerGain { get; }
+        public float HighSpeedSteerStartKph { get; }
+        public float HighSpeedSteerFullKph { get; }
+        public float CombinedGripPenalty { get; }
+        public float SlipAnglePeakDeg { get; }
+        public float SlipAngleFalloff { get; }
+        public float TurnResponse { get; }
+        public float MassSensitivity { get; }
+        public float DownforceGripGain { get; }
+        public float CornerStiffnessFront { get; }
+        public float CornerStiffnessRear { get; }
+        public float YawInertiaScale { get; }
+        public float SteeringCurve { get; }
+        public float TransientDamping { get; }
         public float WidthM { get; }
         public float LengthM { get; }
         public float PowerFactor { get; }
@@ -99,6 +113,20 @@ namespace TopSpeed.Data
             float highSpeedStability = 0.0f,
             float wheelbaseM = 2.7f,
             float maxSteerDeg = 35f,
+            float highSpeedSteerGain = 1.08f,
+            float highSpeedSteerStartKph = 140f,
+            float highSpeedSteerFullKph = 240f,
+            float combinedGripPenalty = 0.72f,
+            float slipAnglePeakDeg = 8f,
+            float slipAngleFalloff = 1.25f,
+            float turnResponse = 1.0f,
+            float massSensitivity = 0.75f,
+            float downforceGripGain = 0.05f,
+            float cornerStiffnessFront = 1.0f,
+            float cornerStiffnessRear = 1.0f,
+            float yawInertiaScale = 1.0f,
+            float steeringCurve = 1.0f,
+            float transientDamping = 1.0f,
             float widthM = 1.8f,
             float lengthM = 4.5f,
             float powerFactor = 0.5f,
@@ -150,6 +178,20 @@ namespace TopSpeed.Data
             HighSpeedStability = highSpeedStability;
             WheelbaseM = wheelbaseM;
             MaxSteerDeg = maxSteerDeg;
+            HighSpeedSteerGain = highSpeedSteerGain;
+            HighSpeedSteerStartKph = highSpeedSteerStartKph;
+            HighSpeedSteerFullKph = highSpeedSteerFullKph;
+            CombinedGripPenalty = combinedGripPenalty;
+            SlipAnglePeakDeg = slipAnglePeakDeg;
+            SlipAngleFalloff = slipAngleFalloff;
+            TurnResponse = turnResponse;
+            MassSensitivity = massSensitivity;
+            DownforceGripGain = downforceGripGain;
+            CornerStiffnessFront = cornerStiffnessFront;
+            CornerStiffnessRear = cornerStiffnessRear;
+            YawInertiaScale = yawInertiaScale;
+            SteeringCurve = steeringCurve;
+            TransientDamping = transientDamping;
             WidthM = widthM;
             LengthM = lengthM;
             PowerFactor = powerFactor;
@@ -212,6 +254,20 @@ namespace TopSpeed.Data
                 spec.HighSpeedStability,
                 spec.WheelbaseM,
                 spec.MaxSteerDeg,
+                spec.HighSpeedSteerGain,
+                spec.HighSpeedSteerStartKph,
+                spec.HighSpeedSteerFullKph,
+                spec.CombinedGripPenalty,
+                spec.SlipAnglePeakDeg,
+                spec.SlipAngleFalloff,
+                spec.TurnResponse,
+                spec.MassSensitivity,
+                spec.DownforceGripGain,
+                spec.CornerStiffnessFront,
+                spec.CornerStiffnessRear,
+                spec.YawInertiaScale,
+                spec.SteeringCurve,
+                spec.TransientDamping,
                 spec.WidthM,
                 spec.LengthM,
                 spec.PowerFactor,

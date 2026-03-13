@@ -35,7 +35,7 @@ namespace TopSpeed.Vehicles.Parsing
 
         private static readonly string[] s_requiredSections =
         {
-            "meta", "sounds", "general", "engine", "drivetrain", "gears", "handling", "dimensions", "tires"
+            "meta", "sounds", "general", "engine", "drivetrain", "gears", "steering", "tire_model", "dynamics", "dimensions", "tires"
         };
 
         private static readonly Dictionary<string, HashSet<string>> s_allowedKeys = BuildAllowedKeys();
@@ -162,7 +162,9 @@ namespace TopSpeed.Vehicles.Parsing
                     "drag_coefficient", "frontal_area", "rolling_resistance", "launch_rpm", "power_factor"),
                 ["drivetrain"] = Set("final_drive", "reverse_max_speed", "reverse_power_factor", "reverse_gear_ratio", "brake_strength"),
                 ["gears"] = Set("number_of_gears", "gear_ratios"),
-                ["handling"] = Set("steering", "tire_grip", "lateral_grip", "high_speed_stability", "wheelbase", "max_steer_deg"),
+                ["steering"] = Set("steering_response", "wheelbase", "max_steer_deg", "high_speed_stability", "high_speed_steer_gain", "high_speed_steer_start_kph", "high_speed_steer_full_kph"),
+                ["tire_model"] = Set("tire_grip", "lateral_grip", "combined_grip_penalty", "slip_angle_peak_deg", "slip_angle_falloff", "turn_response", "mass_sensitivity", "downforce_grip_gain"),
+                ["dynamics"] = Set("corner_stiffness_front", "corner_stiffness_rear", "yaw_inertia_scale", "steering_curve", "transient_damping"),
                 ["dimensions"] = Set("vehicle_width", "vehicle_length"),
                 ["tires"] = Set("tire_circumference", "tire_width", "tire_aspect", "tire_rim"),
                 ["policy"] = Set(

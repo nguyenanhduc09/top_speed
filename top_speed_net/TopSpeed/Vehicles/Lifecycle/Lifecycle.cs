@@ -13,6 +13,8 @@ namespace TopSpeed.Vehicles
         {
             _positionX = positionX;
             _positionY = Math.Max(0f, positionY);
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _laneWidth = _track.LaneWidth * 2;
             _stickReleased = true;
             _audioInitialized = false;
@@ -26,6 +28,8 @@ namespace TopSpeed.Vehicles
         {
             _positionX = positionX;
             _positionY = Math.Max(0f, positionY);
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
         }
 
         public virtual void FinalizeCar()
@@ -41,6 +45,8 @@ namespace TopSpeed.Vehicles
             PushEvent(EventType.CarStart, delay);
             _soundStart.Restart(loop: false);
             _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _engine.Reset();
             _prevFrequency = _idleFreq;
             _frequency = _idleFreq;
@@ -71,6 +77,8 @@ namespace TopSpeed.Vehicles
             PushEvent(EventType.CarStart, delay);
             _soundStart.Restart(loop: false);
             _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _prevFrequency = _idleFreq;
             _frequency = _idleFreq;
             _prevBrakeFrequency = 0;
@@ -94,6 +102,8 @@ namespace TopSpeed.Vehicles
         public virtual void Crash()
         {
             _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _engine.ResetForCrash();
             _throttleVolume = 0.0f;
             _soundCrash = SelectRandomCrashHandle();
@@ -161,6 +171,8 @@ namespace TopSpeed.Vehicles
         public virtual void MiniCrash(float newPosition)
         {
             _speed /= 4;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             if (_positionX < newPosition)
                 _vibration?.PlayEffect(VibrationEffectType.BumpLeft);
             if (_positionX > newPosition)
@@ -201,6 +213,8 @@ namespace TopSpeed.Vehicles
 
             if (_speed < 0)
                 _speed = 0;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
             _soundBump.Play(loop: false);
             PushEvent(EventType.StopBumpVibration, BumpVibrationSeconds);
         }

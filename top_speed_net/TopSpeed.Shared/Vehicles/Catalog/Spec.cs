@@ -47,6 +47,20 @@ namespace TopSpeed.Vehicles
             float powerFactor,
             float[] gearRatios,
             float brakeStrength,
+            float highSpeedSteerGain = 1.08f,
+            float highSpeedSteerStartKph = 140f,
+            float highSpeedSteerFullKph = 240f,
+            float combinedGripPenalty = 0.72f,
+            float slipAnglePeakDeg = 8f,
+            float slipAngleFalloff = 1.25f,
+            float turnResponse = 1.0f,
+            float massSensitivity = 0.75f,
+            float downforceGripGain = 0.05f,
+            float cornerStiffnessFront = 1.0f,
+            float cornerStiffnessRear = 1.0f,
+            float yawInertiaScale = 1.0f,
+            float steeringCurve = 1.0f,
+            float transientDamping = 1.0f,
             TransmissionPolicy? transmissionPolicy = null)
         {
             CarType = carType;
@@ -86,6 +100,20 @@ namespace TopSpeed.Vehicles
             HighSpeedStability = highSpeedStability;
             WheelbaseM = wheelbaseM;
             MaxSteerDeg = maxSteerDeg;
+            HighSpeedSteerGain = highSpeedSteerGain;
+            HighSpeedSteerStartKph = highSpeedSteerStartKph;
+            HighSpeedSteerFullKph = highSpeedSteerFullKph;
+            CombinedGripPenalty = combinedGripPenalty;
+            SlipAnglePeakDeg = slipAnglePeakDeg;
+            SlipAngleFalloff = slipAngleFalloff;
+            TurnResponse = turnResponse;
+            MassSensitivity = massSensitivity;
+            DownforceGripGain = downforceGripGain;
+            CornerStiffnessFront = cornerStiffnessFront;
+            CornerStiffnessRear = cornerStiffnessRear;
+            YawInertiaScale = yawInertiaScale;
+            SteeringCurve = steeringCurve;
+            TransientDamping = transientDamping;
             WidthM = widthM;
             LengthM = lengthM;
             PowerFactor = powerFactor;
@@ -131,6 +159,20 @@ namespace TopSpeed.Vehicles
         public float HighSpeedStability { get; }
         public float WheelbaseM { get; }
         public float MaxSteerDeg { get; }
+        public float HighSpeedSteerGain { get; }
+        public float HighSpeedSteerStartKph { get; }
+        public float HighSpeedSteerFullKph { get; }
+        public float CombinedGripPenalty { get; }
+        public float SlipAnglePeakDeg { get; }
+        public float SlipAngleFalloff { get; }
+        public float TurnResponse { get; }
+        public float MassSensitivity { get; }
+        public float DownforceGripGain { get; }
+        public float CornerStiffnessFront { get; }
+        public float CornerStiffnessRear { get; }
+        public float YawInertiaScale { get; }
+        public float SteeringCurve { get; }
+        public float TransientDamping { get; }
         public float WidthM { get; }
         public float LengthM { get; }
         public float PowerFactor { get; }

@@ -83,6 +83,8 @@ namespace TopSpeed.Vehicles
         private int _currentThrottle;
         private int _currentBrake;
         private float _speedDiff;
+        private float _lateralVelocityMps;
+        private float _yawRateRad;
         private int _difficulty;
         private bool _finished;
         private bool _horning;
