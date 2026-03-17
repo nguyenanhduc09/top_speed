@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Physics.Powertrain;
 using TopSpeed.Physics.Surface;
 using TopSpeed.Physics.Tires;
 
@@ -41,7 +42,14 @@ namespace TopSpeed.Bots
             {
                 var tireOutput = SolveTireModel(config, input.ElapsedSeconds, speedMpsCurrent, steeringInput, surfaceTractionMod, 1f, tireState);
                 longitudinalGripFactor = tireOutput.LongitudinalGripFactor;
-                var accelMps2 = ComputeNetAccelForGear(config, state.Gear, speedMpsCurrent, throttle, surfaceTractionMod, longitudinalGripFactor);
+                // For real launch behavior, use the same drive acceleration path as the player model.
+                var accelMps2 = Calculator.DriveAccel(
+                    config.Powertrain,
+                    state.Gear,
+                    speedMpsCurrent,
+                    throttle,
+                    surfaceTractionMod,
+                    longitudinalGripFactor);
                 var newSpeedMps = speedMpsCurrent + (accelMps2 * input.ElapsedSeconds);
                 if (newSpeedMps < 0f)
                     newSpeedMps = 0f;
