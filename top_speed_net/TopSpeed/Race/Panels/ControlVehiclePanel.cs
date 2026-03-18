@@ -2,7 +2,7 @@ namespace TopSpeed.Race.Panels
 {
     internal sealed class ControlVehiclePanel : IVehicleRacePanel
     {
-        public string Name => "Control panel";
+        public string Name => TopSpeed.Localization.LocalizationService.Mark("Control panel");
         public bool AllowsDrivingInput => true;
         public bool AllowsAuxiliaryInput => true;
 

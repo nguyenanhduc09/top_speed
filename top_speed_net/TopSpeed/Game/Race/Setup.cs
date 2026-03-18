@@ -6,6 +6,7 @@ using TopSpeed.Core;
 using TopSpeed.Data;
 using TopSpeed.Race;
 using TopSpeed.Tracks;
+using TopSpeed.Localization;
 using CoreRaceMode = TopSpeed.Core.RaceMode;
 
 namespace TopSpeed.Game
@@ -56,7 +57,7 @@ namespace TopSpeed.Game
                         timeTrial.Initialize();
                         _timeTrial = timeTrial;
                         _state = AppState.TimeTrial;
-                        _speech.Speak("Time trial.");
+                        _speech.Speak(LocalizationService.Mark("Time trial."));
                         break;
                     case CoreRaceMode.QuickStart:
                     case CoreRaceMode.SingleRace:
@@ -74,7 +75,9 @@ namespace TopSpeed.Game
                         singleRace.Initialize(Algorithm.RandomInt(_settings.NrOfComputers + 1));
                         _singleRace = singleRace;
                         _state = AppState.SingleRace;
-                        _speech.Speak(mode == CoreRaceMode.QuickStart ? "Quick start." : "Single race.");
+                        _speech.Speak(mode == CoreRaceMode.QuickStart
+                            ? LocalizationService.Mark("Quick start.")
+                            : LocalizationService.Mark("Single race."));
                         break;
                 }
             }
@@ -101,8 +104,8 @@ namespace TopSpeed.Game
             }
 
             ShowMessageDialog(
-                "Track load error",
-                "The selected track could not be loaded. The race was not started.",
+                LocalizationService.Mark("Track load error"),
+                LocalizationService.Mark("The selected track could not be loaded. The race was not started."),
                 items);
         }
     }

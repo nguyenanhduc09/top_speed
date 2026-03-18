@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -29,7 +30,10 @@ namespace TopSpeed.Core.Settings
                 var host = (entry.Host ?? string.Empty).Trim();
                 if (host.Length == 0)
                 {
-                    issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, $"network.savedServers.servers[{i}]", "A saved server entry was ignored because the host is empty."));
+                    issues.Add(new SettingsIssue(
+                        SettingsIssueSeverity.Warning,
+                        $"network.savedServers.servers[{i}]",
+                        LocalizationService.Mark("A saved server entry was ignored because the host is empty.")));
                     continue;
                 }
 

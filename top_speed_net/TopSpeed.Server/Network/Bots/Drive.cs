@@ -1,6 +1,7 @@
 using System;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Bots;
@@ -79,7 +80,12 @@ namespace TopSpeed.Server.Network
                     bot.BackfirePulseSeconds = 0f;
                     bot.BackfireArmed = true;
                     _botCrashEvents++;
-                    _logger.Debug($"Bot crashed: room={room.Id}, bot={bot.Id}, number={bot.PlayerNumber}, y={bot.PositionY:0.0}.");
+                    _logger.Debug(LocalizationService.Format(
+                        LocalizationService.Mark("Bot crashed: room={0}, bot={1}, number={2}, y={3:0.0}."),
+                        room.Id,
+                        bot.Id,
+                        bot.PlayerNumber,
+                        bot.PositionY));
                     SendToRoomOnStream(room, PacketSerializer.WritePlayer(Command.PlayerCrashed, bot.Id, bot.PlayerNumber), PacketStream.RaceEvent);
                     return;
                 }
@@ -107,7 +113,12 @@ namespace TopSpeed.Server.Network
 
             SendToRoomOnStream(room, PacketSerializer.WritePlayer(Command.PlayerFinished, bot.Id, bot.PlayerNumber), PacketStream.RaceEvent);
             _botFinishEvents++;
-            _logger.Debug($"Bot finished: room={room.Id}, bot={bot.Id}, number={bot.PlayerNumber}, place={room.RaceResults.Count}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Bot finished: room={0}, bot={1}, number={2}, place={3}."),
+                room.Id,
+                bot.Id,
+                bot.PlayerNumber,
+                room.RaceResults.Count));
         }
     }
 }

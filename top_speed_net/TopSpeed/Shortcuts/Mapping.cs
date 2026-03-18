@@ -1,6 +1,7 @@
 using System;
 using SharpDX.DirectInput;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TopSpeed.Menu;
 using TopSpeed.Speech;
 
@@ -58,13 +59,15 @@ namespace TopSpeed.Shortcuts
             if (_needsInstruction)
             {
                 _needsInstruction = false;
-                _speech.Speak($"Press the new key for {_displayName.ToLowerInvariant()}.");
+                _speech.Speak(LocalizationService.Format(
+                    LocalizationService.Mark("Press the new key for {0}."),
+                    _displayName.ToLowerInvariant()));
             }
 
             if (_input.WasPressed(Key.Escape))
             {
                 _isActive = false;
-                _speech.Speak("Shortcut mapping cancelled.");
+                _speech.Speak(LocalizationService.Mark("Shortcut mapping cancelled."));
                 return;
             }
 
@@ -76,7 +79,7 @@ namespace TopSpeed.Shortcuts
 
                 if (_menu.IsShortcutKeyInUse(_groupId, key, _actionId))
                 {
-                    _speech.Speak("That key is already in use in this shortcut group.");
+                    _speech.Speak(LocalizationService.Mark("That key is already in use in this shortcut group."));
                     return;
                 }
 
@@ -87,27 +90,32 @@ namespace TopSpeed.Shortcuts
                 catch (InvalidOperationException)
                 {
                     _isActive = false;
-                    _speech.Speak("Unable to apply the new shortcut key.");
+                    _speech.Speak(LocalizationService.Mark("Unable to apply the new shortcut key."));
                     return;
                 }
                 catch (ArgumentException)
                 {
                     _isActive = false;
-                    _speech.Speak("Unable to apply the new shortcut key.");
+                    _speech.Speak(LocalizationService.Mark("Unable to apply the new shortcut key."));
                     return;
                 }
 
                 _settings.ShortcutKeyBindings[_actionId] = key;
                 _saveSettings();
                 _isActive = false;
-                _speech.Speak($"{_displayName} set to {FormatKey(key)}.");
+                _speech.Speak(LocalizationService.Format(
+                    LocalizationService.Mark("{0} set to {1}."),
+                    _displayName,
+                    FormatKey(key)));
                 return;
             }
         }
 
         private static string FormatKey(Key key)
         {
-            return (int)key <= 0 ? "none" : key.ToString();
+            return (int)key <= 0
+                ? LocalizationService.Translate(LocalizationService.Mark("none"))
+                : key.ToString();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace TopSpeed.Vehicles.Parsing
             if (policy.Entries.TryGetValue("top_speed_gear", out var topGear))
             {
                 if (!int.TryParse(topGear.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var g) || g < 1 || g > gears)
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, topGear.Line, $"top_speed_gear must be within 1..{gears}."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, topGear.Line, Localized("top_speed_gear must be within 1..{0}.", gears)));
             }
 
             ValidateOptionalPolicyFloat(policy, "base_auto_shift_cooldown", 0f, 2f, issues);
@@ -34,13 +34,13 @@ namespace TopSpeed.Vehicles.Parsing
             if (policy.Entries.TryGetValue("auto_upshift_rpm", out var upAbs))
             {
                 if (!TryParseFloat(upAbs.Value, out var rpm) || rpm < 0f || (rpm > 0f && (rpm < idleRpm || rpm > revLimiter)))
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, upAbs.Line, "auto_upshift_rpm must be 0 or between idle_rpm and rev_limiter."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, upAbs.Line, Localized("auto_upshift_rpm must be 0 or between idle_rpm and rev_limiter.")));
             }
 
             if (policy.Entries.TryGetValue("auto_downshift_rpm", out var downAbs))
             {
                 if (!TryParseFloat(downAbs.Value, out var rpm) || rpm < 0f || (rpm > 0f && (rpm < idleRpm || rpm > revLimiter)))
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, downAbs.Line, "auto_downshift_rpm must be 0 or between idle_rpm and rev_limiter."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, downAbs.Line, Localized("auto_downshift_rpm must be 0 or between idle_rpm and rev_limiter.")));
             }
 
             foreach (var kvp in policy.Entries)
@@ -56,7 +56,7 @@ namespace TopSpeed.Vehicles.Parsing
                         if (!int.TryParse(rawGear, NumberStyles.Integer, CultureInfo.InvariantCulture, out var sourceGear) ||
                             sourceGear < 1 || sourceGear > gears)
                         {
-                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, kvp.Value.Line, $"Invalid key '{kvp.Key}'. Source gear must be within 1..{gears}."));
+                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, kvp.Value.Line, Localized("Invalid key '{0}'. Source gear must be within 1..{1}.", kvp.Key, gears)));
                         }
                     }
                     else
@@ -68,13 +68,13 @@ namespace TopSpeed.Vehicles.Parsing
                             !int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var g2) ||
                             g1 < 1 || g1 > gears || g2 != g1 + 1 || g2 > gears)
                         {
-                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, kvp.Value.Line, $"Invalid key '{kvp.Key}'. Use upshift_delay_X_Y for adjacent gears."));
+                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, kvp.Value.Line, Localized("Invalid key '{0}'. Use upshift_delay_X_Y for adjacent gears.", kvp.Key)));
                         }
                     }
                 }
 
                 if (!TryParseFloat(kvp.Value.Value, out var delay) || delay < 0f || delay > 2f)
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, kvp.Value.Line, $"{kvp.Key} must be a float between 0 and 2 seconds."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, kvp.Value.Line, Localized("{0} must be a float between 0 and 2 seconds.", kvp.Key)));
             }
 
             return !HasErrors(issues);
@@ -87,7 +87,11 @@ namespace TopSpeed.Vehicles.Parsing
             if (!TryParseFloat(entry.Value, out var value) || value < min || value > max)
             {
                 issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line,
-                    $"{key} must be between {min.ToString(CultureInfo.InvariantCulture)} and {max.ToString(CultureInfo.InvariantCulture)}."));
+                    Localized(
+                        "{0} must be between {1} and {2}.",
+                        key,
+                        min.ToString(CultureInfo.InvariantCulture),
+                        max.ToString(CultureInfo.InvariantCulture))));
             }
         }
 

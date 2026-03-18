@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TopSpeed.Localization;
 using TopSpeed.Vehicles;
 
 namespace TopSpeed.Vehicles.Parsing
@@ -22,7 +23,12 @@ namespace TopSpeed.Vehicles.Parsing
         public int Line { get; }
         public string Message { get; }
 
-        public override string ToString() => Line > 0 ? $"Line {Line}: {Message}" : Message;
+        public override string ToString()
+        {
+            return Line > 0
+                ? LocalizationService.Format(LocalizationService.Mark("Line {0}: {1}"), Line, Message)
+                : Message;
+        }
     }
 
     internal sealed class CustomVehicleMeta

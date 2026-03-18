@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -40,7 +41,10 @@ namespace TopSpeed.Core.Settings
             var preset = ui.MenuSoundPreset.Trim();
             if (preset.Length == 0)
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, "ui.menuSoundPreset", "Menu sound preset was empty and was reset to default."));
+                issues.Add(new SettingsIssue(
+                    SettingsIssueSeverity.Warning,
+                    "ui.menuSoundPreset",
+                    LocalizationService.Mark("Menu sound preset was empty and was reset to default.")));
                 return;
             }
 

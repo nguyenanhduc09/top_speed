@@ -5,6 +5,7 @@ using TopSpeed.Network;
 using TopSpeed.Protocol;
 using TopSpeed.Speech;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -16,34 +17,34 @@ namespace TopSpeed.Core.Multiplayer
 
         private void RebuildCreateRoomMenu(bool preserveSelection)
         {
-            var maxPlayersItem = new RadioButton(
-                "Maximum players allowed in this room",
+            var maxPlayersItem = new RadioButton(LocalizationService.Mark("Maximum players allowed in this room"),
                 RoomCapacityOptions,
                 GetCreateRoomPlayersToStartIndex,
                 SetCreateRoomPlayersToStart,
-                hint: "Choose the player capacity from 2 to 10. Use LEFT or RIGHT to change.")
+                hint: LocalizationService.Mark("Choose the player capacity from 2 to 10. Use LEFT or RIGHT to change."))
             {
                 Hidden = _state.Rooms.CreateRoomType == GameRoomType.OneOnOne
             };
 
             var items = new List<MenuItem>
             {
-                new RadioButton(
-                    "Game type",
+                new RadioButton(LocalizationService.Mark("Game type"),
                     RoomTypeOptions,
                     GetCreateRoomTypeIndex,
                     SetCreateRoomType,
-                    hint: "Choose whether this room is a race with bots, a multiplayer race without bots, or a one-on-one game. Use LEFT or RIGHT to change."),
+                    hint: LocalizationService.Mark("Choose whether this room is a race with bots, a multiplayer race without bots, or a one-on-one game. Use LEFT or RIGHT to change.")),
                 maxPlayersItem,
                 new MenuItem(
                     () => string.IsNullOrWhiteSpace(_state.Rooms.CreateRoomName)
-                        ? "Room name, currently automatic"
-                        : $"Room name, currently {_state.Rooms.CreateRoomName}",
+                        ? LocalizationService.Mark("Room name, currently automatic")
+                        : LocalizationService.Format(
+                            LocalizationService.Mark("Room name, currently {0}"),
+                            _state.Rooms.CreateRoomName),
                     MenuAction.None,
                     onActivate: UpdateCreateRoomName,
-                    hint: "Press ENTER to enter a room name. Leave it empty to use an automatic name."),
-                new MenuItem("Create this game room", MenuAction.None, onActivate: ConfirmCreateRoom),
-                new MenuItem("Cancel room creation", MenuAction.Back)
+                    hint: LocalizationService.Mark("Press ENTER to enter a room name. Leave it empty to use an automatic name.")),
+                new MenuItem(LocalizationService.Mark("Create this game room"), MenuAction.None, onActivate: ConfirmCreateRoom),
+                new MenuItem(LocalizationService.Mark("Cancel room creation"), MenuAction.Back)
             };
 
             _menu.UpdateItems(MultiplayerMenuKeys.CreateRoom, items, preserveSelection);
@@ -53,7 +54,7 @@ namespace TopSpeed.Core.Multiplayer
         {
             if (SessionOrNull() == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
@@ -65,7 +66,7 @@ namespace TopSpeed.Core.Multiplayer
         private void UpdateCreateRoomName()
         {
             _promptTextInput(
-                "Enter a room name. Leave this field empty to use an automatic room name.",
+                LocalizationService.Mark("Enter a room name. Leave this field empty to use an automatic room name."),
                 _state.Rooms.CreateRoomName,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -79,11 +80,13 @@ namespace TopSpeed.Core.Multiplayer
 
                     if (string.IsNullOrWhiteSpace(_state.Rooms.CreateRoomName))
                     {
-                        _speech.Speak("Automatic room name selected.");
+                        _speech.Speak(LocalizationService.Mark("Automatic room name selected."));
                         return;
                     }
 
-                    _speech.Speak($"Room name set to {_state.Rooms.CreateRoomName}.");
+                    _speech.Speak(LocalizationService.Format(
+                        LocalizationService.Mark("Room name set to {0}."),
+                        _state.Rooms.CreateRoomName));
                 });
         }
 
@@ -92,7 +95,7 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
@@ -102,7 +105,7 @@ namespace TopSpeed.Core.Multiplayer
             if (_state.Rooms.CreateRoomType == GameRoomType.OneOnOne)
                 playersToStart = 2;
 
-            if (!TrySend(session.SendRoomCreate(_state.Rooms.CreateRoomName, _state.Rooms.CreateRoomType, playersToStart), "room create request"))
+            if (!TrySend(session.SendRoomCreate(_state.Rooms.CreateRoomName, _state.Rooms.CreateRoomType, playersToStart)))
                 return;
             _menu.ShowRoot(MultiplayerMenuKeys.Lobby);
         }
@@ -165,5 +168,9 @@ namespace TopSpeed.Core.Multiplayer
         }
     }
 }
+
+
+
+
 
 

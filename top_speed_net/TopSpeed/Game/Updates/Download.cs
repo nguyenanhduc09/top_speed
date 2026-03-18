@@ -1,8 +1,10 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using TopSpeed.Core.Updates;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Game
 {
@@ -72,7 +74,7 @@ namespace TopSpeed.Game
                 result = new DownloadResult
                 {
                     IsSuccess = false,
-                    ErrorMessage = "Update download failed."
+                    ErrorMessage = LocalizationService.Mark("Update download failed.")
                 };
             }
             else
@@ -89,8 +91,8 @@ namespace TopSpeed.Game
             if (!result.IsSuccess)
             {
                 ShowMessageDialog(
-                    "Download failed",
-                    "The update package could not be downloaded.",
+                    LocalizationService.Mark("Download failed"),
+                    LocalizationService.Mark("The update package could not be downloaded."),
                     new[] { result.ErrorMessage });
                 return;
             }
@@ -115,9 +117,14 @@ namespace TopSpeed.Game
                 if (_updateTonePercent % 10 == 0 && _updateTonePercent != _lastSpokenUpdatePercent)
                 {
                     _lastSpokenUpdatePercent = _updateTonePercent;
-                    _speech.Speak($"{_updateTonePercent}%");
+                    _speech.Speak(FormatProgressPercent(_updateTonePercent));
                 }
             }
+        }
+
+        private static string FormatProgressPercent(int value)
+        {
+            return value.ToString(CultureInfo.InvariantCulture) + CultureInfo.InvariantCulture.NumberFormat.PercentSymbol;
         }
     }
 }

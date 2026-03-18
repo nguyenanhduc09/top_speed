@@ -1,6 +1,7 @@
 using System;
 using TopSpeed.Common;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race
 {
@@ -130,7 +131,7 @@ namespace TopSpeed.Race
                     return VehicleCatalog.Vehicles[bot.VehicleIndex].Name;
             }
 
-            return "Vehicle";
+            return LocalizationService.Mark("Vehicle");
         }
     }
 }

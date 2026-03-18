@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TopSpeed.Input;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -13,27 +14,35 @@ namespace TopSpeed.Core.Multiplayer
             {
                 new MenuFormControl(
                     () => string.IsNullOrWhiteSpace(_state.SavedServers.Draft.Name)
-                        ? "Server name, currently empty."
-                        : $"Server name, currently set to {_state.SavedServers.Draft.Name}",
+                        ? LocalizationService.Mark("Server name, currently empty.")
+                        : LocalizationService.Format(
+                            LocalizationService.Mark("Server name, currently set to {0}"),
+                            _state.SavedServers.Draft.Name),
                     UpdateSavedServerDraftName),
                 new MenuFormControl(
                     () => string.IsNullOrWhiteSpace(_state.SavedServers.Draft.Host)
-                        ? "Server IP or host, currently empty."
-                        : $"Server IP or host, currently set to {_state.SavedServers.Draft.Host}",
+                        ? LocalizationService.Mark("Server IP or host, currently empty.")
+                        : LocalizationService.Format(
+                            LocalizationService.Mark("Server IP or host, currently set to {0}"),
+                            _state.SavedServers.Draft.Host),
                     UpdateSavedServerDraftHost),
                 new MenuFormControl(
                     () => _state.SavedServers.Draft.Port > 0
-                        ? $"Server port, currently set to {_state.SavedServers.Draft.Port}"
-                        : "Server port, currently empty.",
+                        ? LocalizationService.Format(
+                            LocalizationService.Mark("Server port, currently set to {0}"),
+                            _state.SavedServers.Draft.Port)
+                        : LocalizationService.Mark("Server port, currently empty."),
                     UpdateSavedServerDraftPort)
             };
 
-            var saveLabel = _state.SavedServers.EditIndex >= 0 ? "Save server changes" : "Save server";
+            var saveLabel = _state.SavedServers.EditIndex >= 0
+                ? LocalizationService.Mark("Save server changes")
+                : LocalizationService.Mark("Save server");
             var items = MenuFormBuilder.BuildItems(
                 controls,
                 saveLabel,
                 SaveSavedServerDraft,
-                "Go back");
+                LocalizationService.Mark("Go back"));
             _menu.UpdateItems(MultiplayerMenuKeys.SavedServerForm, items, preserveSelection: true);
         }
 
@@ -45,12 +54,11 @@ namespace TopSpeed.Core.Multiplayer
                 return;
             }
 
-            _questions.Show(new Question(
-                "Save changes before closing?",
-                "Are you sure you would like to discard all changes?.",
+            _questions.Show(new Question(LocalizationService.Mark("Save changes before closing?"),
+                LocalizationService.Mark("Are you sure you would like to discard all changes?"),
                 HandleSavedServerDiscardQuestionResult,
-                new QuestionButton(QuestionId.Confirm, "Save changes", flags: QuestionButtonFlags.Default),
-                new QuestionButton(QuestionId.Close, "Discard changes")));
+                new QuestionButton(QuestionId.Confirm, LocalizationService.Mark("Save changes"), flags: QuestionButtonFlags.Default),
+                new QuestionButton(QuestionId.Close, LocalizationService.Mark("Discard changes"))));
         }
 
         private bool IsSavedServerDraftDirty()
@@ -79,7 +87,7 @@ namespace TopSpeed.Core.Multiplayer
             var normalized = NormalizeSavedServerDraft(_state.SavedServers.Draft);
             if (string.IsNullOrWhiteSpace(normalized.Host))
             {
-                _speech.Speak("Server IP or host cannot be empty.");
+                _speech.Speak(LocalizationService.Mark("Server IP or host cannot be empty."));
                 return;
             }
 
@@ -97,9 +105,13 @@ namespace TopSpeed.Core.Multiplayer
             if (string.Equals(_menu.CurrentId, MultiplayerMenuKeys.SavedServerForm, StringComparison.Ordinal))
                 _menu.PopToPrevious();
 
-            _speech.Speak("Server saved.");
+            _speech.Speak(LocalizationService.Mark("Server saved."));
         }
     }
 }
+
+
+
+
 
 

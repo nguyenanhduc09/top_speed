@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Menu
 {
@@ -27,7 +28,8 @@ namespace TopSpeed.Menu
 
         public override string GetDisplayText()
         {
-            return $"{GetBaseText()} check box {FormatValue(_getValue())}";
+            var typeLabel = LocalizationService.Translate(LocalizationService.Mark("check box"));
+            return $"{GetBaseText()} {typeLabel} {FormatValue(_getValue())}";
         }
 
         public override string? ActivateAndGetAnnouncement()
@@ -41,7 +43,9 @@ namespace TopSpeed.Menu
 
         private static string FormatValue(bool value)
         {
-            return value ? "checked" : "not checked";
+            return value
+                ? LocalizationService.Translate(LocalizationService.Mark("checked"))
+                : LocalizationService.Translate(LocalizationService.Mark("not checked"));
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using TopSpeed.Localization;
 using TopSpeed.Server.Logging;
 
 namespace TopSpeed.Server.Config
@@ -29,12 +30,14 @@ namespace TopSpeed.Server.Config
                 var settings = JsonSerializer.Deserialize(
                     json,
                     ServerSettingsJsonContext.Default.ServerSettings);
-                return settings ?? new ServerSettings();
+                return NormalizeSettings(settings ?? new ServerSettings());
             }
             catch (Exception ex)
             {
-                logger.Warning($"Failed to read server settings, using defaults: {ex.Message}");
-                return new ServerSettings();
+                logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to read server settings, using defaults: {0}"),
+                    ex.Message));
+                return NormalizeSettings(new ServerSettings());
             }
         }
 
@@ -52,8 +55,18 @@ namespace TopSpeed.Server.Config
             }
             catch (Exception ex)
             {
-                logger.Warning($"Failed to save server settings: {ex.Message}");
+                logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to save server settings: {0}"),
+                    ex.Message));
             }
+        }
+
+        private static ServerSettings NormalizeSettings(ServerSettings settings)
+        {
+            settings.Language = string.IsNullOrWhiteSpace(settings.Language)
+                ? "en"
+                : settings.Language.Trim();
+            return settings;
         }
     }
 }

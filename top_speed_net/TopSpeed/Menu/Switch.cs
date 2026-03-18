@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Menu
 {
@@ -38,7 +39,8 @@ namespace TopSpeed.Menu
 
         public override string GetDisplayText()
         {
-            return $"{GetBaseText()}; switch {GetValueLabel(_getValue())}";
+            var typeLabel = LocalizationService.Translate(LocalizationService.Mark("switch"));
+            return $"{GetBaseText()}; {typeLabel} {GetValueLabel(_getValue())}";
         }
 
         public override string? ActivateAndGetAnnouncement()
@@ -52,7 +54,8 @@ namespace TopSpeed.Menu
 
         private string GetValueLabel(bool value)
         {
-            return value ? _valueOn : _valueOff;
+            var raw = value ? _valueOn : _valueOff;
+            return LocalizationService.Translate(raw);
         }
     }
 }

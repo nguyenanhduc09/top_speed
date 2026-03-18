@@ -1,4 +1,5 @@
 using System.Net;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 
@@ -24,7 +25,10 @@ namespace TopSpeed.Server.Network
 
         private void PacketFail(IPEndPoint endPoint, Command command)
         {
-            _logger.Warning($"Failed to parse {command} packet from {endPoint}.");
+            _logger.Warning(LocalizationService.Format(
+                LocalizationService.Mark("Failed to parse {0} packet from {1}."),
+                command,
+                endPoint));
         }
 
         private PlayerConnection? GetOrAddPlayer(IPEndPoint endpoint)
@@ -35,8 +39,10 @@ namespace TopSpeed.Server.Network
 
             if (_players.Count >= _config.MaxPlayers)
             {
-                SendStream(endpoint, PacketSerializer.WriteDisconnect("This server is full."), PacketStream.Control);
-                _logger.Warning($"Refused connection from {endpoint}: server is full.");
+                SendStream(endpoint, PacketSerializer.WriteDisconnect(LocalizationService.Mark("This server is full.")), PacketStream.Control);
+                _logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Refused connection from {0}: server is full."),
+                    endpoint));
                 return null;
             }
 
@@ -45,7 +51,10 @@ namespace TopSpeed.Server.Network
             _players[playerId] = player;
             _endpointIndex[key] = playerId;
 
-            _logger.Info($"Connection pending protocol negotiation: playerId={player.Id}, endpoint={endpoint}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Connection pending protocol negotiation: playerId={0}, endpoint={1}."),
+                player.Id,
+                endpoint));
             return player;
         }
     }

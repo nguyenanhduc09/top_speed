@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -18,20 +19,25 @@ namespace TopSpeed.Server.Network
             if (room.RaceStarted || room.PreparingRace)
             {
                 _roomMutationDenied++;
-                _logger.Debug($"Room add-bot denied: room={room.Id}, player={player.Id}, raceStarted={room.RaceStarted}, preparing={room.PreparingRace}.");
-                SendProtocolMessage(player, ProtocolMessageCode.Failed, "Cannot add bots while race setup or race is active.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Room add-bot denied: room={0}, player={1}, raceStarted={2}, preparing={3}."),
+                    room.Id,
+                    player.Id,
+                    room.RaceStarted,
+                    room.PreparingRace));
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, LocalizationService.Mark("Cannot add bots while race setup or race is active."));
                 return;
             }
 
             if (room.RoomType != GameRoomType.BotsRace)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.Failed, "Bots can only be added in race-with-bots rooms.");
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, LocalizationService.Mark("Bots can only be added in race-with-bots rooms."));
                 return;
             }
 
             if (GetRoomParticipantCount(room) >= room.PlayersToStart)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.RoomFull, "This game room is unavailable because it is full.");
+                SendProtocolMessage(player, ProtocolMessageCode.RoomFull, LocalizationService.Mark("This game room is unavailable because it is full."));
                 return;
             }
 
@@ -58,20 +64,25 @@ namespace TopSpeed.Server.Network
             if (room.RaceStarted || room.PreparingRace)
             {
                 _roomMutationDenied++;
-                _logger.Debug($"Room remove-bot denied: room={room.Id}, player={player.Id}, raceStarted={room.RaceStarted}, preparing={room.PreparingRace}.");
-                SendProtocolMessage(player, ProtocolMessageCode.Failed, "Cannot remove bots while race setup or race is active.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Room remove-bot denied: room={0}, player={1}, raceStarted={2}, preparing={3}."),
+                    room.Id,
+                    player.Id,
+                    room.RaceStarted,
+                    room.PreparingRace));
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, LocalizationService.Mark("Cannot remove bots while race setup or race is active."));
                 return;
             }
 
             if (room.RoomType != GameRoomType.BotsRace)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.Failed, "Bots can only be removed in race-with-bots rooms.");
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, LocalizationService.Mark("Bots can only be removed in race-with-bots rooms."));
                 return;
             }
 
             if (room.Bots.Count == 0)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.Failed, "There are no bots to remove.");
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, LocalizationService.Mark("There are no bots to remove."));
                 return;
             }
 
@@ -82,7 +93,7 @@ namespace TopSpeed.Server.Network
             TouchRoomVersion(room);
             EmitRoomParticipantEvent(room, RoomEventKind.BotRemoved, bot.Id, bot.PlayerNumber, bot.State, FormatBotDisplayName(bot));
             EmitRoomLifecycleEvent(room, RoomEventKind.RoomSummaryUpdated);
-            SendProtocolMessage(player, ProtocolMessageCode.Ok, $"Removed bot {bot.Name}.");
+            SendProtocolMessage(player, ProtocolMessageCode.Ok, LocalizationService.Format(LocalizationService.Mark("Removed bot {0}."), bot.Name));
             if (room.RaceStarted && CountActiveRaceParticipants(room) == 0)
                 StopRace(room);
             if (room.PreparingRace)

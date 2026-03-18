@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using TopSpeed.Localization;
 using TopSpeed.Server.Logging;
 
 namespace TopSpeed.Server.Network
@@ -36,7 +37,9 @@ namespace TopSpeed.Server.Network
             _client.Client.Bind(new IPEndPoint(IPAddress.Any, _config.DiscoveryPort));
             _cts = new CancellationTokenSource();
             _receiveTask = Task.Run(() => ReceiveLoop(_cts.Token));
-            _logger.Info($"Discovery service listening on {_config.DiscoveryPort}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Discovery service listening on {0}."),
+                _config.DiscoveryPort));
         }
 
         public void Stop()
@@ -47,7 +50,7 @@ namespace TopSpeed.Server.Network
             _client.Close();
             _client.Dispose();
             _client = null;
-            _logger.Info("Discovery service stopped.");
+            _logger.Info(LocalizationService.Mark("Discovery service stopped."));
         }
 
         private async Task ReceiveLoop(CancellationToken token)
@@ -73,7 +76,9 @@ namespace TopSpeed.Server.Network
                 }
                 catch (Exception ex)
                 {
-                    _logger.Warning($"Discovery receive failed: {ex.Message}");
+                    _logger.Warning(LocalizationService.Format(
+                        LocalizationService.Mark("Discovery receive failed: {0}"),
+                        ex.Message));
                 }
             }
         }

@@ -1,6 +1,7 @@
 using System;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Bots;
@@ -65,7 +66,11 @@ namespace TopSpeed.Server.Network
             bot.EngineFrequency = bot.AudioProfile.IdleFrequency;
             bot.BackfireArmed = true;
             _botStartEvents++;
-            _logger.Debug($"Bot started racing: room={room.Id}, bot={bot.Id}, number={bot.PlayerNumber}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Bot started racing: room={0}, bot={1}, number={2}."),
+                room.Id,
+                bot.Id,
+                bot.PlayerNumber));
             return false;
         }
 
@@ -94,7 +99,13 @@ namespace TopSpeed.Server.Network
             bot.StartDelaySeconds = BotRaceRules.DefaultBotRestartDelaySeconds;
             bot.EngineStartSecondsRemaining = 0f;
             _botRestartEvents++;
-            _logger.Debug($"Bot restarting after crash: room={room.Id}, bot={bot.Id}, number={bot.PlayerNumber}, restartDelay={BotRaceRules.DefaultBotRestartDelaySeconds:0.00}s, startDelay={BotRaceRules.DefaultBotEngineStartSeconds:0.00}s.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Bot restarting after crash: room={0}, bot={1}, number={2}, restartDelay={3:0.00}s, startDelay={4:0.00}s."),
+                room.Id,
+                bot.Id,
+                bot.PlayerNumber,
+                BotRaceRules.DefaultBotRestartDelaySeconds,
+                BotRaceRules.DefaultBotEngineStartSeconds));
             return true;
         }
 
@@ -135,7 +146,11 @@ namespace TopSpeed.Server.Network
             bot.EngineStartSecondsRemaining = 0f;
             bot.RacePhase = BotRacePhase.Normal;
             _botResumeEvents++;
-            _logger.Debug($"Bot recovered and resumed: room={room.Id}, bot={bot.Id}, number={bot.PlayerNumber}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Bot recovered and resumed: room={0}, bot={1}, number={2}."),
+                room.Id,
+                bot.Id,
+                bot.PlayerNumber));
             return true;
         }
     }

@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -15,7 +16,7 @@ namespace TopSpeed.Server.Network
         {
             var roomName = (packet.RoomName ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(roomName))
-                roomName = $"Game {_nextRoomId}";
+                roomName = LocalizationService.Format(LocalizationService.Mark("Game {0}"), _nextRoomId);
             if (roomName.Length > ProtocolConstants.MaxRoomNameLength)
                 roomName = roomName.Substring(0, ProtocolConstants.MaxRoomNameLength);
 
@@ -31,42 +32,62 @@ namespace TopSpeed.Server.Network
             SetTrack(room, room.TrackName);
             JoinRoom(player, room);
             EmitRoomLifecycleEvent(room, RoomEventKind.RoomCreated);
-            BroadcastLobbyAnnouncement($"{DescribePlayer(player)} created game room {room.Name}.");
-            _logger.Info($"Room created: room={room.Id} \"{room.Name}\", host={player.Id}, type={room.RoomType}, playersToStart={room.PlayersToStart}.");
+            BroadcastLobbyAnnouncement(LocalizationService.Format(
+                LocalizationService.Mark("{0} created game room {1}."),
+                DescribePlayer(player),
+                room.Name));
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Room created: room={0} \"{1}\", host={2}, type={3}, playersToStart={4}."),
+                room.Id,
+                room.Name,
+                player.Id,
+                room.RoomType,
+                room.PlayersToStart));
         }
 
         private void HandleJoinRoom(PlayerConnection player, PacketRoomJoin packet)
         {
             if (!_rooms.TryGetValue(packet.RoomId, out var room))
             {
-                SendProtocolMessage(player, ProtocolMessageCode.RoomNotFound, "Game room not found.");
+                SendProtocolMessage(player, ProtocolMessageCode.RoomNotFound, LocalizationService.Mark("Game room not found."));
                 return;
             }
 
             if (room.RaceStarted || room.PreparingRace)
             {
                 _joinDeniedRaceInProgress++;
-                _logger.Debug($"Join denied: player={player.Id}, room={room.Id}, raceStarted={room.RaceStarted}, preparing={room.PreparingRace}.");
-                SendProtocolMessage(player, ProtocolMessageCode.Failed, "This game room is currently in progress.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Join denied: player={0}, room={1}, raceStarted={2}, preparing={3}."),
+                    player.Id,
+                    room.Id,
+                    room.RaceStarted,
+                    room.PreparingRace));
+                SendProtocolMessage(player, ProtocolMessageCode.Failed, LocalizationService.Mark("This game room is currently in progress."));
                 return;
             }
 
             if (GetRoomParticipantCount(room) >= room.PlayersToStart)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.RoomFull, "This game room is unavailable because it is full.");
+                SendProtocolMessage(player, ProtocolMessageCode.RoomFull, LocalizationService.Mark("This game room is unavailable because it is full."));
                 return;
             }
 
             JoinRoom(player, room);
             EmitRoomLifecycleEvent(room, RoomEventKind.RoomSummaryUpdated);
-            _logger.Info($"Player joined room: room={room.Id} \"{room.Name}\", player={player.Id}, participants={GetRoomParticipantCount(room)}/{room.PlayersToStart}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Player joined room: room={0} \"{1}\", player={2}, participants={3}/{4}."),
+                room.Id,
+                room.Name,
+                player.Id,
+                GetRoomParticipantCount(room),
+                room.PlayersToStart));
         }
 
         private void HandleLeaveRoom(PlayerConnection player, bool notify)
         {
             if (!player.RoomId.HasValue)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, LocalizationService.Mark("You are not in a game room."));
                 return;
             }
 
@@ -99,7 +120,7 @@ namespace TopSpeed.Server.Network
             {
                 var stream = room.RaceStarted ? PacketStream.RaceEvent : PacketStream.Room;
                 SendToRoomOnStream(room, PacketSerializer.WritePlayer(Command.PlayerDisconnected, player.Id, oldNumber), stream);
-                SendProtocolMessageToRoom(room, $"{leftName} has left the game.");
+                SendProtocolMessageToRoom(room, LocalizationService.Format(LocalizationService.Mark("{0} has left the game."), leftName));
             }
 
             SendRoomState(player, null);
@@ -108,7 +129,7 @@ namespace TopSpeed.Server.Network
             {
                 _rooms.Remove(room.Id);
                 EmitRoomRemovedEvent(roomId, room.Name);
-                _logger.Info($"Room closed: room={room.Id} \"{room.Name}\".");
+                _logger.Info(LocalizationService.Format(LocalizationService.Mark("Room closed: room={0} \"{1}\"."), room.Id, room.Name));
             }
             else
             {
@@ -125,7 +146,12 @@ namespace TopSpeed.Server.Network
                     EmitRoomLifecycleEvent(room, RoomEventKind.HostChanged);
                 EmitRoomLifecycleEvent(room, RoomEventKind.RoomSummaryUpdated);
             }
-            _logger.Info($"Player left room: room={room.Id} \"{room.Name}\", player={player.Id}, notify={notify}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Player left room: room={0} \"{1}\", player={2}, notify={3}."),
+                room.Id,
+                room.Name,
+                player.Id,
+                notify));
         }
 
         private void JoinRoom(PlayerConnection player, RaceRoom room)
@@ -155,14 +181,21 @@ namespace TopSpeed.Server.Network
                 player.Id,
                 player.PlayerNumber,
                 player.State,
-                string.IsNullOrWhiteSpace(player.Name) ? $"Player {player.PlayerNumber + 1}" : player.Name);
+                string.IsNullOrWhiteSpace(player.Name)
+                    ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1)
+                    : player.Name);
 
             var joinedName = string.IsNullOrWhiteSpace(player.Name)
-                ? $"Player {player.PlayerNumber + 1}"
+                ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1)
                 : player.Name;
             var joined = new PacketPlayerJoined { PlayerId = player.Id, PlayerNumber = player.PlayerNumber, Name = joinedName };
             SendToRoomExceptOnStream(room, player.Id, PacketSerializer.WritePlayerJoined(joined), PacketStream.Room);
-            _logger.Debug($"Join room assignment: room={room.Id}, player={player.Id}, playerNumber={player.PlayerNumber}, host={room.HostId}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Join room assignment: room={0}, player={1}, playerNumber={2}, host={3}."),
+                room.Id,
+                player.Id,
+                player.PlayerNumber,
+                room.HostId));
         }
 
         private int FindFreeRoomNumber(RaceRoom room)

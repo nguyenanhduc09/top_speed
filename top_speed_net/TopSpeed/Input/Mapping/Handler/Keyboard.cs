@@ -1,4 +1,5 @@
 using SharpDX.DirectInput;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Input
 {
@@ -13,12 +14,12 @@ namespace TopSpeed.Input
                     continue;
                 if (KeyMapManager.IsReservedKey(key))
                 {
-                    _speech.Speak("That key is reserved.");
+                    _speech.Speak(LocalizationService.Mark("That key is reserved."));
                     return;
                 }
                 if (_raceInput.KeyMap.IsKeyInUse(key, _mappingAction))
                 {
-                    _speech.Speak("That key is already in use.");
+                    _speech.Speak(LocalizationService.Mark("That key is already in use."));
                     return;
                 }
 
@@ -26,7 +27,10 @@ namespace TopSpeed.Input
                 _saveSettings();
                 _mappingActive = false;
                 var label = _raceInput.KeyMap.GetLabel(_mappingAction);
-                _speech.Speak($"{label} set to {KeyMapManager.FormatKey(key)}.");
+                _speech.Speak(LocalizationService.Format(
+                    LocalizationService.Mark("{0} set to {1}."),
+                    label,
+                    KeyMapManager.FormatKey(key)));
                 return;
             }
         }

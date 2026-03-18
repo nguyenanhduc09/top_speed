@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Menu
 {
@@ -67,7 +68,8 @@ namespace TopSpeed.Menu
 
         public virtual string GetDisplayText()
         {
-            return _textProvider?.Invoke() ?? _text;
+            var text = _textProvider?.Invoke() ?? _text;
+            return LocalizationService.Translate(text);
         }
 
         public virtual string? ActivateAndGetAnnouncement()
@@ -97,26 +99,32 @@ namespace TopSpeed.Menu
             if (actionIndex < 0 || actionIndex >= _actions.Length)
                 return false;
 
-            label = _actions[actionIndex].Label ?? string.Empty;
+            var rawLabel = _actions[actionIndex].Label ?? string.Empty;
+            label = LocalizationService.Translate(rawLabel);
             return true;
         }
 
         public virtual string? GetHintText()
         {
+            var translatedHint = string.IsNullOrWhiteSpace(Hint)
+                ? null
+                : LocalizationService.Translate(Hint);
+
             if (HasActions)
             {
-                var actionsHint = "Actions available, press right arrow to view.";
-                if (string.IsNullOrWhiteSpace(Hint))
+                var actionsHint = LocalizationService.Translate(LocalizationService.Mark("Actions available, press right arrow to view."));
+                if (string.IsNullOrWhiteSpace(translatedHint))
                     return actionsHint;
-                return $"{Hint} {actionsHint}";
+                return $"{translatedHint} {actionsHint}";
             }
 
-            return Hint;
+            return translatedHint;
         }
 
         protected string GetBaseText()
         {
-            return _textProvider?.Invoke() ?? _text;
+            var text = _textProvider?.Invoke() ?? _text;
+            return LocalizationService.Translate(text);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Net;
 using LiteNetLib;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network
@@ -54,7 +55,7 @@ namespace TopSpeed.Network
                     if (!state.ProtocolNegotiated)
                     {
                         manager.Stop();
-                        state.Result = ConnectResult.CreateFail("This server does not support required protocol negotiation. Please update your server.");
+                        state.Result = ConnectResult.CreateFail(LocalizationService.Mark("This server does not support required protocol negotiation. Please update your server."));
                         return state;
                     }
 
@@ -99,7 +100,7 @@ namespace TopSpeed.Network
                     if (!IsCompatibilityAccepted(welcome.Status))
                     {
                         state.ProtocolFailureMessage = string.IsNullOrWhiteSpace(welcome.Message)
-                            ? "Connection refused due to protocol mismatch."
+                            ? LocalizationService.Mark("Connection refused due to protocol mismatch.")
                             : welcome.Message;
                         disconnectedDuringPoll = true;
                         continue;
@@ -131,7 +132,7 @@ namespace TopSpeed.Network
                     if (protocolMessage.Code == ProtocolMessageCode.Failed)
                     {
                         state.ProtocolFailureMessage = string.IsNullOrWhiteSpace(protocolMessage.Message)
-                            ? "Connection refused by server."
+                            ? LocalizationService.Mark("Connection refused by server.")
                             : protocolMessage.Message;
                         disconnectedDuringPoll = true;
                         continue;
@@ -178,8 +179,10 @@ namespace TopSpeed.Network
             }
 
             var reason = string.IsNullOrWhiteSpace(disconnectReason)
-                ? "The server refused the connection."
-                : $"The server refused the connection. Details: {disconnectReason}.";
+                ? LocalizationService.Mark("The server refused the connection.")
+                : LocalizationService.Format(
+                    LocalizationService.Mark("The server refused the connection. Details: {0}."),
+                    disconnectReason);
             return ConnectResult.CreateFail(reason);
         }
 

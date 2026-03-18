@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TopSpeed.Core.Settings;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Game
 {
     internal sealed partial class Game
@@ -21,10 +22,16 @@ namespace TopSpeed.Game
                 if (ShouldSkipSettingsIssue(issue))
                     continue;
                 var message = issue.Message.Trim();
-                var key = string.IsNullOrWhiteSpace(issue.Field) ? "unknown" : issue.Field;
+                var key = string.IsNullOrWhiteSpace(issue.Field)
+                    ? LocalizationService.Translate(LocalizationService.Mark("unknown"))
+                    : issue.Field;
                 var line = message.StartsWith("The key ", StringComparison.OrdinalIgnoreCase)
-                    ? $"{IssueSeverityLabel(issue.Severity)} {message}"
-                    : $"{IssueSeverityLabel(issue.Severity)} key '{key}': {message}";
+                    ? IssueSeverityLabel(issue.Severity) + " " + message
+                    : LocalizationService.Format(
+                        LocalizationService.Mark("{0} key '{1}': {2}"),
+                        IssueSeverityLabel(issue.Severity),
+                        key,
+                        message);
                 items.Add(new DialogItem(line));
             }
 
@@ -32,10 +39,12 @@ namespace TopSpeed.Game
                 return false;
 
             var hasWholeFileParseError = HasWholeFileParseError(_settingsIssues);
-            var title = hasWholeFileParseError ? "Settings file parse error" : "Settings notice";
+            var title = hasWholeFileParseError
+                ? LocalizationService.Mark("Settings file parse error")
+                : LocalizationService.Mark("Settings notice");
             var caption = hasWholeFileParseError
-                ? "The entire settings file could not be parsed. Defaults were loaded. Review this error before continuing."
-                : "Some settings were missing or invalid. Review these details.";
+                ? LocalizationService.Mark("The entire settings file could not be parsed. Defaults were loaded. Review this error before continuing.")
+                : LocalizationService.Mark("Some settings were missing or invalid. Review these details.");
 
             var dialog = new Dialog(
                 title,
@@ -43,7 +52,7 @@ namespace TopSpeed.Game
                 QuestionId.Ok,
                 items,
                 onResult: _ => onClose?.Invoke(),
-                new DialogButton(QuestionId.Ok, "OK"));
+                new DialogButton(QuestionId.Ok, LocalizationService.Mark("OK")));
             _dialogs.Show(dialog);
             return true;
         }
@@ -88,11 +97,11 @@ namespace TopSpeed.Game
             switch (severity)
             {
                 case SettingsIssueSeverity.Error:
-                    return "Error:";
+                    return LocalizationService.Translate(LocalizationService.Mark("Error:"));
                 case SettingsIssueSeverity.Warning:
-                    return "Warning:";
+                    return LocalizationService.Translate(LocalizationService.Mark("Warning:"));
                 default:
-                    return "Info:";
+                    return LocalizationService.Translate(LocalizationService.Mark("Info:"));
             }
         }
     }

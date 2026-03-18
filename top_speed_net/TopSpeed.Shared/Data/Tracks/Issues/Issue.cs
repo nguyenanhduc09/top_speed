@@ -1,3 +1,5 @@
+using TopSpeed.Localization;
+
 namespace TopSpeed.Data
 {
     public readonly struct TrackTsmIssue
@@ -15,9 +17,12 @@ namespace TopSpeed.Data
 
         public override string ToString()
         {
+            var severityLabel = Severity == TrackTsmIssueSeverity.Warning
+                ? LocalizationService.Translate(LocalizationService.Mark("Warning"))
+                : LocalizationService.Translate(LocalizationService.Mark("Error"));
             return LineNumber > 0
-                ? $"{Severity} (line {LineNumber}): {Message}"
-                : $"{Severity}: {Message}";
+                ? severityLabel + " (line " + LineNumber + "): " + Message
+                : severityLabel + ": " + Message;
         }
     }
 }

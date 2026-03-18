@@ -4,6 +4,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Bots;
@@ -49,7 +50,12 @@ namespace TopSpeed.Server.Network
             else if (string.Equals(reason, "bump", StringComparison.Ordinal))
                 _botHornBumpEvents++;
 
-            _logger.Debug($"Bot horn triggered: bot={bot.Id}, number={bot.PlayerNumber}, reason={reason}, duration={duration:0.00}s.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Bot horn triggered: bot={0}, number={1}, reason={2}, duration={3:0.00}s."),
+                bot.Id,
+                bot.PlayerNumber,
+                reason,
+                duration));
         }
 
         private static int CalculateBotEngineFrequency(RoomBot bot, out bool inShiftBand)

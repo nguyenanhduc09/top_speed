@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race
 {
@@ -14,28 +16,48 @@ namespace TopSpeed.Race
             var seconds = (raceTimeMs % 60000) / 1000;
             var parts = new List<string>();
             if (minutes > 0)
-                parts.Add($"{minutes} {(minutes == 1 ? "minute" : "minutes")}");
-            parts.Add($"{seconds} {(seconds == 1 ? "second" : "seconds")}");
+                parts.Add(LocalizationService.Format(
+                    minutes == 1
+                        ? LocalizationService.Mark("{0} minute")
+                        : LocalizationService.Mark("{0} minutes"),
+                    minutes));
+            parts.Add(LocalizationService.Format(
+                seconds == 1
+                    ? LocalizationService.Mark("{0} second")
+                    : LocalizationService.Mark("{0} seconds"),
+                seconds));
             if (detailed)
             {
                 var millis = raceTimeMs % 1000;
-                parts.Add($"point {millis:D3}");
+                parts.Add(LocalizationService.Format(
+                    LocalizationService.Mark("{0} milliseconds"),
+                    millis.ToString("D3", CultureInfo.InvariantCulture)));
             }
             return string.Join(" ", parts);
         }
 
-        protected static string FormatPercentageText(string label, int percent)
+        protected static string FormatRacePercentageText(int percent)
         {
             var clamped = Math.Max(0, Math.Min(100, percent));
-            return string.IsNullOrWhiteSpace(label)
-                ? $"{clamped} percent"
-                : $"{label} {clamped} percent";
+            return LocalizationService.Format(LocalizationService.Mark("Race percentage {0} percent"), clamped);
+        }
+
+        protected static string FormatLapPercentageText(int percent)
+        {
+            var clamped = Math.Max(0, Math.Min(100, percent));
+            return LocalizationService.Format(LocalizationService.Mark("Lap percentage {0} percent"), clamped);
+        }
+
+        protected static string FormatPlayerPercentageText(int percent)
+        {
+            var clamped = Math.Max(0, Math.Min(100, percent));
+            return LocalizationService.Format(LocalizationService.Mark("Player progress {0} percent"), clamped);
         }
 
         protected static string FormatVehicleName(string? name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                return "Vehicle";
+                return LocalizationService.Mark("Vehicle");
             return name!.Replace('_', ' ').Replace('-', ' ').Trim();
         }
 
@@ -44,55 +66,55 @@ namespace TopSpeed.Race
             switch (trackName)
             {
                 case "america":
-                    return "America";
+                    return LocalizationService.Mark("America");
                 case "austria":
-                    return "Austria";
+                    return LocalizationService.Mark("Austria");
                 case "belgium":
-                    return "Belgium";
+                    return LocalizationService.Mark("Belgium");
                 case "brazil":
-                    return "Brazil";
+                    return LocalizationService.Mark("Brazil");
                 case "china":
-                    return "China";
+                    return LocalizationService.Mark("China");
                 case "england":
-                    return "England";
+                    return LocalizationService.Mark("England");
                 case "finland":
-                    return "Finland";
+                    return LocalizationService.Mark("Finland");
                 case "france":
-                    return "France";
+                    return LocalizationService.Mark("France");
                 case "germany":
-                    return "Germany";
+                    return LocalizationService.Mark("Germany");
                 case "ireland":
-                    return "Ireland";
+                    return LocalizationService.Mark("Ireland");
                 case "italy":
-                    return "Italy";
+                    return LocalizationService.Mark("Italy");
                 case "netherlands":
-                    return "Netherlands";
+                    return LocalizationService.Mark("Netherlands");
                 case "portugal":
-                    return "Portugal";
+                    return LocalizationService.Mark("Portugal");
                 case "russia":
-                    return "Russia";
+                    return LocalizationService.Mark("Russia");
                 case "spain":
-                    return "Spain";
+                    return LocalizationService.Mark("Spain");
                 case "sweden":
-                    return "Sweden";
+                    return LocalizationService.Mark("Sweden");
                 case "switserland":
-                    return "Switzerland";
+                    return LocalizationService.Mark("Switzerland");
                 case "advHills":
-                    return "Rally hills";
+                    return LocalizationService.Mark("Rally hills");
                 case "advCoast":
-                    return "French coast";
+                    return LocalizationService.Mark("French coast");
                 case "advCountry":
-                    return "English country";
+                    return LocalizationService.Mark("English country");
                 case "advAirport":
-                    return "Ride airport";
+                    return LocalizationService.Mark("Ride airport");
                 case "advDesert":
-                    return "Rally desert";
+                    return LocalizationService.Mark("Rally desert");
                 case "advRush":
-                    return "Rush hour";
+                    return LocalizationService.Mark("Rush hour");
                 case "advEscape":
-                    return "Polar escape";
+                    return LocalizationService.Mark("Polar escape");
                 case "custom":
-                    return "Custom track";
+                    return LocalizationService.Mark("Custom track");
             }
 
             var baseName = trackName;
@@ -101,7 +123,7 @@ namespace TopSpeed.Race
             else if (trackName.Length > 4)
                 baseName = Path.GetFileNameWithoutExtension(trackName) ?? trackName;
             if (string.IsNullOrWhiteSpace(baseName))
-                baseName = "Track";
+                baseName = LocalizationService.Mark("Track");
             return FormatVehicleName(baseName);
         }
     }

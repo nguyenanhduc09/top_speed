@@ -1,0 +1,3261 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-18 04:38+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:97
+msgid "2 degrees"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:98
+msgid "3 degrees"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:99
+msgid "4 degrees"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:100
+msgid "5 degrees"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:115
+#, csharp-format
+msgid ""
+"A new version of Top Speed was detected. Your current version is {0}. The "
+"new version is {1}. Would you like to download the update?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Network.cs:36
+msgid "A saved server entry was ignored because the host is empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Audio.cs:19
+msgid ""
+"Accessibility option for clearer left-right cues with HRTF. It attenuates "
+"the opposite ear for your own car sounds only. Press ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Map\Actions.cs:19
+msgid "Action"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\MenuItem.cs:115
+msgid "Actions available, press right arrow to view."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:43
+msgid "Add a bot to this game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Menu.cs:34
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:52
+msgid "Add a new server"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:26
+msgid ""
+"Adjust category-based volume balance for engine sounds, effects, ambience, "
+"radio, music, and online events."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:157
+msgid "Adventure tracks are loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:50
+msgid "Ambients and sound sources"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:25
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:69
+msgid "America"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Program.cs:87
+#, csharp-format
+msgid "An unexpected error occurred. A log file was created: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:34
+msgid "An update download is already in progress."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Session.cs:24
+msgid "Are you sure you want to disconnect?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:27
+msgid "Are you sure you want to leave the current room?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Multiplayer\Quit.cs:20
+msgid "Are you sure you want to quit this multiplayer race?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:58
+msgid "Are you sure you would like to discard all changes?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Restore.cs:16
+msgid ""
+"Are you sure you would like to restore all settings to their default values?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:63
+msgid "Attempting to connect, please wait..."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:16
+msgid "Audio"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:26
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:71
+msgid "Austria"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:76
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:86
+msgid "Auto"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:82
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:92
+msgid ""
+"Auto detects wheel pedal direction from resting position. Use LEFT or RIGHT "
+"to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:145
+msgid "Automatic"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Audio.cs:20
+msgid "Automatic audio device format"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:30
+msgid "Automatic race information"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:83
+msgid "Automatic room name selected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:116
+msgid "Automatic transmission"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:74
+msgid "Available game rooms"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:27
+msgid "Available servers"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:27
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:73
+msgid "Belgium"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:58
+msgid "Both"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:84
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:102
+msgid "Bots can only be managed by the host in race-with-bots rooms."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:40
+msgid "Brake"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:83
+msgid "Brake pedal direction"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:28
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:75
+msgid "Brazil"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:52
+msgid "Call sign cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Language.cs:54
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:27
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Choice.cs:51
+msgid "Cancel"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:93
+msgid "Cancel and discard changes"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:47
+msgid "Cancel room creation"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:41
+msgid "Change game options"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:65
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:94
+msgid "Chat message cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:146
+msgid "Check for updates"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:49
+msgid "Check for updates on startup"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:42
+msgid "Check ping"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:42
+msgid "Checking for updates."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:29
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:77
+msgid "China"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Choice.cs:80
+msgid "Choice"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Device.cs:37
+msgid "Choose controller"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:39
+msgid ""
+"Choose how much automatic race information is spoken, such as lap numbers "
+"and player positions. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:59
+msgid ""
+"Choose the difficulty level for single races. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:19
+msgid ""
+"Choose the language used for menu and spoken interface text. Press ENTER to "
+"select."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Language.cs:40
+msgid "Choose the language."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:80
+msgid "Choose the number of laps for this room. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:24
+msgid "Choose the player capacity from 2 to 10. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:140
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:34
+msgid "Choose track type"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:23
+msgid ""
+"Choose what information the copilot reports during the race. Use LEFT or "
+"RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:35
+msgid ""
+"Choose whether this room is a race with bots, a multiplayer race without "
+"bots, or a one-on-one game. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:179
+msgid "Choose your transmission mode"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:169
+msgid "Choose your vehicle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:145
+msgid "Close"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:137
+msgid "Compatibility warning"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:38
+msgid ""
+"Configure default multiplayer hosting settings, including the server port "
+"used by the game."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:15
+msgid ""
+"Configure general gameplay and interface behavior, including units, usage "
+"hints, menu behavior, and update checking."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:30
+msgid ""
+"Configure input devices, force feedback, progressive keyboard behavior, key "
+"mappings, and menu shortcut mappings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:19
+msgid ""
+"Configure spatial audio behavior, including HRTF processing, stereo "
+"widening, and automatic device format detection."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:92
+msgid "Confirm game options"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:107
+msgid "Connected to server."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Result\ConnectResult.cs:69
+msgid "Connected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\PendingOperations.cs:23
+msgid "Connection attempt failed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:164
+msgid "Connection canceled."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:186
+msgid "Connection failed"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Result\ConnectResult.cs:74
+msgid "Connection failed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Connect.cs:87
+#, csharp-format
+msgid "Connection failed: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Result\ConnectResult.cs:65
+msgid "Connection lost before session initialization."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Poll.cs:135
+msgid "Connection refused by server."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Poll.cs:103
+msgid "Connection refused due to protocol mismatch."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Wizard.cs:16
+msgid "Continue"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:142
+msgid "Continue connection"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\ControlVehiclePanel.cs:5
+msgid "Control panel"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Device.cs:55
+msgid "Controller selected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Device.cs:53
+#, csharp-format
+msgid "Controller selected. {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Devices\Joystick\JoystickDevice.cs:196
+#, csharp-format
+msgid "Controller {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:27
+msgid "Controls"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:33
+msgid ""
+"Controls engine-related sounds for bots and other players, including engine "
+"start and stop."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:28
+msgid ""
+"Controls events related to your own vehicle, such as horn, back-fire, and "
+"other vehicle events."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:38
+msgid ""
+"Controls horns, crashes, bumps, brakes, and similar event sounds for bots "
+"and other players."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:62
+msgid ""
+"Controls menu and race music volume. This stays synchronized with the menu "
+"music volume setting."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:48
+msgid ""
+"Controls radio playback volume from other players only. Your own radio "
+"playback is not affected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:43
+msgid "Controls road and surface loops like asphalt, gravel, etc."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:67
+msgid ""
+"Controls server and multiplayer event sounds such as connection and other "
+"events."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:18
+msgid ""
+"Controls the overall audio volume for the game. Set lower to reduce every "
+"sound category."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:53
+msgid ""
+"Controls track ambients, weather loops, noise sounds, and custom track sound "
+"sources."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:23
+msgid ""
+"Controls your own engine and throttle sounds, including engine start and "
+"stop."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:14
+msgid "Copilot"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playlist.cs:51
+msgid "Could not read files from the selected folder."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:34
+msgid "Create a new game"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:17
+msgid "Create a new game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:81
+msgid "Create room controls are loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:46
+msgid "Create this game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:45
+msgid "Current gear"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:46
+msgid "Current lap number"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:48
+msgid "Current lap percentage"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:47
+msgid "Current race percentage"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:49
+msgid "Current race time"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:24
+msgid "Curve announcements"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:100
+msgid "Custom"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Selection\TrackSource.cs:38
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:30
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:117
+msgid "Custom track"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:179
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:197
+msgid "Custom track errors"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Selection\VehicleSource.cs:36
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:131
+msgid "Custom vehicle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:212
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:229
+msgid "Custom vehicle errors"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:69
+msgid "Custom vehicle file must use .tsv extension."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:96
+msgid "Default (1 degree)"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Prompt.cs:18
+#, csharp-format
+msgid "Default server port reset to {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Prompt.cs:32
+#, csharp-format
+msgid "Default server port set to {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Server.cs:14
+#, csharp-format
+msgid "Default server port: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Core.cs:28
+msgid "Defaults restored."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Menu.cs:30
+msgid "Delete"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Delete.cs:16
+msgid "Delete this server?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Dialog.cs:80
+msgid "Dialog"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:61
+msgid "Discard changes"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:143
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:37
+msgid "Disconnect"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:21
+msgid "Disconnect from server"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Session.cs:12
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Packets\PacketControl.cs:18
+msgid "Disconnected from server."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:139
+msgid "Do you want to quit race preparation and stay in this game room?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Download.cs:94
+msgid "Download failed"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:94
+#, csharp-format
+msgid "Download failed with status code {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:164
+#, csharp-format
+msgid "Download failed: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:154
+msgid "Download timed out or was canceled."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:145
+msgid "Download update"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:18
+#, csharp-format
+msgid "Downloaded size: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:22
+msgid "Downloading update..."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:135
+#, csharp-format
+msgid "Duplicate key '{0}' in section [{1}] is not allowed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:62
+#, csharp-format
+msgid "Duplicate room id '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:103
+#, csharp-format
+msgid "Duplicate section [{0}] is not allowed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:55
+#, csharp-format
+msgid "Duplicate segment id '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:67
+#, csharp-format
+msgid "Duplicate sound id '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Menu.cs:29
+msgid "Edit"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Audio.cs:12
+msgid "Enable HRTF audio"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:44
+msgid "Enable menu navigation panning"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:38
+msgid "Enable menu wrapping"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:34
+msgid "Enable usage hints"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:28
+msgid ""
+"Enables force feedback or vibration if your controller supports it. Press "
+"ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:30
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:79
+msgid "England"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:48
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:107
+msgid "English country"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:69
+msgid ""
+"Enter a room name. Leave this field empty to use an automatic room name."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:15
+msgid "Enter the IP address or domain manually"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connection.cs:28
+msgid "Enter the default server port used for manual connections."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Prompt.cs:45
+msgid "Enter the server IP address or domain."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Draft.cs:29
+msgid "Enter the server IP address or host name."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Draft.cs:12
+msgid "Enter the server name."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Draft.cs:47
+msgid "Enter the server port, or leave empty for default."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Prompt.cs:65
+msgid "Enter your call sign."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:20
+msgid "Enter your global chat message."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:43
+msgid "Enter your room chat message."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Issues\Issue.cs:22
+msgid "Error"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:100
+msgid "Error:"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:147
+msgid "Exit Game"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Connect.cs:61
+msgid "Failed to initialize network client."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\loader\Custom.cs:27
+#, csharp-format
+msgid "Failed to load custom vehicle '{0}'. {1}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:93
+#, csharp-format
+msgid "Failed to load radio media. {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Selection\TrackSource.cs:49
+#: D:\top_speed\top_speed_net\TopSpeed\Tracks\TrackLoadException.cs:40
+msgid "Failed to load this track file."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Selection\VehicleSource.cs:48
+msgid "Failed to load this vehicle file."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Tracks\TrackLoadException.cs:13
+#, csharp-format
+msgid "Failed to load track '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Live\Tx.cs:49
+msgid "Failed to open local radio media for live streaming."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:70
+msgid "Failed to send chat message."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Helpers.cs:51
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Multiplayer\Quit.cs:70
+msgid "Failed to send data. Please check your connection."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:174
+msgid "Failed to send handshake."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:58
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:64
+#, csharp-format
+msgid "Failed to send handshake: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:99
+msgid "Failed to send room chat message."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:34
+msgid "Fast (0.50 seconds)"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:33
+msgid "Fastest (0.25 seconds)"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:17
+#, csharp-format
+msgid "File size: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Selection\SourceBase.cs:70
+#, csharp-format
+msgid "File: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:31
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:81
+msgid "Finland"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:25
+msgid "Force feedback"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:32
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:83
+msgid "France"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:47
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:105
+msgid "French coast"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:12
+msgid "Game settings"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:31
+msgid "Game type"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:34
+msgid "Gear reverse"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:35
+#, csharp-format
+msgid "Gear {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:33
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:85
+msgid "Germany"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:128
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Catalog.cs:109
+msgid "Global shortcuts"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Discovery.cs:48
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:130
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:154
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:40
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:181
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:198
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:45
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Menu.cs:35
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:263
+msgid "Go back"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:119
+msgid "Go back to vehicle selection"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:57
+msgid "History"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:75
+msgid ""
+"How many labs should the session be. This applys to single race, time trial "
+"and multiPlayer modes."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Core\State.cs:113
+msgid ""
+"I really have nothing interesting to put here not even the secret to life "
+"except this really long run on sentence that is probably the most boring "
+"thing you have ever read but that will help me get an idea of how fast your "
+"screen reader is speaking."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:20
+msgid "Include custom tracks in randomization"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:24
+msgid "Include custom vehicles in randomization"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:104
+msgid "Info:"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:99
+#, csharp-format
+msgid "Invalid ambience value '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:173
+#, csharp-format
+msgid "Invalid boolean '{0}' for key '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:59
+#, csharp-format
+msgid "Invalid key '{0}'. Source gear must be within 1..{1}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:71
+#, csharp-format
+msgid "Invalid key '{0}'. Use upshift_delay_X_Y for adjacent gears."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:115
+msgid "Invalid line. Expected [section] or key=value."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:207
+#, csharp-format
+msgid "Invalid numeric value '{0}' for key '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Prompt.cs:25
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Draft.cs:66
+msgid "Invalid port. Enter a number between 1 and 65535."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:222
+#, csharp-format
+msgid "Invalid room override value '{0}' for key '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:108
+#, csharp-format
+msgid "Invalid room value '{0}' for key '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:59
+#, csharp-format
+msgid "Invalid segment height '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:43
+#, csharp-format
+msgid "Invalid segment length '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:36
+#, csharp-format
+msgid "Invalid segment noise '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:29
+#, csharp-format
+msgid "Invalid segment surface '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:22
+#, csharp-format
+msgid "Invalid segment type '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:52
+#, csharp-format
+msgid "Invalid segment width '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:166
+#, csharp-format
+msgid "Invalid sound random mode '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:128
+#, csharp-format
+msgid "Invalid sound type '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:341
+#, csharp-format
+msgid "Invalid torque curve key '{0}'. Use format like 2000rpm=200."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:350
+#, csharp-format
+msgid "Invalid torque value '{0}' for '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:200
+#, csharp-format
+msgid "Invalid vector '{0}' for key '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:97
+#, csharp-format
+msgid "Invalid weather value '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:78
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:88
+msgid "Inverted"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:34
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:87
+msgid "Ireland"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:35
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:89
+msgid "Italy"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:13
+msgid "Join a game on the local network"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:91
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:107
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:127
+msgid "Join a game room first"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:18
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:35
+msgid "Join an existing game"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:57
+msgid "Joystick"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Input.cs:32
+msgid ""
+"Joystick bindings section is missing. Defaults were used for joystick "
+"bindings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:159
+#, csharp-format
+msgid "Key '{0}' contains a non-float value '{1}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:19
+#, csharp-format
+msgid "Key '{0}' in section [{1}] must not be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:89
+#, csharp-format
+msgid "Key '{0}' is missing a value."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:138
+#, csharp-format
+msgid "Key '{0}' must be a boolean or 0/1 integer."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:93
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:119
+#, csharp-format
+msgid "Key '{0}' must be a float."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:62
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:77
+#, csharp-format
+msgid "Key '{0}' must be an integer."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:167
+#, csharp-format
+msgid "Key '{0}' must contain at least one float value."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:41
+#, csharp-format
+msgid "Key '{0}' must contain at least one path."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:67
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:103
+#, csharp-format
+msgid "Key '{0}' value {1} is outside allowed range {2} to {3}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:56
+msgid "Keyboard"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Input.cs:22
+msgid ""
+"Keyboard bindings section is missing. Defaults were used for keyboard "
+"bindings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:61
+msgid "Language"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Language.cs:78
+#, csharp-format
+msgid "Language remains {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Language.cs:74
+#, csharp-format
+msgid "Language set to {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:48
+#, csharp-format
+msgid "Lap percentage {0} percent"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:43
+#, csharp-format
+msgid "Lap {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Session.cs:23
+msgid "Leave server?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:47
+msgid "Leave this game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:26
+msgid "Leave this game room?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:51
+msgid "Leaving game room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Model\Types.cs:29
+#, csharp-format
+msgid "Line {0}: {1}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Live\Tx.cs:146
+msgid "Live streaming stopped because Opus encoding failed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Live\Tx.cs:133
+msgid "Live streaming stopped because media decoding failed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:74
+#, csharp-format
+msgid "Loop mode {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:35
+msgid ""
+"Main Menu. Use the view finder to move through the options. Press up or down "
+"to navigate. Press right or button 1 to select. Press left to back out of "
+"any menu."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:36
+msgid ""
+"Main Menu. Use your arrow keys or the view finder to move through the "
+"options. Press ENTER or right or button 1 to select. Press ESCAPE or left to "
+"back out of any menu. Pressing HOME or END will move you to the top or "
+"bottom of a menu."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:34
+msgid ""
+"Main Menu. Use your arrow keys to navigate the options. Press ENTER to "
+"select. Press ESCAPE to back out of any menu. Pressing HOME or END will move "
+"you to the top or bottom of a menu."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:148
+msgid "Main menu"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:75
+msgid "Malformed line. Expected '[section]' or 'key = value'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:14
+msgid "Manage saved servers"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:146
+msgid "Manual"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:117
+msgid "Manual transmission"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:42
+msgid "Map joystick keys"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:41
+msgid "Map keyboard keys"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:43
+msgid "Map menu shortcuts"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Core.cs:73
+msgid "Mapping cancelled."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:15
+msgid "Master audio volume"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:20
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:82
+msgid "Maximum players allowed in this room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\RaceUi.cs:47
+msgid "Menu sound preset was empty and was reset to default."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:81
+msgid "Menu sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:74
+#, csharp-format
+msgid "Menu sounds: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:22
+#, csharp-format
+msgid "Missing file: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:13
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:35
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:56
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:87
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:129
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Values.cs:146
+#, csharp-format
+msgid "Missing required key '{0}' in section [{1}]."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:146
+#, csharp-format
+msgid "Missing required section [{0}]."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:35
+msgid "Moderate (0.75 seconds)"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\KeyMapManager.cs:140
+#, csharp-format
+msgid "Move or press the joystick control for {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:144
+msgid "MultiPlayer game"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:39
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:42
+msgid "Multiplayer lobby"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:70
+msgid "Multiplayer shortcuts"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Device.cs:38
+msgid "Multiple game controllers were detected. Select one controller to use."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:55
+msgid "Music volume"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Audio.cs:101
+msgid "Music volume is not a valid number and was reset to default."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:36
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:91
+msgid "Netherlands"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Live\Tx.cs:152
+msgid "Network send failed while sending live frame."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Live\Tx.cs:119
+msgid "Network send failed while sending live start."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Live\Tx.cs:176
+msgid "Network send failed while sending live stop."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Multiplayer\MultiplayerMode\Run.cs:124
+msgid "Network send failed. Please check your connection."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:136
+msgid "New version detected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:127
+msgid "Next chat category"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Restore.cs:13
+msgid "No"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:185
+msgid "No custom tracks found."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:218
+msgid "No custom vehicles found."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:41
+msgid "No folder playlist loaded."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playlist.cs:16
+msgid "No folder was selected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\RoomSync\Handlers.cs:32
+msgid "No game rooms are currently available."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:46
+msgid "No game rooms found"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Core\Init.cs:38
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Core.cs:46
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Joystick.cs:13
+msgid "No joystick detected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Language.cs:34
+msgid "No languages are available."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\RadioController\Load.cs:16
+msgid "No media file selected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\Buffers.cs:28
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:56
+msgid "No messages yet."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:97
+msgid "No option changes to apply."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:117
+msgid "No players are currently connected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:138
+msgid "No players are currently in this game room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Connect.cs:141
+msgid ""
+"No protocol negotiation response from server. The server may be outdated or "
+"incompatible."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:15
+msgid "No radio media loaded."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Connect.cs:142
+msgid "No response from server. The server may be offline or unreachable."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Connect.cs:17
+msgid "No server address was provided."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Discovery.cs:36
+msgid ""
+"No servers were found on the local network. You can enter an address "
+"manually."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:195
+msgid "No shortcut group selected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:138
+msgid "No shortcuts in this group."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playlist.cs:58
+msgid "No supported audio files were found in the selected folder."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:92
+msgid "No updates found"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:143
+msgid "No, continue preparing"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Multiplayer\Quit.cs:24
+msgid "No, continue racing"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Delete.cs:20
+msgid "No, keep this server"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Session.cs:28
+msgid "No, stay connected"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:31
+msgid "No, stay in this game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:77
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:87
+msgid "Normal"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Ping.cs:13
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:15
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:32
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:58
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:81
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:45
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:60
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:78
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:96
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:114
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:159
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:16
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:33
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:57
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:98
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:19
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:56
+msgid "Not connected to a server."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Interfaces.cs:29
+msgid "Not implemented yet."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:45
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:88
+msgid "Number of computer players"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:76
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:40
+msgid "Number of laps"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:191
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Dialogs.cs:30
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:55
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:53
+msgid "OK"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:32
+msgid "Off"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Calibration.cs:30
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Calibration.cs:34
+msgid "Ok"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:25
+msgid "One-on-one without bots"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:120
+msgid "Online players"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:64
+msgid "Online server event sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:64
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:23
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:62
+msgid "Only the host can change game options."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:66
+msgid "Only the host can start the game."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\RoomSync\Handlers.cs:160
+msgid "Only you are connected right now."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:49
+msgid "Open global chat"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:56
+msgid "Open room chat"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:57
+msgid "Opens chat input for the current room chat when you are inside a room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:50
+msgid "Opens chat input for the global multiplayer lobby chat."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:20
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:145
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:36
+msgid "Options"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:30
+msgid "Other vehicles engine sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:35
+msgid "Other vehicles event sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:79
+msgid "Panel"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:54
+msgid "Pause"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:19
+#, csharp-format
+msgid "Percentage: {0}%"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Ping.cs:19
+msgid "Ping check already in progress."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:89
+msgid "Player"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:54
+#, csharp-format
+msgid "Player progress {0} percent"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:62
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\RoomSync\Participants.cs:18
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Domain\OnlineMap.cs:50
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:145
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:59
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Packets\PacketRoom.cs:32
+#, csharp-format
+msgid "Player {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:110
+msgid "Players in room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:17
+msgid "Please enter a server address."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Discovery.cs:23
+msgid "Please wait. Scanning for servers on the local network."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:52
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:115
+msgid "Polar escape"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:37
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:93
+msgid "Portugal"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:67
+msgid "Preparing to race"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:74
+msgid ""
+"Press ENTER to choose race tracks, street adventure tracks, or a random "
+"track."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:45
+msgid ""
+"Press ENTER to enter a room name. Leave it empty to use an automatic name."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:40
+msgid "Press OK to close the game and install the update."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\KeyMapManager.cs:139
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:63
+#, csharp-format
+msgid "Press the new key for {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:121
+msgid "Previous chat category"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:29
+msgid "Progressive keyboard input"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:81
+#, csharp-format
+msgid "Property '{0}' is outside any section."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:186
+msgid ""
+"Provide tire_circumference or all of tire_width, tire_aspect, and tire_rim."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Question.cs:90
+msgid "Question"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:141
+msgid "Quick start"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Race\Setup.cs:79
+msgid "Quick start."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:138
+msgid "Quit race preparation?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Multiplayer\Quit.cs:19
+msgid "Quit race?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:42
+#, csharp-format
+msgid "Race percentage {0} percent"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:31
+msgid "Race settings"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:46
+#, csharp-format
+msgid "Race started in {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:50
+#, csharp-format
+msgid "Race stopped in {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:72
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:84
+#, csharp-format
+msgid "Race time {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:178
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:137
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:28
+msgid "Race track"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:147
+msgid "Race tracks are loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:23
+msgid "Race with bots"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:24
+msgid "Race without bots"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Core.cs:65
+msgid "Radio"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:104
+#, csharp-format
+msgid "Radio loaded {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:33
+msgid "Radio paused."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:25
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:32
+msgid "Radio playing."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:45
+msgid "Radio volume"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:50
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:111
+msgid "Rally desert"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:46
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:103
+msgid "Rally hills"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:180
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:197
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:31
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:49
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:83
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:101
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:136
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:147
+msgid "Random"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:118
+msgid "Random transmission mode"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:108
+msgid "Random vehicle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:129
+msgid "Ready. Waiting for other players."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:53
+msgid "Recalibrate screen reader rate"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\RadioController\Load.cs:78
+msgid "Received media is empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:45
+msgid "Remove the last bot that was added"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:51
+msgid "Report distance"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:52
+msgid "Report speed"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:53
+msgid "Report track name"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:44
+msgid "Request position information"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:42
+msgid "Reset all configurable settings back to their default values."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:39
+msgid "Restore default settings"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:78
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:33
+msgid "Return to multiplayer lobby"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:57
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:65
+msgid "Return to room controls"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:177
+msgid "Returned to room controls."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Flow\VehicleStep.cs:40
+msgid "Reverse"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:138
+msgid "Review these details before connecting."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:49
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:109
+msgid "Ride airport"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:94
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:97
+msgid "Room controls"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:88
+#, csharp-format
+msgid "Room name set to {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:39
+msgid "Room name, currently automatic"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Create.cs:41
+#, csharp-format
+msgid "Room name, currently {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:96
+msgid "Room options updated."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:51
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:113
+msgid "Rush hour"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:38
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:95
+msgid "Russia"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:60
+msgid "Save changes"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:57
+msgid "Save changes before closing?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:40
+msgid "Save server"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:39
+msgid "Save server changes"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Menu.cs:72
+msgid "Saved server host is empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Accessibility.cs:24
+msgid "Screen reader rate is not a valid number and was reset to default."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Core\State.cs:111
+msgid ""
+"Screen-reader calibration. You'll be presented with a short piece of text on "
+"the next screen. Press ENTER when your screen-reader finishes speaking it."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:47
+#, csharp-format
+msgid "Section '{0}' requires an id."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:387
+msgid ""
+"Section [torque_curve] must define at least two RPM points, or a preset with "
+"enough points."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:141
+#, csharp-format
+msgid ""
+"Segment '{0}' references room '{1}', but no matching [room:{1}] section or "
+"preset exists."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:154
+#, csharp-format
+msgid ""
+"Segment '{0}' references sound source '{1}', but no matching [sound:{1}] "
+"section exists."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:45
+#, csharp-format
+msgid "Segment length '{0}' is below minimum {1} and will be clamped."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:67
+msgid "Segment room id cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:80
+msgid "Segment sound source list cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:56
+msgid "Select a custom track"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:108
+msgid "Select a custom vehicle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:150
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:160
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:51
+msgid "Select a track"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:103
+msgid "Select a vehicle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:21
+#, csharp-format
+msgid "Select device: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:61
+msgid "Select input device"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Selection.cs:120
+msgid "Select radio media file"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Selection.cs:155
+msgid "Select radio media folder"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:86
+msgid "Select the menu sound preset. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:86
+msgid ""
+"Select the player capacity for this room. The host can start with fewer "
+"players. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:150
+msgid "Select transmission mode"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:90
+msgid "Server IP or host cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:24
+msgid "Server IP or host, currently empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:26
+#, csharp-format
+msgid "Server IP or host, currently set to {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Delete.cs:53
+msgid "Server deleted."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:65
+msgid "Server details"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:62
+msgid "Server form is loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:17
+msgid "Server name, currently empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:19
+#, csharp-format
+msgid "Server name, currently set to {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:34
+msgid "Server port, currently empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:32
+#, csharp-format
+msgid "Server port, currently set to {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Form.cs:108
+msgid "Server saved."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:35
+msgid "Server settings"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:132
+#, csharp-format
+msgid "Server supported protocol versions: {0} to {1}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:34
+msgid ""
+"Set race behavior defaults such as copilot callouts, curve announcements, "
+"automatic info, laps, computer opponents, and difficulty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:49
+msgid ""
+"Sets how many computer-controlled cars will race against you. Use LEFT or "
+"RIGHT to change by 1, PAGE UP or PAGE DOWN to change by 10, HOME for "
+"maximum, END for minimum."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:44
+msgid ""
+"Sets how many laps the session will be for single race, time trial, and "
+"multiplayer. Use LEFT or RIGHT to change by 1, PAGE UP or PAGE DOWN to "
+"change by 10, HOME for maximum, END for minimum."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:116
+msgid ""
+"Sets how much small steering movement is ignored around center. Default is 1 "
+"degree. Use LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\ParseErrors.cs:23
+#, csharp-format
+msgid ""
+"Settings file '{0}' could not be read as valid JSON. Defaults were used. "
+"Details: {1}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Load.cs:88
+#, csharp-format
+msgid "Settings file '{0}' is empty or invalid. Defaults were used."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Load.cs:25
+#, csharp-format
+msgid "Settings file '{0}' was not found. Default settings were created."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:43
+msgid "Settings file parse error"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:44
+msgid "Settings notice"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Wizard.cs:11
+msgid "Setup wizard."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:134
+msgid "Shared lobby chat"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:42
+msgid "Shift gear down"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:41
+msgid "Shift gear up"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Input.cs:112
+msgid "Shortcut binding id is missing and was ignored."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:70
+msgid "Shortcut mapping cancelled."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:63
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Selection.cs:89
+#, csharp-format
+msgid "Shuffle mode {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:143
+msgid "Single race"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:50
+msgid "Single race difficulty"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Race\Setup.cs:80
+msgid "Single race."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:36
+msgid "Slowest (1.00 second)"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:180
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:198
+msgid "Some custom track files are invalid and were skipped."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:213
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:230
+msgid "Some custom vehicle files are invalid and were skipped."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:47
+msgid "Some settings were missing or invalid. Review these details."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:177
+#, csharp-format
+msgid ""
+"Sound '{0}' references end_area '{1}', but no matching segment id exists."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:166
+#, csharp-format
+msgid ""
+"Sound '{0}' references start_area '{1}', but no matching segment id exists."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:149
+#, csharp-format
+msgid ""
+"Sound key '{0}' contains invalid path '{1}'. Paths must be track-relative."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:135
+#, csharp-format
+msgid ""
+"Sound key '{0}' must be a track-relative path and cannot escape the track "
+"folder."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:143
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:159
+#, csharp-format
+msgid "Sound list for '{0}' cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:39
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:97
+msgid "Spain"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Rooms.cs:43
+msgid "Speaks your current ping while you are in multiplayer menus."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:50
+msgid "Start the engine"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:39
+msgid "Start this game now"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:37
+msgid "Steer left"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:38
+msgid "Steer right"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:93
+msgid "Steering dead zone"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Audio.cs:16
+msgid "Stereo widening for own car"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:179
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Race.cs:29
+msgid "Street adventure"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:40
+msgid "Surface loop sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:40
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:99
+msgid "Sweden"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:29
+msgid ""
+"Switch between fixed distance and speed dependent curve announcements. Press "
+"ENTER to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:33
+msgid "Switch between metric and imperial units. Press ENTER to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:128
+msgid ""
+"Switches chat history to the next category in the shared lobby chat view."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:122
+msgid ""
+"Switches chat history to the previous category in the shared lobby chat view."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\TrackList.cs:41
+msgid "Switserland"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:101
+msgid "Switzerland"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Joystick.cs:30
+msgid "That control is already in use."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:82
+msgid "That key is already in use in this shortcut group."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Keyboard.cs:22
+msgid "That key is already in use."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Keyboard.cs:17
+msgid "That key is reserved."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Core.cs:41
+msgid ""
+"The accessibility section is missing. Defaults were used for accessibility "
+"settings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Core.cs:16
+msgid "The audio section is missing. Defaults were used for audio settings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:183
+msgid "The connection attempt failed for an unknown reason."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:46
+msgid ""
+"The entire settings file could not be parsed. Defaults were loaded. Review "
+"this error before continuing."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:81
+msgid "The game could not check for updates."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Core.cs:21
+msgid "The input section is missing. Defaults were used for input settings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Input.cs:126
+#, csharp-format
+msgid ""
+"The key input.menuShortcuts.bindings[{0}].key has invalid value {1} and was "
+"ignored."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Validation\Core.cs:147
+#, csharp-format
+msgid "The key {0} has invalid value {1}, which was replaced with {2}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Core.cs:36
+msgid ""
+"The network section is missing. Defaults were used for network settings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Ping.cs:50
+#, csharp-format
+msgid "The ping took {0} milliseconds."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Core.cs:26
+msgid "The race section is missing. Defaults were used for race settings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playlist.cs:35
+msgid "The selected folder does not exist."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playlist.cs:28
+msgid "The selected folder path is invalid."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Selection.cs:56
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\RadioController\Load.cs:23
+msgid "The selected media file does not exist."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Race\Setup.cs:108
+msgid "The selected track could not be loaded. The race was not started."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:126
+msgid "The server and client are compatible, but not an exact match."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Poll.cs:182
+msgid "The server refused the connection."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Poll.cs:184
+#, csharp-format
+msgid "The server refused the connection. Details: {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Result\ConnectResult.cs:86
+msgid ""
+"The server supports an older protocol range. You can continue, but some "
+"features may behave differently."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Apply\Core.cs:31
+msgid "The ui section is missing. Defaults were used for menu settings."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:18
+msgid "The update could not be installed automatically."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:39
+msgid "The update download is complete."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:31
+msgid "The update info file could not be read."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:34
+msgid "The update info file has an invalid version format."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Download.cs:95
+msgid "The update package could not be downloaded."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:32
+msgid "The update package file was not found."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:57
+msgid "The updater could not be started."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\ParseErrors.cs:16
+#, csharp-format
+msgid "The value '{0}' for the key '{1}' could not be parsed as Boolean. {2}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Choice.cs:70
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Dialog.cs:71
+msgid "This dialog is not cancelable. You need to choose an option."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Poll.cs:58
+msgid ""
+"This server does not support required protocol negotiation. Please update "
+"your server."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Delete.cs:17
+msgid ""
+"This will remove the saved server entry from the list. Are you sure you "
+"would like to continue?"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:39
+msgid "Throttle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:73
+msgid "Throttle pedal direction"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Core.cs:142
+msgid "Time trial"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Race\Setup.cs:60
+msgid "Time trial."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Program.cs:89
+#: D:\top_speed\top_speed_net\TopSpeed\Window\GameWindow.cs:20
+msgid "Top Speed"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:121
+#, csharp-format
+msgid "Top-level key '{0}' is not supported."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:359
+#, csharp-format
+msgid "Torque curve RPM '{0:F0}' must be between 300 and 25000."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:368
+#, csharp-format
+msgid "Torque value '{0:F1}' must be between 0 and 5000 Nm."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:126
+#: D:\top_speed\top_speed_net\TopSpeed\Tracks\TrackLoadException.cs:27
+msgid "Track"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Parser.cs:31
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Parser.cs:55
+#, csharp-format
+msgid "Track file not found: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Race\Setup.cs:107
+msgid "Track load error"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:129
+msgid "Track must include at least one [segment:<id>] section."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Parser.cs:65
+#, csharp-format
+msgid "Track path must point to a .tsm file inside a track folder: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:107
+msgid "Track, currently random chosen."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:114
+#, csharp-format
+msgid "Track, currently {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Tracks\TrackLoadException.cs:30
+#, csharp-format
+msgid "Track: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:176
+msgid "Transmission selection is loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Device.cs:59
+msgid "Unable to activate the selected controller."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:93
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:99
+msgid "Unable to apply the new shortcut key."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:26
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:159
+msgid "Unable to resolve server address."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:31
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:37
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:43
+#, csharp-format
+msgid "Unable to resolve server address: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:28
+msgid "Units"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:60
+msgid "Unknown"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\ParseErrors.cs:12
+msgid "Unknown error."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Program.cs:21
+msgid "Unknown exception."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:128
+#, csharp-format
+msgid "Unknown key '{0}' in section [{1}]."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\loader\Custom.cs:24
+msgid "Unknown parse error."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:113
+#, csharp-format
+msgid "Unknown room key '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:101
+#, csharp-format
+msgid "Unknown room preset '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Validate.cs:39
+#, csharp-format
+msgid "Unknown section '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:96
+#, csharp-format
+msgid "Unknown section [{0}]."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:90
+#, csharp-format
+msgid "Unknown segment key '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:212
+#, csharp-format
+msgid "Unknown sound key '{0}'."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:312
+#, csharp-format
+msgid "Unknown torque curve preset '{0}'. Valid values: {1}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:227
+msgid "Unknown update error."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Load.cs:100
+#, csharp-format
+msgid ""
+"Unsupported settings schema version '{0}'. Expected {1}. Defaults were used."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:80
+msgid "Update check failed"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:66
+msgid "Update check failed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:67
+#, csharp-format
+msgid "Update check failed: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:28
+msgid "Update check is already in progress."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:62
+msgid "Update check timed out."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Dialog.cs:43
+msgid "Update download complete."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Download.cs:77
+msgid "Update download failed."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Updates\Service.cs:44
+#, csharp-format
+msgid "Update package '{0}' was not found in the latest release."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:31
+msgid "Update package missing"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:56
+msgid "Updater launch failed"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:17
+msgid "Updater not found"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Race\Bind.cs:43
+msgid "Use horn"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:60
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Modes\single\Commentary.cs:134
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Multiplayer\MultiplayerMode\Commentary.cs:156
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Car.cs:35
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\VehicleDefinition.cs:10
+msgid "Vehicle"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:20
+msgid "Vehicle engine sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:25
+msgid "Vehicle event sounds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:62
+#, csharp-format
+msgid "Vehicle file not found: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Core\Loader.cs:56
+msgid "Vehicle file path is empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:167
+msgid "Vehicle selection is loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Main.cs:20
+msgid "Volume settings"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Issues\Issue.cs:21
+msgid "Warning"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:102
+msgid "Warning:"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Menu\Wizard.cs:12
+msgid ""
+"Welcome to Top Speed setup. On the next screens, you will choose your "
+"language and then calibrate the screen-reader speaking rate."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:129
+msgid "What's new in this version:"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Audio.cs:15
+msgid ""
+"When checked, Three-D audio uses HRTF spatialization for more realistic "
+"positioning. Press ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:37
+msgid ""
+"When checked, menu items can speak usage hints after a short delay. Press "
+"ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:48
+msgid ""
+"When checked, menu navigation sounds pan left or right based on the item "
+"position. Press ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:42
+msgid ""
+"When checked, menu navigation wraps from the last item to the first. Press "
+"ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:23
+msgid ""
+"When checked, random track selection can include custom tracks. Press ENTER "
+"to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:27
+msgid ""
+"When checked, random vehicle selection can include custom vehicles. Press "
+"ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:52
+msgid ""
+"When checked, the game checks for updates automatically after the logo. "
+"Press ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Audio.cs:23
+msgid ""
+"When checked, the game uses the device channel count and sample rate. "
+"Restart required. Press ENTER to toggle."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:40
+msgid ""
+"When enabled, throttle, brake, and steering ramp in over time instead of "
+"jumping instantly to full value. Press LEFT or RIGHT to change."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:46
+msgid "Who is currently present in this game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:19
+msgid "Who is online"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Restore.cs:12
+msgid "Yes"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\SavedServers\Delete.cs:19
+msgid "Yes, delete this server"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Session.cs:27
+msgid "Yes, disconnect from the server"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:30
+msgid "Yes, leave this game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:142
+msgid "Yes, quit race preparation"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Multiplayer\Quit.cs:23
+msgid "Yes, quit the race"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Check.cs:93
+msgid "You are already using the latest version."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:19
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:32
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:56
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:129
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Options.cs:17
+msgid "You are not currently inside a game room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:38
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Chat\Input.cs:87
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:120
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:165
+msgid "You are not in a game room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:22
+msgid "You are now host of this game."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:33
+msgid "You can download the update again or install manually."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:11
+#, csharp-format
+msgid "You joined {0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Actions.cs:173
+msgid "You left race preparation and returned to room controls."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:17
+msgid "You left the game room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Network\Connect\Connector\Helpers.cs:140
+#, csharp-format
+msgid ""
+"Your client protocol version is {0}. This server supports protocol versions "
+"{1}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:129
+#, csharp-format
+msgid "Your client protocol version: {0}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\Buffers.cs:87
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:19
+msgid "all"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:43
+msgid "auto_downshift_rpm must be 0 or between idle_rpm and rev_limiter."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:146
+msgid "auto_shift_rpm must be 0 or between idle_rpm and rev_limiter."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:37
+msgid "auto_upshift_rpm must be 0 or between idle_rpm and rev_limiter."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:69
+msgid "available"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:59
+msgid "both"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\CheckBox.cs:31
+msgid "check box"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\CheckBox.cs:47
+msgid "checked"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\Buffers.cs:85
+msgid "connections"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:18
+msgid "curves only"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:77
+msgid "default"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:50
+#, csharp-format
+msgid "default ({0})"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:53
+msgid "easy"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:191
+msgid "end_area cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:26
+msgid "fixed distance"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:70
+msgid "game room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:120
+#, csharp-format
+msgid "gear_ratios count ({0}) must match number_of_gears ({1})."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:134
+msgid "gear_ratios must be non-increasing from gear 1 to last gear."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:128
+#, csharp-format
+msgid "gear_ratios[{0}] is outside allowed range 0.20 to 8.00."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\Buffers.cs:83
+msgid "global chat"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:55
+msgid "hard"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:156
+msgid ""
+"high_speed_steer_full_kph must be greater than high_speed_steer_start_kph."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:30
+msgid "imperial"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:58
+msgid "joystick"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:57
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Helpers.cs:60
+msgid "keyboard"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:35
+msgid "lap"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:36
+msgid "laps"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:34
+msgid "laps only"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:150
+msgid "launch_rpm must not exceed rev_limiter."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Domain\OnlineMap.cs:9
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:12
+msgid "main room"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:142
+msgid "max_rpm must be greater than or equal to idle_rpm."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Game.cs:29
+msgid "metric"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Settings\Manager\Load.cs:101
+msgid "missing"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:117
+msgid "none"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:54
+msgid "normal"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\CheckBox.cs:48
+msgid "not checked"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:17
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:33
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:66
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:77
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Selection.cs:92
+msgid "off"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:35
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:65
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Playback.cs:76
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Panels\RadioVehiclePanel\Selection.cs:91
+msgid "on"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:55
+msgid "one-on-one"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:80
+msgid "panel"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:148
+msgid "peak_torque_rpm must be between idle_rpm and rev_limiter."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:30
+msgid "player"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\Core.cs:31
+msgid "players"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:57
+msgid "race with bots"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:56
+msgid "race without bots"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:68
+msgid "racing"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\RadioButton.cs:47
+msgid "radio button"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:144
+msgid "rev_limiter must be between idle_rpm and max_rpm."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\Buffers.cs:84
+msgid "room chat"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\Buffers.cs:86
+msgid "room events"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:154
+msgid "shift_freq must be between idle_freq and top_freq."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Slider.cs:68
+msgid "slider"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Race.cs:25
+msgid "speed dependent"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Data\Tracks\Parser\Rules.cs:181
+msgid "start_area cannot be empty."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Switch.cs:42
+msgid "switch"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:193
+msgid "tire_aspect must be between 5 and 150."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:178
+msgid "tire_circumference must be between 0.2 and 5.0 meters."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:195
+msgid "tire_rim must be between 4 and 30 inches."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:191
+msgid "tire_width must be between 20 and 450 mm."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Build\Core.cs:152
+msgid "top_freq must be greater than or equal to idle_freq."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:23
+#, csharp-format
+msgid "top_speed_gear must be within 1..{0}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:26
+msgid "unknown"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:134
+#, csharp-format
+msgid "{0:F0} feet traveled"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:115
+#, csharp-format
+msgid "{0:F0} kilometers per hour, {1:F0} RPM, {2:F0} horsepower"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:142
+#, csharp-format
+msgid "{0:F0} meters traveled"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:107
+#, csharp-format
+msgid "{0:F0} miles per hour, {1:F0} RPM, {2:F0} horsepower"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:140
+#, csharp-format
+msgid "{0:F1} kilometers traveled"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Requests.cs:132
+#, csharp-format
+msgid "{0:F1} miles traveled"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Connection\Connect.cs:111
+#, csharp-format
+msgid "{0} Message of the day: {1}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:89
+#, csharp-format
+msgid ""
+"{0} Use LEFT or RIGHT to change by 1, PAGE UP or PAGE DOWN to change by 10, "
+"HOME for maximum, END for minimum."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Choice.cs:125
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Dialog.cs:113
+#, csharp-format
+msgid "{0} dialog"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Choice.cs:128
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Dialog.cs:116
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\Question.cs:130
+#, csharp-format
+msgid "{0} dialog {1}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:63
+#, csharp-format
+msgid "{0} game with {1} people"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Packets\PacketRoom.cs:34
+#, csharp-format
+msgid "{0} has joined the game."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:183
+#, csharp-format
+msgid "{0} has no shortcuts."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:28
+#, csharp-format
+msgid "{0} joined the current room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Game\Settings\Issues.cs:31
+#, csharp-format
+msgid "{0} key '{1}': {2}"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:35
+#, csharp-format
+msgid "{0} left the current room."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:33
+#, csharp-format
+msgid "{0} milliseconds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:21
+#, csharp-format
+msgid "{0} minute"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:22
+#, csharp-format
+msgid "{0} minutes"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:77
+#, csharp-format
+msgid "{0} must be a float between 0 and 2 seconds."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Vehicles\Parsing\Policy\Core.cs:91
+#, csharp-format
+msgid "{0} must be between {1} and {2}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:82
+#, csharp-format
+msgid "{0} panel"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Online.cs:49
+#, csharp-format
+msgid "{0} people are connected."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:26
+#, csharp-format
+msgid "{0} second"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Format.cs:27
+#, csharp-format
+msgid "{0} seconds"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Joystick.cs:39
+#: D:\top_speed\top_speed_net\TopSpeed\Input\Mapping\Handler\Keyboard.cs:31
+#: D:\top_speed\top_speed_net\TopSpeed\Shortcuts\Mapping.cs:107
+#, csharp-format
+msgid "{0} set to {1}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:71
+#, csharp-format
+msgid "{0}, in progress"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:67
+#, csharp-format
+msgid "{0}, maximum {1} players"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Browser.cs:73
+#, csharp-format
+msgid "{0}, room is full"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Rooms\Menu.cs:148
+#, csharp-format
+msgid "{0}: host"
+msgstr ""

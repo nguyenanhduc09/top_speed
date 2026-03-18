@@ -2,18 +2,19 @@ using System;
 using System.Linq;
 using System.Net;
 using LiteNetLib;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Server.Network
 {
     internal sealed partial class RaceServer
     {
-        private const string SnapshotServerName = "TopSpeed Server";
+        private static readonly string SnapshotServerName = LocalizationService.Mark("TopSpeed Server");
 
         public void Start()
         {
             ResetStreamTxMetrics();
             _transport.Start(_config.Port);
-            _logger.Info("Race server started.");
+            _logger.Info(LocalizationService.Mark("Race server started."));
         }
 
         public void Stop()
@@ -27,7 +28,7 @@ namespace TopSpeed.Server.Network
             }
 
             _transport.Stop();
-            _logger.Info("Race server stopped.");
+            _logger.Info(LocalizationService.Mark("Race server stopped."));
         }
 
         public void Update(float deltaSeconds)
@@ -113,30 +114,35 @@ namespace TopSpeed.Server.Network
             }
             _endpointIndex.Remove(player.EndPoint.ToString());
             _players.Remove(player.Id);
-            _logger.Info($"Connection removed: player={player.Id}, endpoint={player.EndPoint}, room={roomId?.ToString() ?? "none"}, reason={reason}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Connection removed: player={0}, endpoint={1}, room={2}, reason={3}."),
+                player.Id,
+                player.EndPoint,
+                roomId?.ToString() ?? LocalizationService.Translate(LocalizationService.Mark("none")),
+                reason));
         }
 
         private static string BuildDisconnectMessage(string reason)
         {
             if (string.IsNullOrWhiteSpace(reason))
-                return "The server closed the connection.";
+                return LocalizationService.Mark("The server closed the connection.");
 
             switch (reason)
             {
                 case "timeout":
-                    return "Connection timed out.";
+                    return LocalizationService.Mark("Connection timed out.");
                 case "protocol_mismatch":
-                    return "Connection refused due to protocol mismatch.";
+                    return LocalizationService.Mark("Connection refused due to protocol mismatch.");
                 case "protocol_rejected":
-                    return "Connection refused due to invalid protocol negotiation.";
+                    return LocalizationService.Mark("Connection refused due to invalid protocol negotiation.");
                 case "server_full":
-                    return "This server is full.";
+                    return LocalizationService.Mark("This server is full.");
                 case "host_shutdown":
-                    return "The server will be shut down immediately by the host.";
+                    return LocalizationService.Mark("The server will be shut down immediately by the host.");
                 case "peer_disconnect":
-                    return "Connection closed.";
+                    return LocalizationService.Mark("Connection closed.");
                 default:
-                    return $"Connection closed by server. Reason: {reason}.";
+                    return LocalizationService.Format(LocalizationService.Mark("Connection closed by server. Reason: {0}."), reason);
             }
         }
 
@@ -146,7 +152,9 @@ namespace TopSpeed.Server.Network
             {
                 var raceStarted = _rooms.Values.Any(r => r.RaceStarted);
                 var trackSelected = _rooms.Values.Any(r => r.TrackSelected);
-                var trackName = _rooms.Count == 1 ? _rooms.Values.First().TrackName : (_rooms.Count > 1 ? "multiple" : string.Empty);
+                var trackName = _rooms.Count == 1
+                    ? _rooms.Values.First().TrackName
+                    : (_rooms.Count > 1 ? LocalizationService.Mark("multiple") : string.Empty);
                 return new ServerSnapshot(SnapshotServerName, _config.Port, _config.MaxPlayers, _players.Count, raceStarted, trackSelected, trackName);
             }
         }

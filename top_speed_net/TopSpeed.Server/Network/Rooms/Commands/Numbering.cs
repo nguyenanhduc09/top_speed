@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Bots;
@@ -66,7 +67,9 @@ namespace TopSpeed.Server.Network
                     player.Id,
                     player.PlayerNumber,
                     player.State,
-                    string.IsNullOrWhiteSpace(player.Name) ? $"Player {player.PlayerNumber + 1}" : player.Name);
+                    string.IsNullOrWhiteSpace(player.Name)
+                        ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1)
+                        : player.Name);
             }
 
             for (var i = 0; i < changedBots.Count; i++)
@@ -82,7 +85,11 @@ namespace TopSpeed.Server.Network
             }
 
             EmitRoomLifecycleEvent(room, RoomEventKind.RoomSummaryUpdated);
-            _logger.Debug($"Room numbers compacted: room={room.Id}, humans={changedPlayers.Count}, bots={changedBots.Count}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Room numbers compacted: room={0}, humans={1}, bots={2}."),
+                room.Id,
+                changedPlayers.Count,
+                changedBots.Count));
         }
     }
 }

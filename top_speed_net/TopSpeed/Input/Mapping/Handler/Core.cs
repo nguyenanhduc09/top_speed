@@ -1,5 +1,6 @@
 using System;
 using SharpDX.DirectInput;
+using TopSpeed.Localization;
 using TopSpeed.Speech;
 using TopSpeed.Input.Devices.Joystick;
 
@@ -42,7 +43,7 @@ namespace TopSpeed.Input
             {
                 if (_input.VibrationDevice == null || !_input.VibrationDevice.IsAvailable)
                 {
-                    _speech.Speak("No joystick detected.");
+                    _speech.Speak(LocalizationService.Mark("No joystick detected."));
                     return;
                 }
             }
@@ -69,7 +70,7 @@ namespace TopSpeed.Input
             if (_input.WasPressed(Key.Escape))
             {
                 _mappingActive = false;
-                _speech.Speak("Mapping cancelled.");
+                _speech.Speak(LocalizationService.Mark("Mapping cancelled."));
                 return;
             }
 

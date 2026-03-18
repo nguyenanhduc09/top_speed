@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TopSpeed.Audio;
 using TopSpeed.Data;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
@@ -17,9 +18,22 @@ namespace TopSpeed.Core.Multiplayer
     internal sealed partial class MultiplayerCoordinator : IMultiplayerRuntime
     {
         private const int MaxChatMessages = 100;
-        private static readonly string[] RoomTypeOptions = { "Race with bots", "Race without bots", "One-on-one without bots" };
-        private static readonly string[] RoomCapacityOptions = BuildNumericOptions(2, ProtocolConstants.MaxRoomPlayersToStart, "players");
-        private static readonly string[] LapCountOptions = BuildNumericOptions(1, 16, "laps");
+        private static readonly string[] RoomTypeOptions =
+        {
+            LocalizationService.Mark("Race with bots"),
+            LocalizationService.Mark("Race without bots"),
+            LocalizationService.Mark("One-on-one without bots")
+        };
+        private static readonly string[] RoomCapacityOptions = BuildNumericOptions(
+            2,
+            ProtocolConstants.MaxRoomPlayersToStart,
+            LocalizationService.Mark("player"),
+            LocalizationService.Mark("players"));
+        private static readonly string[] LapCountOptions = BuildNumericOptions(
+            1,
+            16,
+            LocalizationService.Mark("lap"),
+            LocalizationService.Mark("laps"));
         private static readonly TrackInfo[] RoomTrackOptions = BuildRoomTrackOptions();
         private const int ConnectingPulseIntervalMs = 500;
         private readonly CoordinatorState _state = new CoordinatorState();

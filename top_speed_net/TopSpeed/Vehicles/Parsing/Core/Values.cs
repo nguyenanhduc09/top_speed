@@ -10,13 +10,13 @@ namespace TopSpeed.Vehicles.Parsing
         {
             if (!section.Entries.TryGetValue(key, out var entry))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, $"Missing required key '{key}' in section [{section.Name}]."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
                 return string.Empty;
             }
 
             var value = entry.Value.Trim();
             if (value.Length == 0)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' in section [{section.Name}] must not be empty."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' in section [{1}] must not be empty.", key, section.Name)));
             return value;
         }
 
@@ -32,13 +32,13 @@ namespace TopSpeed.Vehicles.Parsing
         {
             if (!section.Entries.TryGetValue(key, out var entry))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, $"Missing required key '{key}' in section [{section.Name}]."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
                 return Array.Empty<string>();
             }
 
             var values = ParseCsvStrings(entry.Value);
             if (values.Count == 0)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must contain at least one path."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must contain at least one path.", key)));
             return values;
         }
 
@@ -53,18 +53,18 @@ namespace TopSpeed.Vehicles.Parsing
         {
             if (!section.Entries.TryGetValue(key, out var entry))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, $"Missing required key '{key}' in section [{section.Name}]."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
                 return min;
             }
 
             if (!int.TryParse(entry.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must be an integer."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must be an integer.", key)));
                 return min;
             }
 
             if (value < min || value > max)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' value {value} is outside allowed range {min} to {max}."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' value {1} is outside allowed range {2} to {3}.", key, value, min, max)));
             return value;
         }
 
@@ -74,7 +74,7 @@ namespace TopSpeed.Vehicles.Parsing
                 return null;
             if (!int.TryParse(entry.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must be an integer."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must be an integer.", key)));
                 return null;
             }
             return value;
@@ -84,13 +84,13 @@ namespace TopSpeed.Vehicles.Parsing
         {
             if (!section.Entries.TryGetValue(key, out var entry))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, $"Missing required key '{key}' in section [{section.Name}]."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
                 return min;
             }
 
             if (!TryParseFloat(entry.Value, out var value))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must be a float."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must be a float.", key)));
                 return min;
             }
 
@@ -99,7 +99,12 @@ namespace TopSpeed.Vehicles.Parsing
                 issues.Add(new VehicleTsvIssue(
                     VehicleTsvIssueSeverity.Error,
                     entry.Line,
-                    $"Key '{key}' value {value.ToString(CultureInfo.InvariantCulture)} is outside allowed range {min.ToString(CultureInfo.InvariantCulture)} to {max.ToString(CultureInfo.InvariantCulture)}."));
+                    Localized(
+                        "Key '{0}' value {1} is outside allowed range {2} to {3}.",
+                        key,
+                        value.ToString(CultureInfo.InvariantCulture),
+                        min.ToString(CultureInfo.InvariantCulture),
+                        max.ToString(CultureInfo.InvariantCulture))));
             }
 
             return value;
@@ -111,7 +116,7 @@ namespace TopSpeed.Vehicles.Parsing
                 return null;
             if (!TryParseFloat(entry.Value, out var value))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must be a float."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must be a float.", key)));
                 return null;
             }
             return value;
@@ -121,7 +126,7 @@ namespace TopSpeed.Vehicles.Parsing
         {
             if (!section.Entries.TryGetValue(key, out var entry))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, $"Missing required key '{key}' in section [{section.Name}]."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
                 return false;
             }
 
@@ -130,7 +135,7 @@ namespace TopSpeed.Vehicles.Parsing
             if (int.TryParse(entry.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var intValue))
                 return intValue != 0;
 
-            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must be a boolean or 0/1 integer."));
+            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must be a boolean or 0/1 integer.", key)));
             return false;
         }
 
@@ -138,7 +143,7 @@ namespace TopSpeed.Vehicles.Parsing
         {
             if (!section.Entries.TryGetValue(key, out var entry))
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, $"Missing required key '{key}' in section [{section.Name}]."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, section.Line, Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
                 return null;
             }
 
@@ -151,7 +156,7 @@ namespace TopSpeed.Vehicles.Parsing
                     continue;
                 if (!TryParseFloat(token, out var parsed))
                 {
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' contains a non-float value '{token}'."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' contains a non-float value '{1}'.", key, token)));
                     return null;
                 }
                 values.Add(parsed);
@@ -159,7 +164,7 @@ namespace TopSpeed.Vehicles.Parsing
 
             if (values.Count == 0)
             {
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, $"Key '{key}' must contain at least one float value."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, entry.Line, Localized("Key '{0}' must contain at least one float value.", key)));
                 return null;
             }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Server.Network
 {
@@ -42,7 +43,7 @@ namespace TopSpeed.Server.Network
         public int ShutdownByHost(string announcementMessage)
         {
             var message = string.IsNullOrWhiteSpace(announcementMessage)
-                ? "The server will be shut down immediately by the host."
+                ? LocalizationService.Mark("The server will be shut down immediately by the host.")
                 : announcementMessage.Trim();
 
             lock (_lock)
@@ -74,7 +75,7 @@ namespace TopSpeed.Server.Network
         {
             if (!string.IsNullOrWhiteSpace(player.Name))
                 return player.Name;
-            return $"Player {player.PlayerNumber + 1}";
+            return LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1);
         }
     }
 }

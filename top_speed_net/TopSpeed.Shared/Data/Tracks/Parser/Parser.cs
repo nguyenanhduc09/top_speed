@@ -28,7 +28,7 @@ namespace TopSpeed.Data
             {
                 issues = new[]
                 {
-                    new TrackTsmIssue(TrackTsmIssueSeverity.Error, 0, $"Track file not found: {nameOrPath}")
+                    new TrackTsmIssue(TrackTsmIssueSeverity.Error, 0, Localized("Track file not found: {0}", nameOrPath))
                 };
                 return false;
             }
@@ -52,7 +52,7 @@ namespace TopSpeed.Data
             issues = issueList;
             if (!File.Exists(filename))
             {
-                issueList.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, 0, $"Track file not found: {filename}"));
+                issueList.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, 0, Localized("Track file not found: {0}", filename)));
                 return false;
             }
 
@@ -62,7 +62,7 @@ namespace TopSpeed.Data
                 issueList.Add(new TrackTsmIssue(
                     TrackTsmIssueSeverity.Error,
                     0,
-                    $"Track path must point to a .tsm file inside a track folder: {filename}"));
+                    Localized("Track path must point to a .tsm file inside a track folder: {0}", filename)));
                 return false;
             }
 

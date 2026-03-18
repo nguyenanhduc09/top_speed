@@ -4,6 +4,7 @@ using System.Threading;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -13,7 +14,7 @@ namespace TopSpeed.Core.Multiplayer
             var trimmed = (text ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(trimmed))
             {
-                _speech.Speak("Please enter a server address.");
+                _speech.Speak(LocalizationService.Mark("Please enter a server address."));
                 return false;
             }
 
@@ -48,7 +49,7 @@ namespace TopSpeed.Core.Multiplayer
             var trimmed = (text ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(trimmed))
             {
-                _speech.Speak("Call sign cannot be empty.");
+                _speech.Speak(LocalizationService.Mark("Call sign cannot be empty."));
                 return false;
             }
 
@@ -59,7 +60,7 @@ namespace TopSpeed.Core.Multiplayer
 
         private void AttemptConnect(string host, int port, string callSign)
         {
-            _speech.Speak("Attempting to connect, please wait...");
+            _speech.Speak(LocalizationService.Mark("Attempting to connect, please wait..."));
             ClearPendingCompatibilityResult(disposeSession: true);
             _clearSession();
             _lifetime.ResetPing();
@@ -103,9 +104,14 @@ namespace TopSpeed.Core.Multiplayer
             OnSessionCleared();
             PlayNetworkSound("connected.ogg");
 
-            var welcome = "Connected to server.";
+            var welcome = LocalizationService.Mark("Connected to server.");
             if (!string.IsNullOrWhiteSpace(result.Motd))
-                welcome += $" Message of the day: {result.Motd}.";
+            {
+                welcome = LocalizationService.Format(
+                    LocalizationService.Mark("{0} Message of the day: {1}."),
+                    welcome,
+                    result.Motd);
+            }
             _speech.Speak(welcome);
             _menu.FadeOutMenuMusic();
             _menu.ShowRoot(MultiplayerMenuKeys.Lobby);
@@ -117,20 +123,24 @@ namespace TopSpeed.Core.Multiplayer
             var items = new List<DialogItem>
             {
                 new DialogItem(string.IsNullOrWhiteSpace(notice.Message)
-                    ? "The server and client are compatible, but not an exact match."
+                    ? LocalizationService.Mark("The server and client are compatible, but not an exact match.")
                     : notice.Message),
-                new DialogItem($"Your client protocol version: {notice.ClientVersion}"),
-                new DialogItem($"Server supported protocol versions: {notice.ServerSupported.MinSupported} to {notice.ServerSupported.MaxSupported}")
+                new DialogItem(LocalizationService.Format(
+                    LocalizationService.Mark("Your client protocol version: {0}"),
+                    notice.ClientVersion)),
+                new DialogItem(LocalizationService.Format(
+                    LocalizationService.Mark("Server supported protocol versions: {0} to {1}"),
+                    notice.ServerSupported.MinSupported,
+                    notice.ServerSupported.MaxSupported))
             };
 
-            var dialog = new Dialog(
-                "Compatibility warning",
-                "Review these details before connecting.",
+            var dialog = new Dialog(LocalizationService.Mark("Compatibility warning"),
+                LocalizationService.Mark("Review these details before connecting."),
                 QuestionId.Close,
                 items,
                 HandleCompatibilityDialogResult,
-                new DialogButton(QuestionId.Confirm, "Continue connection", flags: DialogButtonFlags.Default),
-                new DialogButton(QuestionId.Close, "Disconnect"));
+                new DialogButton(QuestionId.Confirm, LocalizationService.Mark("Continue connection"), flags: DialogButtonFlags.Default),
+                new DialogButton(QuestionId.Close, LocalizationService.Mark("Disconnect")));
             _dialogs.Show(dialog);
         }
 
@@ -151,7 +161,7 @@ namespace TopSpeed.Core.Multiplayer
             if (_state.Connection.PendingCompatibilityResult.Session != null)
                 _state.Connection.PendingCompatibilityResult.Session.Dispose();
             ClearPendingCompatibilityResult(disposeSession: false);
-            _speech.Speak("Connection canceled.");
+            _speech.Speak(LocalizationService.Mark("Connection canceled."));
             _enterMenuState();
         }
 
@@ -170,19 +180,22 @@ namespace TopSpeed.Core.Multiplayer
         private void ShowConnectionFailedDialog(string message)
         {
             var text = string.IsNullOrWhiteSpace(message)
-                ? "The connection attempt failed for an unknown reason."
+                ? LocalizationService.Mark("The connection attempt failed for an unknown reason.")
                 : message.Trim();
 
-            var dialog = new Dialog(
-                "Connection failed",
+            var dialog = new Dialog(LocalizationService.Mark("Connection failed"),
                 null,
                 QuestionId.Ok,
                 new[] { new DialogItem(text) },
                 null,
-                new DialogButton(QuestionId.Ok, "OK"));
+                new DialogButton(QuestionId.Ok, LocalizationService.Mark("OK")));
             _dialogs.Show(dialog);
         }
     }
 }
+
+
+
+
 
 

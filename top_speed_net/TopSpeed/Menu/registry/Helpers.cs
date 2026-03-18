@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TopSpeed.Core;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TopSpeed.Network;
 
 namespace TopSpeed.Menu
@@ -30,9 +31,9 @@ namespace TopSpeed.Menu
 
         private string MainMenuTitle()
         {
-            const string keyboard = "Main Menu. Use your arrow keys to navigate the options. Press ENTER to select. Press ESCAPE to back out of any menu. Pressing HOME or END will move you to the top or bottom of a menu.";
-            const string joystick = "Main Menu. Use the view finder to move through the options. Press up or down to navigate. Press right or button 1 to select. Press left to back out of any menu.";
-            const string both = "Main Menu. Use your arrow keys or the view finder to move through the options. Press ENTER or right or button 1 to select. Press ESCAPE or left to back out of any menu. Pressing HOME or END will move you to the top or bottom of a menu.";
+            var keyboard = LocalizationService.Mark("Main Menu. Use your arrow keys to navigate the options. Press ENTER to select. Press ESCAPE to back out of any menu. Pressing HOME or END will move you to the top or bottom of a menu.");
+            var joystick = LocalizationService.Mark("Main Menu. Use the view finder to move through the options. Press up or down to navigate. Press right or button 1 to select. Press left to back out of any menu.");
+            var both = LocalizationService.Mark("Main Menu. Use your arrow keys or the view finder to move through the options. Press ENTER or right or button 1 to select. Press ESCAPE or left to back out of any menu. Pressing HOME or END will move you to the top or bottom of a menu.");
 
             return _settings.DeviceMode switch
             {
@@ -44,17 +45,19 @@ namespace TopSpeed.Menu
 
         private static string FormatServerPort(int port)
         {
-            return port > 0 ? port.ToString() : $"default ({ClientProtocol.DefaultServerPort})";
+            return port > 0
+                ? port.ToString()
+                : LocalizationService.Format(LocalizationService.Mark("default ({0})"), ClientProtocol.DefaultServerPort);
         }
 
         private static string DeviceLabel(InputDeviceMode mode)
         {
             return mode switch
             {
-                InputDeviceMode.Keyboard => "keyboard",
-                InputDeviceMode.Joystick => "joystick",
-                InputDeviceMode.Both => "both",
-                _ => "keyboard"
+                InputDeviceMode.Keyboard => LocalizationService.Translate(LocalizationService.Mark("keyboard")),
+                InputDeviceMode.Joystick => LocalizationService.Translate(LocalizationService.Mark("joystick")),
+                InputDeviceMode.Both => LocalizationService.Translate(LocalizationService.Mark("both")),
+                _ => LocalizationService.Translate(LocalizationService.Mark("keyboard"))
             };
         }
 

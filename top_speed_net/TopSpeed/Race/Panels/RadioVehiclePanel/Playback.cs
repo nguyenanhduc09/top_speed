@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race.Panels
 {
@@ -11,7 +12,7 @@ namespace TopSpeed.Race.Panels
             {
                 if (_playlist.Count == 0)
                 {
-                    _announce("No radio media loaded.");
+                    _announce(LocalizationService.Mark("No radio media loaded."));
                     return;
                 }
 
@@ -21,13 +22,15 @@ namespace TopSpeed.Race.Panels
                 if (!LoadPlaylistEntry(_playlistIndex, preservePlaybackState: false, announceLoaded: true))
                     return;
                 _radio.SetPlayback(true);
-                _announce("Radio playing.");
+                _announce(LocalizationService.Mark("Radio playing."));
                 _playbackChanged?.Invoke(_radio.HasMedia, _radio.DesiredPlaying, _radio.MediaId);
                 return;
             }
 
             _radio.TogglePlayback();
-            _announce(_radio.DesiredPlaying ? "Radio playing." : "Radio paused.");
+            _announce(_radio.DesiredPlaying
+                ? LocalizationService.Mark("Radio playing.")
+                : LocalizationService.Mark("Radio paused."));
             _playbackChanged?.Invoke(_radio.HasMedia, _radio.DesiredPlaying, _radio.MediaId);
         }
 
@@ -35,7 +38,7 @@ namespace TopSpeed.Race.Panels
         {
             if (_playlist.Count == 0)
             {
-                _announce("No folder playlist loaded.");
+                _announce(LocalizationService.Mark("No folder playlist loaded."));
                 return;
             }
 
@@ -56,14 +59,22 @@ namespace TopSpeed.Race.Panels
             if (!string.IsNullOrWhiteSpace(lastFolder))
                 BuildPlaylistFromFolder(lastFolder, preserveCurrentMedia: true, announceErrors: false);
 
-            _announce($"Shuffle mode {(_shuffleMode ? "on" : "off")}.");
+            _announce(LocalizationService.Format(
+                LocalizationService.Mark("Shuffle mode {0}."),
+                _shuffleMode
+                    ? LocalizationService.Translate(LocalizationService.Mark("on"))
+                    : LocalizationService.Translate(LocalizationService.Mark("off"))));
         }
 
         private void ToggleLoop()
         {
             _loopMode = !_loopMode;
             ApplyLoopMode();
-            _announce($"Loop mode {(_loopMode ? "on" : "off")}.");
+            _announce(LocalizationService.Format(
+                LocalizationService.Mark("Loop mode {0}."),
+                _loopMode
+                    ? LocalizationService.Translate(LocalizationService.Mark("on"))
+                    : LocalizationService.Translate(LocalizationService.Mark("off"))));
         }
 
         private bool LoadPlaylistEntry(int index, bool preservePlaybackState, bool announceLoaded, bool announceNameOnly = false)
@@ -78,7 +89,9 @@ namespace TopSpeed.Race.Panels
             var mediaId = _nextMediaId();
             if (!_radio.TryLoadFromFile(mediaPath, mediaId, preservePlaybackState, out var error))
             {
-                _announce($"Failed to load radio media. {error}");
+                _announce(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to load radio media. {0}"),
+                    error));
                 return false;
             }
 
@@ -88,7 +101,7 @@ namespace TopSpeed.Race.Panels
                 if (announceNameOnly)
                     _announce(fileName);
                 else
-                    _announce($"Radio loaded {fileName}.");
+                    _announce(LocalizationService.Format(LocalizationService.Mark("Radio loaded {0}."), fileName));
             }
 
             _mediaLoaded?.Invoke(mediaId, mediaPath);

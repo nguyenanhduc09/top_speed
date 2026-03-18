@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -26,7 +27,10 @@ namespace TopSpeed.Server.Network
         private void SendRaceSnapshot(RaceRoom room, DeliveryMethod deliveryMethod)
         {
             _raceSnapshotSends++;
-            _logger.Debug($"Race snapshot send: room={room.Id}, delivery={deliveryMethod}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Race snapshot send: room={0}, delivery={1}."),
+                room.Id,
+                deliveryMethod));
             var payload = BuildRaceSnapshotPayload(room);
             if (payload == null)
                 return;

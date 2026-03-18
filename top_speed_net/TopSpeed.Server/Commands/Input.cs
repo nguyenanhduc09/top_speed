@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using TopSpeed.Server.Logging;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Server.Commands
 {
     internal static class CommandInput
@@ -40,23 +41,23 @@ namespace TopSpeed.Server.Commands
 
             ConsoleSink.WriteLine(title);
             for (var i = 0; i < options.Count; i++)
-                ConsoleSink.WriteLine($"{i + 1}. {options[i]}");
+                ConsoleSink.WriteLine((i + 1).ToString(CultureInfo.InvariantCulture) + ". " + options[i]);
 
             while (true)
             {
-                if (!TryReadLine("Enter option number:", out var raw))
+                if (!TryReadLine(LocalizationService.Mark("Enter option number:"), out var raw))
                     return false;
 
                 if (!int.TryParse(raw.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var menuNumber))
                 {
-                    ConsoleSink.WriteLine("Invalid input. Enter a valid number.");
+                    ConsoleSink.WriteLine(LocalizationService.Mark("Invalid input. Enter a valid number."));
                     continue;
                 }
 
                 var index = menuNumber - 1;
                 if (index < 0 || index >= options.Count)
                 {
-                    ConsoleSink.WriteLine("Invalid option number.");
+                    ConsoleSink.WriteLine(LocalizationService.Mark("Invalid option number."));
                     continue;
                 }
 
@@ -75,13 +76,13 @@ namespace TopSpeed.Server.Commands
 
                 if (!int.TryParse(raw.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
                 {
-                    ConsoleSink.WriteLine("Invalid input. Enter a valid number.");
+                    ConsoleSink.WriteLine(LocalizationService.Mark("Invalid input. Enter a valid number."));
                     continue;
                 }
 
                 if (parsed < min || parsed > max)
                 {
-                    ConsoleSink.WriteLine($"Value must be between {min} and {max}.");
+                    ConsoleSink.WriteLineFormat(LocalizationService.Mark("Value must be between {0} and {1}."), min, max);
                     continue;
                 }
 
@@ -101,13 +102,13 @@ namespace TopSpeed.Server.Commands
                 var text = raw.Trim();
                 if (!allowEmpty && text.Length == 0)
                 {
-                    ConsoleSink.WriteLine("Value cannot be empty.");
+                    ConsoleSink.WriteLine(LocalizationService.Mark("Value cannot be empty."));
                     continue;
                 }
 
                 if (text.Length > maxLength)
                 {
-                    ConsoleSink.WriteLine($"Value is too long. Maximum length is {maxLength} characters.");
+                    ConsoleSink.WriteLineFormat(LocalizationService.Mark("Value is too long. Maximum length is {0} characters."), maxLength);
                     continue;
                 }
 
@@ -118,7 +119,13 @@ namespace TopSpeed.Server.Commands
 
         public static string FormatOnOff(bool value)
         {
-            return value ? "on" : "off";
+            return value
+                ? LocalizationService.Translate(LocalizationService.Mark("on"))
+                : LocalizationService.Translate(LocalizationService.Mark("off"));
         }
     }
 }
+
+
+
+

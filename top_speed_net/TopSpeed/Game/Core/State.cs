@@ -11,6 +11,7 @@ using TopSpeed.Core.Settings;
 using TopSpeed.Core.Updates;
 using TopSpeed.Data;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
@@ -44,6 +45,8 @@ namespace TopSpeed.Game
         private readonly ChoiceDialogManager _choices;
         private readonly RaceSettings _settings;
         private readonly IReadOnlyList<SettingsIssue> _settingsIssues;
+        private readonly bool _settingsFileMissing;
+        private readonly IReadOnlyList<ClientLanguage> _clientLanguages;
         private readonly RaceInput _raceInput;
         private readonly RaceSetup _setup;
         private readonly IRaceModeFactory _raceModeFactory;
@@ -63,6 +66,7 @@ namespace TopSpeed.Game
         private AppState _state;
         private AppState _pausedState;
         private bool _needsCalibration;
+        private bool _autoUpdateAfterCalibration;
         private bool _calibrationMenusRegistered;
         private string? _calibrationReturnMenuId;
         private bool _calibrationOverlay;
@@ -103,10 +107,10 @@ namespace TopSpeed.Game
 
         private const string CalibrationIntroMenuId = "calibration_intro";
         private const string CalibrationSampleMenuId = "calibration_sample";
-        private const string CalibrationInstructions =
-            "Screen-reader calibration. You'll be presented with a short piece of text on the next screen. Press ENTER when your screen-reader finishes speaking it.";
-        private const string CalibrationSampleText =
-            "I really have nothing interesting to put here not even the secret to life except this really long run on sentence that is probably the most boring thing you have ever read but that will help me get an idea of how fast your screen reader is speaking.";
+        private static readonly string CalibrationInstructions = LocalizationService.Mark(
+            "Screen-reader calibration. You'll be presented with a short piece of text on the next screen. Press ENTER when your screen-reader finishes speaking it.");
+        private static readonly string CalibrationSampleText = LocalizationService.Mark(
+            "I really have nothing interesting to put here not even the secret to life except this really long run on sentence that is probably the most boring thing you have ever read but that will help me get an idea of how fast your screen reader is speaking.");
 
         public event Action? ExitRequested;
 

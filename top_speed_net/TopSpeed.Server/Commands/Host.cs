@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Config;
 using TopSpeed.Server.Logging;
@@ -38,12 +39,12 @@ namespace TopSpeed.Server.Commands
             _updater = updater ?? throw new ArgumentNullException(nameof(updater));
             _registry = new CommandRegistry(new[]
             {
-                new CommandDefinition("help", "Show available server commands.", ExecuteHelp),
-                new CommandDefinition("options", "Open server options menu.", ExecuteOptions),
-                new CommandDefinition("players", "List connected players and protocol versions.", ExecutePlayers),
-                new CommandDefinition("version", "Display server and protocol versions.", ExecuteVersion),
-                new CommandDefinition("update", "Manually check for server updates.", ExecuteUpdate),
-                new CommandDefinition("shutdown", "Shutdown the server.", ExecuteShutdown)
+                new CommandDefinition("help", LocalizationService.Mark("Show available server commands."), ExecuteHelp),
+                new CommandDefinition("options", LocalizationService.Mark("Open server options menu."), ExecuteOptions),
+                new CommandDefinition("players", LocalizationService.Mark("List connected players and protocol versions."), ExecutePlayers),
+                new CommandDefinition("version", LocalizationService.Mark("Display server and protocol versions."), ExecuteVersion),
+                new CommandDefinition("update", LocalizationService.Mark("Manually check for server updates."), ExecuteUpdate),
+                new CommandDefinition("shutdown", LocalizationService.Mark("Shutdown the server."), ExecuteShutdown)
             });
         }
 
@@ -51,13 +52,13 @@ namespace TopSpeed.Server.Commands
         {
             if (!IsInputAvailable())
             {
-                var message = "Standard input is not available. Server commands are disabled.";
+                var message = LocalizationService.Mark("Standard input is not available. Server commands are disabled.");
                 _logger.Warning(message);
                 ConsoleSink.WriteLine(message);
                 return false;
             }
 
-            ConsoleSink.WriteLine("Server command interface ready. Type \"help\" to get the list of commands.");
+            ConsoleSink.WriteLine(LocalizationService.Mark("Server command interface ready. Type \"help\" to get the list of commands."));
             _thread = new Thread(RunLoop)
             {
                 IsBackground = true,
@@ -78,7 +79,7 @@ namespace TopSpeed.Server.Commands
             {
                 if (!CommandInput.TryReadLine(">", out var raw))
                 {
-                    DisableCommands("Standard input is no longer available. Server commands are disabled.");
+                    DisableCommands(LocalizationService.Mark("Standard input is no longer available. Server commands are disabled."));
                     return;
                 }
 
@@ -89,7 +90,7 @@ namespace TopSpeed.Server.Commands
                 var commandName = ParseCommandName(input);
                 if (!_registry.TryGet(commandName, out var command))
                 {
-                    ConsoleSink.WriteLine($"Invalid command \"{commandName}\". Type \"help\" for the list of commands.");
+                    ConsoleSink.WriteLineFormat(LocalizationService.Mark("Invalid command \"{0}\". Type \"help\" for the list of commands."), commandName);
                     continue;
                 }
 
@@ -99,47 +100,52 @@ namespace TopSpeed.Server.Commands
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Command '{command.Name}' failed: {ex.Message}");
-                    ConsoleSink.WriteLine("Command failed. Check server logs for details.");
+                    _logger.Error(LocalizationService.Format(
+                        LocalizationService.Mark("Command '{0}' failed: {1}"),
+                        command.Name,
+                        ex.Message));
+                    ConsoleSink.WriteLine(LocalizationService.Mark("Command failed. Check server logs for details."));
                 }
             }
         }
 
         private void ExecuteHelp()
         {
-            ConsoleSink.WriteLine("Available commands:");
+            ConsoleSink.WriteLine(LocalizationService.Mark("Available commands:"));
             var commands = _registry.Commands;
             for (var i = 0; i < commands.Count; i++)
             {
                 var command = commands[i];
-                ConsoleSink.WriteLine($"\"{command.Name}\": {command.Description}");
+                ConsoleSink.WriteLine("\"" + command.Name + "\": " + LocalizationService.Translate(command.Description));
             }
         }
 
         private void ExecutePlayers()
         {
             var players = _server.GetPlayersSnapshot();
-            ConsoleSink.WriteLine($"{players.Length} players are connected:");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("{0} players are connected:"), players.Length);
             for (var i = 0; i < players.Length; i++)
             {
                 var player = players[i];
-                ConsoleSink.WriteLine($"{player.Name}, using protocol version {player.ProtocolVersion}");
+                ConsoleSink.WriteLineFormat(LocalizationService.Mark("{0}, using protocol version {1}"), player.Name, player.ProtocolVersion);
             }
         }
 
         private void ExecuteShutdown()
         {
-            ConsoleSink.WriteLine("shutting down...");
-            _server.ShutdownByHost("The server will be shut down immediately by the host.");
+            ConsoleSink.WriteLine(LocalizationService.Mark("shutting down..."));
+            _server.ShutdownByHost(LocalizationService.Mark("The server will be shut down immediately by the host."));
             _stopRequested = true;
             _shutdownSource.Cancel();
         }
 
         private void ExecuteVersion()
         {
-            ConsoleSink.WriteLine($"Server version: {ServerUpdateConfig.CurrentVersion.ToMachineString()}");
-            ConsoleSink.WriteLine($"Protocol version: {ProtocolProfile.Current.ToMachineString()}");
-            ConsoleSink.WriteLine($"Protocol supported range: {ProtocolProfile.ServerSupported.MinSupported.ToMachineString()} to {ProtocolProfile.ServerSupported.MaxSupported.ToMachineString()}");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Server version: {0}"), ServerUpdateConfig.CurrentVersion.ToMachineString());
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Protocol version: {0}"), ProtocolProfile.Current.ToMachineString());
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Protocol supported range: {0} to {1}"),
+                ProtocolProfile.ServerSupported.MinSupported.ToMachineString(),
+                ProtocolProfile.ServerSupported.MaxSupported.ToMachineString());
         }
 
         private void ExecuteUpdate()
@@ -153,9 +159,9 @@ namespace TopSpeed.Server.Commands
             while (!_stopRequested && !_shutdownSource.IsCancellationRequested)
             {
                 var options = BuildOptionsMenuEntries();
-                if (!CommandInput.TryPromptMenuChoice("Server options:", options, out var choiceIndex))
+                if (!CommandInput.TryPromptMenuChoice(LocalizationService.Mark("Server options:"), options, out var choiceIndex))
                 {
-                    DisableCommands("Standard input is no longer available. Server commands are disabled.");
+                    DisableCommands(LocalizationService.Mark("Standard input is no longer available. Server commands are disabled."));
                     return;
                 }
 
@@ -186,75 +192,77 @@ namespace TopSpeed.Server.Commands
         {
             return new[]
             {
-                $"Message of the day: {FormatMotd(_settings.Motd)}",
-                $"Server port: {_settings.Port}",
-                $"Discovery port: {_settings.DiscoveryPort}",
-                $"Max players: {_settings.MaxPlayers}",
-                $"Check for updates on startup: {CommandInput.FormatOnOff(_settings.CheckForUpdatesOnStartup)}",
-                "Back"
+                LocalizationService.Format(LocalizationService.Mark("Message of the day: {0}"), FormatMotd(_settings.Motd)),
+                LocalizationService.Format(LocalizationService.Mark("Server port: {0}"), _settings.Port),
+                LocalizationService.Format(LocalizationService.Mark("Discovery port: {0}"), _settings.DiscoveryPort),
+                LocalizationService.Format(LocalizationService.Mark("Max players: {0}"), _settings.MaxPlayers),
+                LocalizationService.Format(LocalizationService.Mark("Check for updates on startup: {0}"), CommandInput.FormatOnOff(_settings.CheckForUpdatesOnStartup)),
+                LocalizationService.Translate(LocalizationService.Mark("Back"))
             };
         }
 
         private void EditMotd()
         {
-            var prompt = $"Enter message of the day (max {ProtocolConstants.MaxMotdLength} chars, empty clears value):";
+            var prompt = LocalizationService.Format(
+                LocalizationService.Mark("Enter message of the day (max {0} chars, empty clears value):"),
+                ProtocolConstants.MaxMotdLength);
             if (!CommandInput.TryPromptText(prompt, ProtocolConstants.MaxMotdLength, allowEmpty: true, out var motd))
             {
-                DisableCommands("Standard input is no longer available. Server commands are disabled.");
+                DisableCommands(LocalizationService.Mark("Standard input is no longer available. Server commands are disabled."));
                 return;
             }
 
             _settings.Motd = motd;
             _server.SetMotd(motd);
             SaveSettings();
-            ConsoleSink.WriteLine("Message of the day updated.");
+            ConsoleSink.WriteLine(LocalizationService.Mark("Message of the day updated."));
         }
 
         private void EditServerPort()
         {
-            if (!CommandInput.TryPromptInt("Enter server port (1-65535):", 1, 65535, out var port))
+            if (!CommandInput.TryPromptInt(LocalizationService.Mark("Enter server port (1-65535):"), 1, 65535, out var port))
             {
-                DisableCommands("Standard input is no longer available. Server commands are disabled.");
+                DisableCommands(LocalizationService.Mark("Standard input is no longer available. Server commands are disabled."));
                 return;
             }
 
             _settings.Port = port;
             SaveSettings();
-            ConsoleSink.WriteLine($"Server port updated to {port}. Restart required for this change.");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Server port updated to {0}. Restart required for this change."), port);
         }
 
         private void EditDiscoveryPort()
         {
-            if (!CommandInput.TryPromptInt("Enter discovery port (1-65535):", 1, 65535, out var port))
+            if (!CommandInput.TryPromptInt(LocalizationService.Mark("Enter discovery port (1-65535):"), 1, 65535, out var port))
             {
-                DisableCommands("Standard input is no longer available. Server commands are disabled.");
+                DisableCommands(LocalizationService.Mark("Standard input is no longer available. Server commands are disabled."));
                 return;
             }
 
             _settings.DiscoveryPort = port;
             SaveSettings();
-            ConsoleSink.WriteLine($"Discovery port updated to {port}. Restart required for this change.");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Discovery port updated to {0}. Restart required for this change."), port);
         }
 
         private void EditMaxPlayers()
         {
-            if (!CommandInput.TryPromptInt("Enter max players (1-255):", 1, byte.MaxValue, out var maxPlayers))
+            if (!CommandInput.TryPromptInt(LocalizationService.Mark("Enter max players (1-255):"), 1, byte.MaxValue, out var maxPlayers))
             {
-                DisableCommands("Standard input is no longer available. Server commands are disabled.");
+                DisableCommands(LocalizationService.Mark("Standard input is no longer available. Server commands are disabled."));
                 return;
             }
 
             _settings.MaxPlayers = maxPlayers;
             _server.SetMaxPlayers(maxPlayers);
             SaveSettings();
-            ConsoleSink.WriteLine($"Max players updated to {maxPlayers}.");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Max players updated to {0}."), maxPlayers);
         }
 
         private void ToggleCheckForUpdatesOnStartup()
         {
             _settings.CheckForUpdatesOnStartup = !_settings.CheckForUpdatesOnStartup;
             SaveSettings();
-            ConsoleSink.WriteLine($"Check for updates on startup: {CommandInput.FormatOnOff(_settings.CheckForUpdatesOnStartup)}");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("Check for updates on startup: {0}"), CommandInput.FormatOnOff(_settings.CheckForUpdatesOnStartup));
         }
 
         private void SaveSettings()
@@ -279,7 +287,9 @@ namespace TopSpeed.Server.Commands
 
         private static string FormatMotd(string motd)
         {
-            return string.IsNullOrWhiteSpace(motd) ? "(empty)" : motd;
+            return string.IsNullOrWhiteSpace(motd)
+                ? LocalizationService.Translate(LocalizationService.Mark("(empty)"))
+                : motd;
         }
 
         private static bool IsInputAvailable()
@@ -303,3 +313,7 @@ namespace TopSpeed.Server.Commands
         }
     }
 }
+
+
+
+

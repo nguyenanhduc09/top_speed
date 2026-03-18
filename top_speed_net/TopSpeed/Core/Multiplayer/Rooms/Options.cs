@@ -5,6 +5,7 @@ using TopSpeed.Data;
 using TopSpeed.Menu;
 using TopSpeed.Protocol;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -13,13 +14,13 @@ namespace TopSpeed.Core.Multiplayer
         {
             if (!_state.Rooms.CurrentRoom.InRoom)
             {
-                _speech.Speak("You are not currently inside a game room.");
+                _speech.Speak(LocalizationService.Mark("You are not currently inside a game room."));
                 return;
             }
 
             if (!_state.Rooms.CurrentRoom.IsHost)
             {
-                _speech.Speak("Only the host can change game options.");
+                _speech.Speak(LocalizationService.Mark("Only the host can change game options."));
                 return;
             }
 
@@ -52,13 +53,13 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
             if (!_state.Rooms.CurrentRoom.InRoom || !_state.Rooms.CurrentRoom.IsHost || !_state.Rooms.RoomOptionsDraftActive)
             {
-                _speech.Speak("Only the host can change game options.");
+                _speech.Speak(LocalizationService.Mark("Only the host can change game options."));
                 return;
             }
 
@@ -66,14 +67,14 @@ namespace TopSpeed.Core.Multiplayer
             var currentTrack = string.IsNullOrWhiteSpace(_state.Rooms.CurrentRoom.TrackName) ? TrackList.RaceTracks[0].Key : _state.Rooms.CurrentRoom.TrackName;
             if (!string.Equals(currentTrack, _state.Rooms.RoomOptionsTrackName, StringComparison.OrdinalIgnoreCase))
             {
-                if (!TrySend(session.SendRoomSetTrack(_state.Rooms.RoomOptionsTrackName), "track change request"))
+                if (!TrySend(session.SendRoomSetTrack(_state.Rooms.RoomOptionsTrackName)))
                     return;
                 appliedAny = true;
             }
 
             if (_state.Rooms.CurrentRoom.Laps != _state.Rooms.RoomOptionsLaps)
             {
-                if (!TrySend(session.SendRoomSetLaps(_state.Rooms.RoomOptionsLaps), "lap count change request"))
+                if (!TrySend(session.SendRoomSetLaps(_state.Rooms.RoomOptionsLaps)))
                     return;
                 appliedAny = true;
             }
@@ -83,7 +84,7 @@ namespace TopSpeed.Core.Multiplayer
                 var playersToStart = _state.Rooms.RoomOptionsPlayersToStart < 2 ? (byte)2 : _state.Rooms.RoomOptionsPlayersToStart;
                 if (_state.Rooms.CurrentRoom.PlayersToStart != playersToStart)
                 {
-                    if (!TrySend(session.SendRoomSetPlayersToStart(playersToStart), "player count change request"))
+                    if (!TrySend(session.SendRoomSetPlayersToStart(playersToStart)))
                         return;
                     appliedAny = true;
                 }
@@ -91,7 +92,9 @@ namespace TopSpeed.Core.Multiplayer
 
             CancelRoomOptionsChanges();
             _menu.ShowRoot(MultiplayerMenuKeys.RoomControls);
-            _speech.Speak(appliedAny ? "Room options updated." : "No option changes to apply.");
+            _speech.Speak(appliedAny
+                ? LocalizationService.Mark("Room options updated.")
+                : LocalizationService.Mark("No option changes to apply."));
         }
 
         private string GetRoomOptionsTrackText()
@@ -100,12 +103,16 @@ namespace TopSpeed.Core.Multiplayer
                 BeginRoomOptionsDraft();
 
             if (_state.Rooms.RoomOptionsTrackRandom)
-                return "Track, currently random chosen.";
+            {
+                return LocalizationService.Mark("Track, currently random chosen.");
+            }
 
             var trackName = TryGetTrackDisplay(_state.Rooms.RoomOptionsTrackName, out var display)
                 ? display
                 : _state.Rooms.RoomOptionsTrackName;
-            return $"Track, currently {trackName}.";
+            return LocalizationService.Format(
+                LocalizationService.Mark("Track, currently {0}."),
+                trackName);
         }
 
         private int GetRoomOptionsLapsIndex()
@@ -168,10 +175,10 @@ namespace TopSpeed.Core.Multiplayer
         {
             var items = new List<MenuItem>
             {
-                new MenuItem("Race track", MenuAction.None, nextMenuId: MultiplayerMenuKeys.RoomTrackRace),
-                new MenuItem("Street adventure", MenuAction.None, nextMenuId: MultiplayerMenuKeys.RoomTrackAdventure),
-                new MenuItem("Random", MenuAction.None, onActivate: SelectRandomRoomTrackAny),
-                new MenuItem("Go back", MenuAction.Back)
+                new MenuItem(LocalizationService.Mark("Race track"), MenuAction.None, nextMenuId: MultiplayerMenuKeys.RoomTrackRace),
+                new MenuItem(LocalizationService.Mark("Street adventure"), MenuAction.None, nextMenuId: MultiplayerMenuKeys.RoomTrackAdventure),
+                new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, onActivate: SelectRandomRoomTrackAny),
+                new MenuItem(LocalizationService.Mark("Go back"), MenuAction.Back)
             };
 
             _menu.UpdateItems(MultiplayerMenuKeys.RoomTrackType, items);
@@ -187,8 +194,8 @@ namespace TopSpeed.Core.Multiplayer
                 items.Add(new MenuItem(track.Display, MenuAction.None, onActivate: () => SelectRoomTrack(track.Key, false)));
             }
 
-            items.Add(new MenuItem("Random", MenuAction.None, onActivate: () => SelectRandomRoomTrackCategory(category)));
-            items.Add(new MenuItem("Go back", MenuAction.Back));
+            items.Add(new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, onActivate: () => SelectRandomRoomTrackCategory(category)));
+            items.Add(new MenuItem(LocalizationService.Mark("Go back"), MenuAction.Back));
             _menu.UpdateItems(menuId, items);
         }
 
@@ -256,6 +263,9 @@ namespace TopSpeed.Core.Multiplayer
         }
     }
 }
+
+
+
 
 
 

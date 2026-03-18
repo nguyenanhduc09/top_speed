@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TopSpeed.Input;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -12,12 +13,11 @@ namespace TopSpeed.Core.Multiplayer
                 return;
 
             _state.SavedServers.PendingDeleteIndex = index;
-            _questions.Show(new Question(
-                "Delete this server?",
-                "This will remove the saved server entry from the list. Are you sure you would like to continue?",
+            _questions.Show(new Question(LocalizationService.Mark("Delete this server?"),
+                LocalizationService.Mark("This will remove the saved server entry from the list. Are you sure you would like to continue?"),
                 HandleDeleteSavedServerQuestionResult,
-                new QuestionButton(QuestionId.Yes, "Yes, delete this server"),
-                new QuestionButton(QuestionId.No, "No, keep this server", flags: QuestionButtonFlags.Default)));
+                new QuestionButton(QuestionId.Yes, LocalizationService.Mark("Yes, delete this server")),
+                new QuestionButton(QuestionId.No, LocalizationService.Mark("No, keep this server"), flags: QuestionButtonFlags.Default)));
         }
 
         private void HandleSavedServerDiscardQuestionResult(int resultId)
@@ -50,8 +50,12 @@ namespace TopSpeed.Core.Multiplayer
             RebuildSavedServersMenu();
             if (_questions.IsQuestionMenu(_menu.CurrentId))
                 _menu.PopToPrevious();
-            _speech.Speak("Server deleted.");
+            _speech.Speak(LocalizationService.Mark("Server deleted."));
         }
     }
 }
+
+
+
+
 

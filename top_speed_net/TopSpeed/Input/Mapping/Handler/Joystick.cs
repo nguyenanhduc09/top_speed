@@ -1,4 +1,5 @@
 using TopSpeed.Input.Devices.Joystick;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Input
 {
@@ -9,7 +10,7 @@ namespace TopSpeed.Input
             if (!_input.TryGetJoystickState(out var state))
             {
                 _mappingActive = false;
-                _speech.Speak("No joystick detected.");
+                _speech.Speak(LocalizationService.Mark("No joystick detected."));
                 return;
             }
 
@@ -26,7 +27,7 @@ namespace TopSpeed.Input
                 return;
             if (_raceInput.KeyMap.IsAxisInUse(axis, _mappingAction))
             {
-                _speech.Speak("That control is already in use.");
+                _speech.Speak(LocalizationService.Mark("That control is already in use."));
                 return;
             }
 
@@ -34,7 +35,10 @@ namespace TopSpeed.Input
             _saveSettings();
             _mappingActive = false;
             var label = _raceInput.KeyMap.GetLabel(_mappingAction);
-            _speech.Speak($"{label} set to {KeyMapManager.FormatAxis(axis)}.");
+            _speech.Speak(LocalizationService.Format(
+                LocalizationService.Mark("{0} set to {1}."),
+                label,
+                KeyMapManager.FormatAxis(axis)));
         }
 
         private JoystickAxisOrButton FindTriggeredAxis(JoystickStateSnapshot current, JoystickStateSnapshot previous)

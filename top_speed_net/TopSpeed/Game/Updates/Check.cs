@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TopSpeed.Core.Updates;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Game
 {
     internal sealed partial class Game
@@ -24,13 +25,13 @@ namespace TopSpeed.Game
         {
             if (_updateCheckTask != null)
             {
-                _speech.Speak("Update check is already in progress.");
+                _speech.Speak(LocalizationService.Mark("Update check is already in progress."));
                 return;
             }
 
             if (_updateDownloadTask != null)
             {
-                _speech.Speak("An update download is already in progress.");
+                _speech.Speak(LocalizationService.Mark("An update download is already in progress."));
                 return;
             }
 
@@ -38,7 +39,7 @@ namespace TopSpeed.Game
             _updatePromptShown = false;
             _pendingUpdateInfo = null;
             _updateCheckTask = Task.Run(() => _updateService.CheckAsync(UpdateConfig.CurrentVersion, CancellationToken.None));
-            _speech.Speak("Checking for updates.");
+            _speech.Speak(LocalizationService.Mark("Checking for updates."));
         }
 
         private void UpdateUpdateFlow()
@@ -62,7 +63,7 @@ namespace TopSpeed.Game
                 result = new UpdateCheckResult
                 {
                     IsSuccess = false,
-                    ErrorMessage = "Update check failed."
+                    ErrorMessage = LocalizationService.Mark("Update check failed.")
                 };
             }
             else
@@ -76,8 +77,8 @@ namespace TopSpeed.Game
                 if (wasManual)
                 {
                     ShowMessageDialog(
-                        "Update check failed",
-                        "The game could not check for updates.",
+                        LocalizationService.Mark("Update check failed"),
+                        LocalizationService.Mark("The game could not check for updates."),
                         new[] { result.ErrorMessage });
                 }
 
@@ -88,8 +89,8 @@ namespace TopSpeed.Game
             if (_pendingUpdateInfo == null && wasManual)
             {
                 ShowMessageDialog(
-                    "No updates found",
-                    "You are already using the latest version.",
+                    LocalizationService.Mark("No updates found"),
+                    LocalizationService.Mark("You are already using the latest version."),
                     Array.Empty<string>());
             }
         }
@@ -110,8 +111,10 @@ namespace TopSpeed.Game
 
             var update = _pendingUpdateInfo;
             _updatePromptShown = true;
-            var caption =
-                $"A new version of Top Speed was detected. Your current version is {UpdateConfig.CurrentVersion}. The new version is {update.Version}. Would you like to download the update?";
+            var caption = LocalizationService.Format(
+                LocalizationService.Mark("A new version of Top Speed was detected. Your current version is {0}. The new version is {1}. Would you like to download the update?"),
+                UpdateConfig.CurrentVersion,
+                update.Version);
             var changeItems = new List<DialogItem>();
             var hasChanges = false;
             if (update.Changes != null)
@@ -123,15 +126,14 @@ namespace TopSpeed.Game
                         continue;
                     if (!hasChanges)
                     {
-                        changeItems.Add(new DialogItem("What's new in this version:"));
+                        changeItems.Add(new DialogItem(LocalizationService.Mark("What's new in this version:")));
                         hasChanges = true;
                     }
                     changeItems.Add(new DialogItem(line.Trim()));
                 }
             }
 
-            var dialog = new Dialog(
-                "New version detected.",
+            var dialog = new Dialog(LocalizationService.Mark("New version detected."),
                 caption,
                 QuestionId.Cancel,
                 changeItems,
@@ -140,10 +142,13 @@ namespace TopSpeed.Game
                     if (resultId == QuestionId.Confirm)
                         BeginUpdateDownload(update);
                 },
-                new DialogButton(QuestionId.Confirm, "Download update"),
-                new DialogButton(QuestionId.Close, "Close"));
+                new DialogButton(QuestionId.Confirm, LocalizationService.Mark("Download update")), new DialogButton(QuestionId.Close, LocalizationService.Mark("Close")));
 
             _dialogs.Show(dialog);
         }
     }
 }
+
+
+
+

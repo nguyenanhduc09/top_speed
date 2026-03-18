@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 
@@ -7,7 +8,7 @@ namespace TopSpeed.Server.Network
 {
     internal sealed partial class RaceServer
     {
-        private const string MainRoomName = "main room";
+        private static readonly string MainRoomName = LocalizationService.Mark("main room");
 
         private void HandleOnlinePlayersRequest(PlayerConnection requester)
         {
@@ -78,14 +79,14 @@ namespace TopSpeed.Server.Network
                 return MainRoomName;
             if (!string.IsNullOrWhiteSpace(room.Name))
                 return room.Name;
-            return $"room {room.Id}";
+            return LocalizationService.Format(LocalizationService.Mark("room {0}"), room.Id);
         }
 
         private static string GetOnlineDisplayName(PlayerConnection player)
         {
             if (!string.IsNullOrWhiteSpace(player.Name))
                 return player.Name;
-            return $"Player {player.PlayerNumber + 1}";
+            return LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1);
         }
     }
 }

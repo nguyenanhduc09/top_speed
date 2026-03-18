@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Multiplayer
 {
@@ -9,20 +10,20 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
             if (_state.Connection.IsPingPending)
             {
-                _speech.Speak("Ping check already in progress.");
+                _speech.Speak(LocalizationService.Mark("Ping check already in progress."));
                 return;
             }
 
             _state.Connection.IsPingPending = true;
             _state.Connection.PingStartedAtTicks = DateTime.UtcNow.Ticks;
             PlayNetworkSound("ping_start.ogg");
-            if (!TrySend(session.SendPing(), "ping request"))
+            if (!TrySend(session.SendPing()))
             {
                 _state.Connection.IsPingPending = false;
                 return;
@@ -45,7 +46,9 @@ namespace TopSpeed.Core.Multiplayer
             if (elapsed < 0)
                 elapsed = 0;
             PlayNetworkSound("ping_stop.ogg");
-            _speech.Speak($"The ping took {(int)Math.Round(elapsed)} milliseconds.");
+            _speech.Speak(LocalizationService.Format(
+                LocalizationService.Mark("The ping took {0} milliseconds."),
+                (int)Math.Round(elapsed)));
         }
     }
 }

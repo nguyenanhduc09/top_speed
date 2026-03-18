@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TopSpeed.Network;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Multiplayer
 {
@@ -19,7 +20,7 @@ namespace TopSpeed.Core.Multiplayer
                     return true;
 
                 var result = _state.Connection.ConnectTask.IsFaulted || _state.Connection.ConnectTask.IsCanceled
-                    ? ConnectResult.CreateFail("Connection attempt failed.")
+                    ? ConnectResult.CreateFail(LocalizationService.Mark("Connection attempt failed."))
                     : _state.Connection.ConnectTask.GetAwaiter().GetResult();
                 _lifetime.CompleteConnectOperation();
                 HandleConnectResult(result);

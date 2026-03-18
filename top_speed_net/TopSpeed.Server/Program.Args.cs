@@ -4,6 +4,7 @@ using System.IO;
 using TopSpeed.Server.Config;
 using TopSpeed.Server.Logging;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Server
 {
     internal static partial class Program
@@ -58,35 +59,37 @@ namespace TopSpeed.Server
 
         private static void ShowHelp()
         {
-            ConsoleSink.WriteLine("TopSpeed.Server usage:");
-            ConsoleSink.WriteLine("  TopSpeed.Server [options]");
+            ConsoleSink.WriteLine(LocalizationService.Mark("TopSpeed.Server usage:"));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  TopSpeed.Server [options]"));
             ConsoleSink.WriteLine(string.Empty);
-            ConsoleSink.WriteLine("Options:");
-            ConsoleSink.WriteLine("  --port <number>         Server port (1-65535).");
-            ConsoleSink.WriteLine("  --max-players <number>  Max connected players (1-255).");
-            ConsoleSink.WriteLine("  --motd <text>           Message of the day.");
-            ConsoleSink.WriteLine("  --log <levels>          Comma-separated levels: error,warning,info,debug,all.");
-            ConsoleSink.WriteLine("  --log-file <path>       Output log file path (e.g. log.txt).");
-            ConsoleSink.WriteLine("  -h, --help              Show this help.");
+            ConsoleSink.WriteLine(LocalizationService.Mark("Options:"));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  --port <number>         Server port (1-65535)."));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  --max-players <number>  Max connected players (1-255)."));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  --motd <text>           Message of the day."));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  --log <levels>          Comma-separated levels: error,warning,info,debug,all."));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  --log-file <path>       Output log file path (e.g. log.txt)."));
+            ConsoleSink.WriteLine(LocalizationService.Mark("  -h, --help              Show this help."));
         }
 
         private static string FormatLogLevels(LogLevel levels)
         {
             if (levels == LogLevel.None)
-                return "none";
+                return LocalizationService.Translate(LocalizationService.Mark("none"));
             if (levels == LogLevel.All)
-                return "all";
+                return LocalizationService.Translate(LocalizationService.Mark("all"));
 
             var parts = new System.Collections.Generic.List<string>();
             if ((levels & LogLevel.Error) != 0)
-                parts.Add("error");
+                parts.Add(LocalizationService.Translate(LocalizationService.Mark("error")));
             if ((levels & LogLevel.Warning) != 0)
-                parts.Add("warning");
+                parts.Add(LocalizationService.Translate(LocalizationService.Mark("warning")));
             if ((levels & LogLevel.Info) != 0)
-                parts.Add("info");
+                parts.Add(LocalizationService.Translate(LocalizationService.Mark("info")));
             if ((levels & LogLevel.Debug) != 0)
-                parts.Add("debug");
-            return parts.Count == 0 ? "none" : string.Join(",", parts);
+                parts.Add(LocalizationService.Translate(LocalizationService.Mark("debug")));
+            return parts.Count == 0
+                ? LocalizationService.Translate(LocalizationService.Mark("none"))
+                : string.Join(",", parts);
         }
 
         private static string? GetArgumentValue(string[] args, string key)
@@ -124,7 +127,7 @@ namespace TopSpeed.Server
                 if (port >= 1 && port <= 65535)
                     settings.Port = port;
                 else
-                    logger.Warning("Invalid --port value. Using configured port.");
+                    logger.Warning(LocalizationService.Mark("Invalid --port value. Using configured port."));
             }
 
             if (TryGetIntArg(args, "--max-players", out var maxPlayers))
@@ -132,7 +135,7 @@ namespace TopSpeed.Server
                 if (maxPlayers >= 1 && maxPlayers <= byte.MaxValue)
                     settings.MaxPlayers = maxPlayers;
                 else
-                    logger.Warning("Invalid --max-players value. Using configured max players.");
+                    logger.Warning(LocalizationService.Mark("Invalid --max-players value. Using configured max players."));
             }
 
             var motd = GetArgumentValue(args, "--motd");
@@ -150,3 +153,6 @@ namespace TopSpeed.Server
         }
     }
 }
+
+
+

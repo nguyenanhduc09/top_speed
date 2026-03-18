@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using LiteNetLib;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network
@@ -22,19 +23,25 @@ namespace TopSpeed.Network
 
                 return addresses.Length > 0
                     ? ResolveResult.Ok(addresses[0])
-                    : ResolveResult.Fail("Unable to resolve server address.");
+                    : ResolveResult.Fail(LocalizationService.Mark("Unable to resolve server address."));
             }
             catch (SocketException ex)
             {
-                return ResolveResult.Fail($"Unable to resolve server address: {ex.Message}");
+                return ResolveResult.Fail(LocalizationService.Format(
+                    LocalizationService.Mark("Unable to resolve server address: {0}"),
+                    ex.Message));
             }
             catch (ArgumentException ex)
             {
-                return ResolveResult.Fail($"Unable to resolve server address: {ex.Message}");
+                return ResolveResult.Fail(LocalizationService.Format(
+                    LocalizationService.Mark("Unable to resolve server address: {0}"),
+                    ex.Message));
             }
             catch (InvalidOperationException ex)
             {
-                return ResolveResult.Fail($"Unable to resolve server address: {ex.Message}");
+                return ResolveResult.Fail(LocalizationService.Format(
+                    LocalizationService.Mark("Unable to resolve server address: {0}"),
+                    ex.Message));
             }
         }
 
@@ -47,11 +54,15 @@ namespace TopSpeed.Network
             }
             catch (ObjectDisposedException ex)
             {
-                return SendResult.Fail($"Failed to send handshake: {ex.Message}");
+                return SendResult.Fail(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to send handshake: {0}"),
+                    ex.Message));
             }
             catch (InvalidOperationException ex)
             {
-                return SendResult.Fail($"Failed to send handshake: {ex.Message}");
+                return SendResult.Fail(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to send handshake: {0}"),
+                    ex.Message));
             }
         }
 
@@ -75,7 +86,7 @@ namespace TopSpeed.Network
         {
             var trimmed = (callSign ?? string.Empty).Trim();
             if (trimmed.Length == 0)
-                trimmed = "Player";
+                trimmed = LocalizationService.Mark("Player");
             if (trimmed.Length > ProtocolConstants.MaxPlayerNameLength)
                 trimmed = trimmed.Substring(0, ProtocolConstants.MaxPlayerNameLength);
             return trimmed;
@@ -125,7 +136,10 @@ namespace TopSpeed.Network
         private static string BuildProtocolRefusalFallback(PacketProtocolWelcome welcome)
         {
             var range = new ProtocolRange(welcome.ServerMinSupported, welcome.ServerMaxSupported);
-            return $"Your client protocol version is {ProtocolProfile.Current}. This server supports protocol versions {range}.";
+            return LocalizationService.Format(
+                LocalizationService.Mark("Your client protocol version is {0}. This server supports protocol versions {1}."),
+                ProtocolProfile.Current,
+                range);
         }
 
         private readonly struct ResolveResult
@@ -142,7 +156,7 @@ namespace TopSpeed.Network
             public string Error { get; }
 
             public static ResolveResult Ok(IPAddress address) => new ResolveResult(true, address, string.Empty);
-            public static ResolveResult Fail(string error) => new ResolveResult(false, null, error ?? "Unable to resolve server address.");
+            public static ResolveResult Fail(string error) => new ResolveResult(false, null, error ?? LocalizationService.Mark("Unable to resolve server address."));
         }
 
         private readonly struct SendResult
@@ -157,7 +171,7 @@ namespace TopSpeed.Network
             public string Error { get; }
 
             public static SendResult Ok() => new SendResult(true, string.Empty);
-            public static SendResult Fail(string error) => new SendResult(false, error ?? "Failed to send handshake.");
+            public static SendResult Fail(string error) => new SendResult(false, error ?? LocalizationService.Mark("Failed to send handshake."));
         }
     }
 }

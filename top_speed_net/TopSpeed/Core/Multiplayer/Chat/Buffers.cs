@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer.Chat
 {
     internal enum HistoryBuffer
@@ -24,7 +25,7 @@ namespace TopSpeed.Core.Multiplayer.Chat
             HistoryBuffer.RoomEvents
         };
         private readonly int _maxEntries;
-        private readonly List<MenuItem> _emptyItems = new List<MenuItem> { new MenuItem("No messages yet.", MenuAction.None) };
+        private readonly List<MenuItem> _emptyItems = new List<MenuItem> { new MenuItem(LocalizationService.Mark("No messages yet."), MenuAction.None) };
 
         public HistoryBuffers(int maxEntries)
         {
@@ -79,11 +80,11 @@ namespace TopSpeed.Core.Multiplayer.Chat
         {
             return Current switch
             {
-                HistoryBuffer.GlobalChat => "global chat",
-                HistoryBuffer.RoomChat => "room chat",
-                HistoryBuffer.Connections => "connections",
-                HistoryBuffer.RoomEvents => "room events",
-                _ => "all"
+                HistoryBuffer.GlobalChat => LocalizationService.Mark("global chat"),
+                HistoryBuffer.RoomChat => LocalizationService.Mark("room chat"),
+                HistoryBuffer.Connections => LocalizationService.Mark("connections"),
+                HistoryBuffer.RoomEvents => LocalizationService.Mark("room events"),
+                _ => LocalizationService.Mark("all")
             };
         }
 
@@ -123,3 +124,6 @@ namespace TopSpeed.Core.Multiplayer.Chat
         }
     }
 }
+
+
+

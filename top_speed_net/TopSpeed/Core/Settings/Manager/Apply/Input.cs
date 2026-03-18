@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SharpDX.DirectInput;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -15,14 +16,20 @@ namespace TopSpeed.Core.Settings
             settings.DeviceMode = ReadEnum(input.DeviceMode, settings.DeviceMode, "input.deviceMode", issues);
 
             if (input.Keyboard == null)
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, "input.keyboard", "Keyboard bindings section is missing. Defaults were used for keyboard bindings."));
+                issues.Add(new SettingsIssue(
+                    SettingsIssueSeverity.Warning,
+                    "input.keyboard",
+                    LocalizationService.Mark("Keyboard bindings section is missing. Defaults were used for keyboard bindings.")));
             else
                 ApplyKeyboard(settings, input.Keyboard, issues);
 
             ApplyMenuShortcuts(settings, input.MenuShortcuts, issues);
 
             if (input.Joystick == null)
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, "input.joystick", "Joystick bindings section is missing. Defaults were used for joystick bindings."));
+                issues.Add(new SettingsIssue(
+                    SettingsIssueSeverity.Warning,
+                    "input.joystick",
+                    LocalizationService.Mark("Joystick bindings section is missing. Defaults were used for joystick bindings.")));
             else
                 ApplyJoystick(settings, input.Joystick, issues);
         }
@@ -102,7 +109,7 @@ namespace TopSpeed.Core.Settings
                     issues.Add(new SettingsIssue(
                         SettingsIssueSeverity.Warning,
                         $"input.menuShortcuts.bindings[{i}].id",
-                        "Shortcut binding id is missing and was ignored."));
+                        LocalizationService.Mark("Shortcut binding id is missing and was ignored.")));
                     continue;
                 }
 
@@ -115,7 +122,10 @@ namespace TopSpeed.Core.Settings
                     issues.Add(new SettingsIssue(
                         SettingsIssueSeverity.Warning,
                         $"input.menuShortcuts.bindings[{i}].key",
-                        $"The key input.menuShortcuts.bindings[{i}].key has invalid value {keyValue} and was ignored."));
+                        LocalizationService.Format(
+                            LocalizationService.Mark("The key input.menuShortcuts.bindings[{0}].key has invalid value {1} and was ignored."),
+                            i,
+                            keyValue)));
                     continue;
                 }
 

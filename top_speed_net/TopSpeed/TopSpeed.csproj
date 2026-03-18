@@ -50,8 +50,12 @@
       <Link>Sounds\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <TargetPath>Sounds\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
     </Content>
-    <Content Include="..\..\docs\**\*"
-             Exclude="..\..\docs\**\*.md;..\..\docs\render_docs.py">
+    <Content Include="..\languages\client\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>languages\client\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>languages\client\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
+    <Content Include="..\..\docs\**\*" Exclude="..\..\docs\**\*.md;..\..\docs\render_docs.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>docs\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <TargetPath>docs\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>

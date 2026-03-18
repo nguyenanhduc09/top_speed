@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Vehicles.Control;
 using TopSpeed.Vehicles.Core;
@@ -31,7 +32,7 @@ namespace TopSpeed.Vehicles
         public bool Horning => _soundHorn.IsPlaying;
         public bool UserDefined => _userDefined;
         public string? CustomFile => _customFile;
-        public string VehicleName { get; private set; } = "Vehicle";
+        public string VehicleName { get; private set; } = LocalizationService.Mark("Vehicle");
         public float WidthM => _widthM;
         public float LengthM => _lengthM;
 

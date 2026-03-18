@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using TopSpeed.Menu;
 using TopSpeed.Protocol;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
     {
         private const string OnlinePlayersScreenId = "online_players_main";
-        private const string MainRoomName = "main room";
+        private static readonly string MainRoomName = LocalizationService.Mark("main room");
 
         private void OpenOnlinePlayersMenu()
         {
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
@@ -23,7 +24,7 @@ namespace TopSpeed.Core.Multiplayer
                 return;
 
             _state.Rooms.IsOnlinePlayersOpenPending = true;
-            if (!TrySend(session.SendOnlinePlayersRequest(), "online players request"))
+            if (!TrySend(session.SendOnlinePlayersRequest()))
                 _state.Rooms.IsOnlinePlayersOpenPending = false;
         }
 
@@ -36,28 +37,41 @@ namespace TopSpeed.Core.Multiplayer
                 items.Add(new MenuItem(FormatOnlinePlayerLabel(players[i]), MenuAction.None));
             }
 
-            items.Add(new MenuItem("Go back", MenuAction.Back));
+            items.Add(new MenuItem(LocalizationService.Mark("Go back"), MenuAction.Back));
             _menu.SetScreens(
                 MultiplayerMenuKeys.OnlinePlayers,
-                new[] { new MenuView(OnlinePlayersScreenId, items, $"{players.Length} people are connected.") },
+                new[]
+                {
+                    new MenuView(
+                        OnlinePlayersScreenId,
+                        items,
+                        LocalizationService.Format(
+                            LocalizationService.Mark("{0} people are connected."),
+                            players.Length))
+                },
                 OnlinePlayersScreenId);
         }
 
         private static string FormatOnlinePlayerLabel(OnlinePlayerInfo player)
         {
             var name = string.IsNullOrWhiteSpace(player.Name)
-                ? $"Player {player.PlayerNumber + 1}"
+                ? LocalizationService.Format(
+                    LocalizationService.Mark("Player {0}"),
+                    player.PlayerNumber + 1)
                 : player.Name;
             var roomName = string.IsNullOrWhiteSpace(player.RoomName)
-                ? MainRoomName
+                ? LocalizationService.Translate(MainRoomName)
                 : player.RoomName;
             var state = player.PresenceState switch
             {
-                OnlinePresenceState.PreparingToRace => "Preparing to race",
-                OnlinePresenceState.Racing => "racing",
-                _ => "available"
+                OnlinePresenceState.PreparingToRace => LocalizationService.Translate(LocalizationService.Mark("Preparing to race")),
+                OnlinePresenceState.Racing => LocalizationService.Translate(LocalizationService.Mark("racing")),
+                _ => LocalizationService.Translate(LocalizationService.Mark("available"))
             };
-            return $"{name}, {state}: {roomName}";
+            return name + ", " + state + ": " + roomName;
         }
     }
 }
+
+
+

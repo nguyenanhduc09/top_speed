@@ -117,7 +117,7 @@ namespace TopSpeed.Vehicles.Parsing
                 if (gearRatios.Count != gearCount)
                 {
                     issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, gears.Entries["gear_ratios"].Line,
-                        $"gear_ratios count ({gearRatios.Count}) must match number_of_gears ({gearCount})."));
+                        Localized("gear_ratios count ({0}) must match number_of_gears ({1}).", gearRatios.Count, gearCount)));
                 }
                 else
                 {
@@ -125,13 +125,13 @@ namespace TopSpeed.Vehicles.Parsing
                     {
                         var value = gearRatios[i];
                         if (value < 0.20f || value > 8.00f)
-                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, gears.Entries["gear_ratios"].Line, $"gear_ratios[{i + 1}] is outside allowed range 0.20 to 8.00."));
+                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, gears.Entries["gear_ratios"].Line, Localized("gear_ratios[{0}] is outside allowed range 0.20 to 8.00.", i + 1)));
                     }
                     for (var i = 1; i < gearRatios.Count; i++)
                     {
                         if (gearRatios[i] > gearRatios[i - 1] + 0.0001f)
                         {
-                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, gears.Entries["gear_ratios"].Line, "gear_ratios must be non-increasing from gear 1 to last gear."));
+                            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, gears.Entries["gear_ratios"].Line, Localized("gear_ratios must be non-increasing from gear 1 to last gear.")));
                             break;
                         }
                     }
@@ -139,21 +139,21 @@ namespace TopSpeed.Vehicles.Parsing
             }
 
             if (maxRpm < idleRpm)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["max_rpm"].Line, "max_rpm must be greater than or equal to idle_rpm."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["max_rpm"].Line, Localized("max_rpm must be greater than or equal to idle_rpm.")));
             if (revLimiter < idleRpm || revLimiter > maxRpm)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["rev_limiter"].Line, "rev_limiter must be between idle_rpm and max_rpm."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["rev_limiter"].Line, Localized("rev_limiter must be between idle_rpm and max_rpm.")));
             if (autoShiftRpm > 0f && (autoShiftRpm < idleRpm || autoShiftRpm > revLimiter))
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["auto_shift_rpm"].Line, "auto_shift_rpm must be 0 or between idle_rpm and rev_limiter."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["auto_shift_rpm"].Line, Localized("auto_shift_rpm must be 0 or between idle_rpm and rev_limiter.")));
             if (peakTorqueRpm < idleRpm || peakTorqueRpm > revLimiter)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, torque.Entries["peak_torque_rpm"].Line, "peak_torque_rpm must be between idle_rpm and rev_limiter."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, torque.Entries["peak_torque_rpm"].Line, Localized("peak_torque_rpm must be between idle_rpm and rev_limiter.")));
             if (launchRpm > revLimiter)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["launch_rpm"].Line, "launch_rpm must not exceed rev_limiter."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["launch_rpm"].Line, Localized("launch_rpm must not exceed rev_limiter.")));
             if (topFreq < idleFreq)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, sounds.Entries["top_freq"].Line, "top_freq must be greater than or equal to idle_freq."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, sounds.Entries["top_freq"].Line, Localized("top_freq must be greater than or equal to idle_freq.")));
             if (shiftFreq < idleFreq || shiftFreq > topFreq)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, sounds.Entries["shift_freq"].Line, "shift_freq must be between idle_freq and top_freq."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, sounds.Entries["shift_freq"].Line, Localized("shift_freq must be between idle_freq and top_freq.")));
             if (highSpeedSteerFullKph <= highSpeedSteerStartKph)
-                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, steeringSection.Entries["high_speed_steer_full_kph"].Line, "high_speed_steer_full_kph must be greater than high_speed_steer_start_kph."));
+                issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, steeringSection.Entries["high_speed_steer_full_kph"].Line, Localized("high_speed_steer_full_kph must be greater than high_speed_steer_start_kph.")));
 
             if (!TryBuildTorqueCurve(
                     torqueCurve,
@@ -175,7 +175,7 @@ namespace TopSpeed.Vehicles.Parsing
             if (tireCircumference.HasValue && tireCircumference.Value > 0f)
             {
                 if (tireCircumference.Value < 0.2f || tireCircumference.Value > 5f)
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_circumference"].Line, "tire_circumference must be between 0.2 and 5.0 meters."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_circumference"].Line, Localized("tire_circumference must be between 0.2 and 5.0 meters.")));
                 else
                     tireCircumferenceResolved = tireCircumference.Value;
             }
@@ -183,16 +183,16 @@ namespace TopSpeed.Vehicles.Parsing
             {
                 if (!tireWidth.HasValue || !tireAspect.HasValue || !tireRim.HasValue)
                 {
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Line, "Provide tire_circumference or all of tire_width, tire_aspect, and tire_rim."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Line, Localized("Provide tire_circumference or all of tire_width, tire_aspect, and tire_rim.")));
                 }
                 else
                 {
                     if (tireWidth.Value < 20 || tireWidth.Value > 450)
-                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_width"].Line, "tire_width must be between 20 and 450 mm."));
+                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_width"].Line, Localized("tire_width must be between 20 and 450 mm.")));
                     if (tireAspect.Value < 5 || tireAspect.Value > 150)
-                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_aspect"].Line, "tire_aspect must be between 5 and 150."));
+                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_aspect"].Line, Localized("tire_aspect must be between 5 and 150.")));
                     if (tireRim.Value < 4 || tireRim.Value > 30)
-                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_rim"].Line, "tire_rim must be between 4 and 30 inches."));
+                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, tires.Entries["tire_rim"].Line, Localized("tire_rim must be between 4 and 30 inches.")));
                     if (!HasErrors(issues))
                         tireCircumferenceResolved = CalculateTireCircumferenceM(tireWidth.Value, tireAspect.Value, tireRim.Value);
                 }
@@ -309,7 +309,7 @@ namespace TopSpeed.Vehicles.Parsing
                     issues.Add(new VehicleTsvIssue(
                         VehicleTsvIssueSeverity.Error,
                         presetEntry.Line,
-                        $"Unknown torque curve preset '{rawPreset}'. Valid values: {PresetCatalog.NamesText}."));
+                        Localized("Unknown torque curve preset '{0}'. Valid values: {1}.", rawPreset, PresetCatalog.NamesText)));
                     rpmPoints = Array.Empty<float>();
                     torquePoints = Array.Empty<float>();
                     return false;
@@ -338,7 +338,7 @@ namespace TopSpeed.Vehicles.Parsing
                     issues.Add(new VehicleTsvIssue(
                         VehicleTsvIssueSeverity.Error,
                         entryPair.Value.Line,
-                        $"Invalid torque curve key '{entryPair.Key}'. Use format like 2000rpm=200."));
+                        Localized("Invalid torque curve key '{0}'. Use format like 2000rpm=200.", entryPair.Key)));
                     continue;
                 }
 
@@ -347,7 +347,7 @@ namespace TopSpeed.Vehicles.Parsing
                     issues.Add(new VehicleTsvIssue(
                         VehicleTsvIssueSeverity.Error,
                         entryPair.Value.Line,
-                        $"Invalid torque value '{entryPair.Value.Value}' for '{entryPair.Key}'."));
+                        Localized("Invalid torque value '{0}' for '{1}'.", entryPair.Value.Value, entryPair.Key)));
                     continue;
                 }
 
@@ -356,7 +356,7 @@ namespace TopSpeed.Vehicles.Parsing
                     issues.Add(new VehicleTsvIssue(
                         VehicleTsvIssueSeverity.Error,
                         entryPair.Value.Line,
-                        $"Torque curve RPM '{rpm:F0}' must be between 300 and 25000."));
+                        Localized("Torque curve RPM '{0:F0}' must be between 300 and 25000.", rpm)));
                     continue;
                 }
 
@@ -365,7 +365,7 @@ namespace TopSpeed.Vehicles.Parsing
                     issues.Add(new VehicleTsvIssue(
                         VehicleTsvIssueSeverity.Error,
                         entryPair.Value.Line,
-                        $"Torque value '{torqueNm:F1}' must be between 0 and 5000 Nm."));
+                        Localized("Torque value '{0:F1}' must be between 0 and 5000 Nm.", torqueNm)));
                     continue;
                 }
 
@@ -384,7 +384,7 @@ namespace TopSpeed.Vehicles.Parsing
                 issues.Add(new VehicleTsvIssue(
                     VehicleTsvIssueSeverity.Error,
                     torqueCurveSection.Line,
-                    "Section [torque_curve] must define at least two RPM points, or a preset with enough points."));
+                    Localized("Section [torque_curve] must define at least two RPM points, or a preset with enough points.")));
                 rpmPoints = Array.Empty<float>();
                 torquePoints = Array.Empty<float>();
                 return false;

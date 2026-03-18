@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -17,7 +18,10 @@ namespace TopSpeed.Core.Settings
             }
             else
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, "accessibility.screenReaderRateMs", "Screen reader rate is not a valid number and was reset to default."));
+                issues.Add(new SettingsIssue(
+                    SettingsIssueSeverity.Warning,
+                    "accessibility.screenReaderRateMs",
+                    LocalizationService.Mark("Screen reader rate is not a valid number and was reset to default.")));
             }
         }
 

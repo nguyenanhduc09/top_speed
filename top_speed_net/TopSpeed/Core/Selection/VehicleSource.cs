@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TopSpeed.Vehicles;
 using TopSpeed.Vehicles.Parsing;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core
 {
@@ -32,7 +33,7 @@ namespace TopSpeed.Core
 
             var info = new CustomVehicleInfo(
                 file,
-                string.IsNullOrWhiteSpace(parsed.Meta.Name) ? "Custom vehicle" : parsed.Meta.Name,
+                string.IsNullOrWhiteSpace(parsed.Meta.Name) ? LocalizationService.Mark("Custom vehicle") : parsed.Meta.Name,
                 parsed.Meta.Version ?? string.Empty,
                 parsed.Meta.Description ?? string.Empty);
             return (true, info);
@@ -44,7 +45,7 @@ namespace TopSpeed.Core
 
             if (issues == null || issues.Count == 0)
             {
-                AddIssue("Failed to load this vehicle file.");
+                AddIssue(LocalizationService.Mark("Failed to load this vehicle file."));
                 return;
             }
 

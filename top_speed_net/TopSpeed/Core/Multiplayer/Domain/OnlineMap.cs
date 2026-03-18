@@ -1,11 +1,12 @@
 using System;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Core.Multiplayer
 {
     internal static class OnlineMap
     {
-        private const string MainRoomName = "main room";
+        private static readonly string MainRoomName = LocalizationService.Mark("main room");
 
         public static OnlineListInfo ToList(PacketOnlinePlayers? packet)
         {
@@ -45,7 +46,9 @@ namespace TopSpeed.Core.Multiplayer
         {
             if (!string.IsNullOrWhiteSpace(name))
                 return name;
-            return $"Player {playerNumber + 1}";
+            return LocalizationService.Format(
+                LocalizationService.Mark("Player {0}"),
+                playerNumber + 1);
         }
 
         private static string ResolveRoomName(string roomName)

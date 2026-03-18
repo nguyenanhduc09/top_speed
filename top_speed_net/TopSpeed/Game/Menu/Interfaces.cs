@@ -4,6 +4,7 @@ using TopSpeed.Core;
 using TopSpeed.Data;
 using TopSpeed.Input;
 using TopSpeed.Menu;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Game
 {
@@ -25,8 +26,10 @@ namespace TopSpeed.Game
         void IMenuUiActions.ShowMessageDialog(string title, string caption, IReadOnlyList<string> items) => ShowMessageDialog(title, caption, items);
         void IMenuUiActions.ShowChoiceDialog(string title, string? caption, IReadOnlyDictionary<int, string> items, bool cancelable, string? cancelLabel, Action<ChoiceDialogResult>? onResult)
             => ShowChoiceDialog(title, caption, items, cancelable, cancelLabel, onResult);
-        void IMenuUiActions.SpeakNotImplemented() => _speech.Speak("Not implemented yet.");
+        void IMenuUiActions.SpeakNotImplemented() => _speech.Speak(LocalizationService.Mark("Not implemented yet."));
 
+        string IMenuSettingsActions.GetLanguageName() => CurrentLanguageName();
+        void IMenuSettingsActions.ChangeLanguage() => ChangeLanguage();
         void IMenuSettingsActions.RestoreDefaults() => RestoreDefaults();
         void IMenuSettingsActions.RecalibrateScreenReaderRate() => StartCalibrationSequence("options_game");
         void IMenuSettingsActions.CheckForUpdates() => StartManualUpdateCheck();

@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Windowing
 {
@@ -16,7 +17,7 @@ namespace TopSpeed.Windowing
 
         public GameWindow()
         {
-            Text = "Top Speed";
+            Text = LocalizationService.Translate(LocalizationService.Mark("Top Speed"));
             StartPosition = FormStartPosition.CenterScreen;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;

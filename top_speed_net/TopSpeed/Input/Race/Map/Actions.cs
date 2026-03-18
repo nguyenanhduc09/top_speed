@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SharpDX.DirectInput;
 using TopSpeed.Input.Devices.Joystick;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Input
 {
@@ -15,7 +16,7 @@ namespace TopSpeed.Input
         {
             return _actionBindings.TryGetValue(action, out var binding)
                 ? binding.Label
-                : "Action";
+                : LocalizationService.Mark("Action");
         }
 
         internal Key GetKeyMapping(InputAction action)

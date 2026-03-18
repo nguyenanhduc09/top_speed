@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core
 {
@@ -65,7 +66,9 @@ namespace TopSpeed.Core
 
         protected void AddFileIssue(string file)
         {
-            _issues.Add($"File: {Path.GetFileName(file)}");
+            _issues.Add(LocalizationService.Format(
+                LocalizationService.Mark("File: {0}"),
+                Path.GetFileName(file)));
         }
 
         protected void AddIssue(string message)

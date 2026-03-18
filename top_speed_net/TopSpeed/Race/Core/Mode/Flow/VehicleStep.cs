@@ -2,6 +2,7 @@ using System;
 using TopSpeed.Data;
 using TopSpeed.Input;
 using TopSpeed.Tracks;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race
 {
@@ -35,7 +36,9 @@ namespace TopSpeed.Race
             if (!_input.GetGearUp() && !_input.GetGearDown())
                 return;
 
-            SpeakText(currentGear <= 0 ? "Reverse" : currentGear.ToString());
+            SpeakText(currentGear <= 0
+                ? LocalizationService.Mark("Reverse")
+                : currentGear.ToString());
         }
 
         private void HandleTurnEndCue(Track.Road road)

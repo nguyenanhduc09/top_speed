@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core
 {
@@ -34,7 +35,7 @@ namespace TopSpeed.Core
                 ? ResolveFolderName(file)
                 : parsed.Name!;
             if (string.IsNullOrWhiteSpace(display))
-                display = "Custom track";
+                display = LocalizationService.Mark("Custom track");
 
             return (true, new TrackInfo(file, display));
         }
@@ -45,7 +46,7 @@ namespace TopSpeed.Core
 
             if (issues == null || issues.Count == 0)
             {
-                AddIssue("Failed to load this track file.");
+                AddIssue(LocalizationService.Mark("Failed to load this track file."));
                 return;
             }
 

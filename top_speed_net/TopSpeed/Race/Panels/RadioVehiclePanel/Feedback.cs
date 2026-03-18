@@ -4,6 +4,7 @@ using TopSpeed.Audio;
 using TopSpeed.Core;
 using TopSpeed.Core.Settings;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TS.Audio;
 
 namespace TopSpeed.Race.Panels
@@ -32,7 +33,7 @@ namespace TopSpeed.Race.Panels
 
             _radio.SetVolumePercent(target);
             if (target != previous)
-                _announce($"{target}%");
+                _announce(target + "%");
             PlayFeedback(feedbackSound);
         }
 

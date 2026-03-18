@@ -5,6 +5,7 @@ using SharpDX;
 using SharpDX.DirectInput;
 using TopSpeed.Input.Devices.Vibration;
 using TopSpeed.Input.Devices.Joystick;
+using TopSpeed.Localization;
 using DirectInputJoystick = SharpDX.DirectInput.Joystick;
 
 namespace TopSpeed.Input.Devices.Joystick
@@ -191,7 +192,9 @@ namespace TopSpeed.Input.Devices.Joystick
                 return device.InstanceName.Trim();
             if (!string.IsNullOrWhiteSpace(device.ProductName))
                 return device.ProductName.Trim();
-            return "Controller " + device.InstanceGuid.ToString("D", CultureInfo.InvariantCulture);
+            return LocalizationService.Format(
+                LocalizationService.Mark("Controller {0}"),
+                device.InstanceGuid.ToString("D", CultureInfo.InvariantCulture));
         }
 
         private static bool LooksLikeWheel(string? name)

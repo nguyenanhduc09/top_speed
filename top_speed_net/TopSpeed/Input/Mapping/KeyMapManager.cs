@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SharpDX.DirectInput;
 using TopSpeed.Input.Devices.Joystick;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Input
 {
@@ -135,8 +136,8 @@ namespace TopSpeed.Input
         {
             var label = GetLabel(action).ToLowerInvariant();
             return keyboard
-                ? $"Press the new key for {label}."
-                : $"Move or press the joystick control for {label}.";
+                ? LocalizationService.Format(LocalizationService.Mark("Press the new key for {0}."), label)
+                : LocalizationService.Format(LocalizationService.Mark("Move or press the joystick control for {0}."), label);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -91,7 +92,14 @@ namespace TopSpeed.Server.Network
             TouchRoomVersion(room);
             EmitRoomLifecycleEvent(room, RoomEventKind.RaceStarted);
             EmitRoomLifecycleEvent(room, RoomEventKind.RoomSummaryUpdated);
-            _logger.Info($"Race started: room={room.Id} \"{room.Name}\", track={room.TrackName}, laps={room.Laps}, humans={activePlayerIds.Count}, bots={room.Bots.Count}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Race started: room={0} \"{1}\", track={2}, laps={3}, humans={4}, bots={5}."),
+                room.Id,
+                room.Name,
+                room.TrackName,
+                room.Laps,
+                activePlayerIds.Count,
+                room.Bots.Count));
             room.PendingLoadouts.Clear();
             room.PrepareSkips.Clear();
         }
@@ -145,7 +153,11 @@ namespace TopSpeed.Server.Network
             TouchRoomVersion(room);
             EmitRoomLifecycleEvent(room, RoomEventKind.RaceStopped);
             EmitRoomLifecycleEvent(room, RoomEventKind.RoomSummaryUpdated);
-            _logger.Info($"Race stopped: room={room.Id} \"{room.Name}\", results={string.Join(",", results)}.");
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("Race stopped: room={0} \"{1}\", results={2}."),
+                room.Id,
+                room.Name,
+                string.Join(",", results)));
         }
 
     }

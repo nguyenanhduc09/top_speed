@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race.Panels
 {
@@ -52,7 +53,7 @@ namespace TopSpeed.Race.Panels
             var fullPath = Path.GetFullPath(selectedPath);
             if (!File.Exists(fullPath))
             {
-                _announce("The selected media file does not exist.");
+                _announce(LocalizationService.Mark("The selected media file does not exist."));
                 return;
             }
 
@@ -84,7 +85,11 @@ namespace TopSpeed.Race.Panels
             if (!LoadPlaylistEntry(_playlistIndex, preservePlaybackState: true, announceLoaded: true))
                 return;
 
-            _announce($"Shuffle mode {(_shuffleMode ? "on" : "off")}.");
+            _announce(LocalizationService.Format(
+                LocalizationService.Mark("Shuffle mode {0}."),
+                _shuffleMode
+                    ? LocalizationService.Translate(LocalizationService.Mark("on"))
+                    : LocalizationService.Translate(LocalizationService.Mark("off"))));
         }
 
         private void HandlePlaybackEndAdvance()
@@ -112,7 +117,7 @@ namespace TopSpeed.Race.Panels
                     dialog.CheckFileExists = true;
                     dialog.CheckPathExists = true;
                     dialog.Multiselect = false;
-                    dialog.Title = "Select radio media file";
+                    dialog.Title = LocalizationService.Translate(LocalizationService.Mark("Select radio media file"));
                     dialog.Filter = "Audio files|*.wav;*.ogg;*.mp3;*.flac;*.aac;*.m4a|All files|*.*";
 
                     var owner = GetDialogOwner();
@@ -147,7 +152,7 @@ namespace TopSpeed.Race.Panels
                 string? selectedFolder = null;
                 using (var dialog = new FolderBrowserDialog())
                 {
-                    dialog.Description = "Select radio media folder";
+                    dialog.Description = LocalizationService.Translate(LocalizationService.Mark("Select radio media folder"));
                     dialog.ShowNewFolderButton = false;
                     if (!string.IsNullOrWhiteSpace(currentFolder) && Directory.Exists(currentFolder))
                         dialog.SelectedPath = currentFolder;

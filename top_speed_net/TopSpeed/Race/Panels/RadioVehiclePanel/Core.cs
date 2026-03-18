@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TopSpeed.Audio;
 using TopSpeed.Core.Settings;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TopSpeed.Vehicles;
 using TS.Audio;
 
@@ -61,7 +62,7 @@ namespace TopSpeed.Race.Panels
             ApplyLoopMode();
         }
 
-        public string Name => "Radio";
+        public string Name => LocalizationService.Mark("Radio");
         public bool AllowsDrivingInput => false;
         public bool AllowsAuxiliaryInput => false;
 

@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -16,13 +17,13 @@ namespace TopSpeed.Server.Network
             room = null!;
             if (!player.RoomId.HasValue)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, LocalizationService.Mark("You are not in a game room."));
                 return false;
             }
 
             if (!_rooms.TryGetValue(player.RoomId.Value, out var foundRoom) || foundRoom == null)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, "You are not in a game room.");
+                SendProtocolMessage(player, ProtocolMessageCode.NotInRoom, LocalizationService.Mark("You are not in a game room."));
                 return false;
             }
 
@@ -30,7 +31,7 @@ namespace TopSpeed.Server.Network
 
             if (room.HostId != player.Id)
             {
-                SendProtocolMessage(player, ProtocolMessageCode.NotHost, "Only host can do this.");
+                SendProtocolMessage(player, ProtocolMessageCode.NotHost, LocalizationService.Mark("Only host can do this."));
                 return false;
             }
 

@@ -1,6 +1,7 @@
 using System;
 using TopSpeed.Common;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 using TopSpeed.Race.Events;
 using TopSpeed.Vehicles;
 
@@ -29,7 +30,9 @@ namespace TopSpeed.Race
             if (_input.GetCurrentGear() && _started && _lap <= _nrOfLaps)
             {
                 var gear = _car.Gear;
-                SpeakText(_car.InReverseGear ? "Gear reverse" : $"Gear {gear}");
+                SpeakText(_car.InReverseGear
+                    ? LocalizationService.Mark("Gear reverse")
+                    : LocalizationService.Format(LocalizationService.Mark("Gear {0}"), gear));
             }
         }
 
@@ -37,7 +40,7 @@ namespace TopSpeed.Race
         {
             if (_input.GetCurrentLapNr() && _started && _lap <= _nrOfLaps)
             {
-                SpeakText($"Lap {_lap}");
+                SpeakText(LocalizationService.Format(LocalizationService.Mark("Lap {0}"), _lap));
             }
         }
 
@@ -47,7 +50,7 @@ namespace TopSpeed.Race
             {
                 var perc = (_car.PositionY / (float)(_track.Length * _nrOfLaps)) * 100.0f;
                 var units = Math.Max(0, Math.Min(100, (int)perc));
-                SpeakText(FormatPercentageText("Race percentage", units));
+                SpeakText(FormatRacePercentageText(units));
             }
         }
 
@@ -57,7 +60,7 @@ namespace TopSpeed.Race
             {
                 var perc = ((_car.PositionY - (_track.Length * (_lap - 1))) / _track.Length) * 100.0f;
                 var units = Math.Max(0, Math.Min(100, (int)perc));
-                SpeakText(FormatPercentageText("Lap percentage", units));
+                SpeakText(FormatLapPercentageText(units));
             }
         }
 
@@ -66,7 +69,7 @@ namespace TopSpeed.Race
             if (_input.GetCurrentRaceTime() && _started && _lap <= _nrOfLaps)
             {
                 var text = FormatTimeText((int)(_stopwatch.ElapsedMilliseconds - _stopwatchDiffMs), detailed: false);
-                SpeakText($"Race time {text}");
+                SpeakText(LocalizationService.Format(LocalizationService.Mark("Race time {0}"), text));
             }
         }
 
@@ -78,7 +81,7 @@ namespace TopSpeed.Race
                     ? (int)(_stopwatch.ElapsedMilliseconds - _stopwatchDiffMs)
                     : _raceTime;
                 var text = FormatTimeText(timeMs, detailed: false);
-                SpeakText($"Race time {text}");
+                SpeakText(LocalizationService.Format(LocalizationService.Mark("Race time {0}"), text));
             }
         }
 
@@ -100,11 +103,19 @@ namespace TopSpeed.Race
                 if (_settings.Units == UnitSystem.Imperial)
                 {
                     var speedMph = speedKmh * KmToMiles;
-                    SpeakText($"{speedMph:F0} miles per hour, {rpm:F0} RPM, {horsepower:F0} horsepower");
+                    SpeakText(LocalizationService.Format(
+                        LocalizationService.Mark("{0:F0} miles per hour, {1:F0} RPM, {2:F0} horsepower"),
+                        speedMph,
+                        rpm,
+                        horsepower));
                 }
                 else
                 {
-                    SpeakText($"{speedKmh:F0} kilometers per hour, {rpm:F0} RPM, {horsepower:F0} horsepower");
+                    SpeakText(LocalizationService.Format(
+                        LocalizationService.Mark("{0:F0} kilometers per hour, {1:F0} RPM, {2:F0} horsepower"),
+                        speedKmh,
+                        rpm,
+                        horsepower));
                 }
             }
         }
@@ -118,17 +129,17 @@ namespace TopSpeed.Race
                 {
                     var distanceMiles = distanceM / MetersPerMile;
                     if (distanceMiles >= 1f)
-                        SpeakText($"{distanceMiles:F1} miles traveled");
+                        SpeakText(LocalizationService.Format(LocalizationService.Mark("{0:F1} miles traveled"), distanceMiles));
                     else
-                        SpeakText($"{distanceM * MetersToFeet:F0} feet traveled");
+                        SpeakText(LocalizationService.Format(LocalizationService.Mark("{0:F0} feet traveled"), distanceM * MetersToFeet));
                 }
                 else
                 {
                     var distanceKm = distanceM / 1000f;
                     if (distanceKm >= 1f)
-                        SpeakText($"{distanceKm:F1} kilometers traveled");
+                        SpeakText(LocalizationService.Format(LocalizationService.Mark("{0:F1} kilometers traveled"), distanceKm));
                     else
-                        SpeakText($"{distanceM:F0} meters traveled");
+                        SpeakText(LocalizationService.Format(LocalizationService.Mark("{0:F0} meters traveled"), distanceM));
                 }
             }
         }

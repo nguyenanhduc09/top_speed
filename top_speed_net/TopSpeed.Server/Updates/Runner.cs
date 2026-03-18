@@ -1,9 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using TopSpeed.Server.Logging;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Server.Updates
 {
     internal sealed class ServerUpdateRunner
@@ -24,7 +26,7 @@ namespace TopSpeed.Server.Updates
 
         public bool RunInteractiveCheck()
         {
-            ConsoleSink.WriteLine("Checking for update...");
+            ConsoleSink.WriteLine(LocalizationService.Mark("Checking for update..."));
             var result = _service
                 .CheckAsync(ServerUpdateConfig.CurrentVersion, CancellationToken.None)
                 .GetAwaiter()
@@ -33,27 +35,30 @@ namespace TopSpeed.Server.Updates
             if (!result.IsSuccess)
             {
                 var message = string.IsNullOrWhiteSpace(result.ErrorMessage)
-                    ? "Update check failed."
+                    ? LocalizationService.Mark("Update check failed.")
                     : result.ErrorMessage;
-                _logger.Warning($"Server update check failed: {message}");
+                _logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Server update check failed: {0}"),
+                    message));
                 ConsoleSink.WriteLine(message);
                 return false;
             }
 
             if (result.Update == null)
             {
-                ConsoleSink.WriteLine("Server is up-to-date.");
+                ConsoleSink.WriteLine(LocalizationService.Mark("Server is up-to-date."));
                 return false;
             }
 
             var update = result.Update;
             var currentVersion = ServerUpdateConfig.CurrentVersion.ToMachineString();
-            ConsoleSink.WriteLine(
-                $"A new update is available for the server. Your current server version is {currentVersion}. Available version: {update.VersionText}.");
-            ConsoleSink.WriteLine("Changes:");
+            ConsoleSink.WriteLineFormat(LocalizationService.Mark("A new update is available for the server. Your current server version is {0}. Available version: {1}."),
+                currentVersion,
+                update.VersionText);
+            ConsoleSink.WriteLine(LocalizationService.Mark("Changes:"));
             if (update.Changes.Count == 0)
             {
-                ConsoleSink.WriteLine("No changes were listed for this update.");
+                ConsoleSink.WriteLine(LocalizationService.Mark("No changes were listed for this update."));
             }
             else
             {
@@ -66,9 +71,9 @@ namespace TopSpeed.Server.Updates
                 }
             }
 
-            if (!TryPromptYesNo("Would you like to download the update? (y/n)", out var shouldDownload))
+            if (!TryPromptYesNo(LocalizationService.Mark("Would you like to download the update? (y/n)"), out var shouldDownload))
             {
-                var message = "Standard input is not available. Update download was skipped.";
+                var message = LocalizationService.Mark("Standard input is not available. Update download was skipped.");
                 _logger.Warning(message);
                 ConsoleSink.WriteLine(message);
                 return false;
@@ -77,7 +82,7 @@ namespace TopSpeed.Server.Updates
             if (!shouldDownload)
                 return false;
 
-            ConsoleSink.WriteLine("Downloading...");
+            ConsoleSink.WriteLine(LocalizationService.Mark("Downloading..."));
             ResetProgress();
             var download = _service
                 .DownloadAsync(update, AppContext.BaseDirectory, RenderProgress, CancellationToken.None)
@@ -88,9 +93,11 @@ namespace TopSpeed.Server.Updates
             if (!download.IsSuccess)
             {
                 var message = string.IsNullOrWhiteSpace(download.ErrorMessage)
-                    ? "Download failed."
+                    ? LocalizationService.Mark("Download failed.")
                     : download.ErrorMessage;
-                _logger.Warning($"Server update download failed: {message}");
+                _logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Server update download failed: {0}"),
+                    message));
                 ConsoleSink.WriteLine(message);
                 return false;
             }
@@ -107,7 +114,7 @@ namespace TopSpeed.Server.Updates
             var updaterPath = Path.Combine(root, _config.UpdaterExeName);
             if (!File.Exists(updaterPath))
             {
-                ConsoleSink.WriteLine($"Updater not found: {_config.UpdaterExeName}");
+                ConsoleSink.WriteLineFormat(LocalizationService.Mark("Updater not found: {0}"), _config.UpdaterExeName);
                 return false;
             }
 
@@ -136,8 +143,10 @@ namespace TopSpeed.Server.Updates
             }
             catch (Exception ex)
             {
-                _logger.Warning($"Could not launch updater: {ex.Message}");
-                ConsoleSink.WriteLine($"Could not launch updater: {ex.Message}");
+                _logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Could not launch updater: {0}"),
+                    ex.Message));
+                ConsoleSink.WriteLineFormat(LocalizationService.Mark("Could not launch updater: {0}"), ex.Message);
                 return false;
             }
         }
@@ -182,7 +191,7 @@ namespace TopSpeed.Server.Updates
                     return true;
                 }
 
-                ConsoleSink.WriteLine("Invalid input. Enter y or n.");
+                ConsoleSink.WriteLine(LocalizationService.Mark("Invalid input. Enter y or n."));
             }
         }
 
@@ -195,7 +204,7 @@ namespace TopSpeed.Server.Updates
                     return;
 
                 _lastProgressPercent = percent;
-                ConsoleSink.WriteLine($"{percent}%");
+                ConsoleSink.WriteLine(percent.ToString(CultureInfo.InvariantCulture) + "%");
                 return;
             }
 
@@ -218,11 +227,11 @@ namespace TopSpeed.Server.Updates
             }
             catch (InvalidOperationException)
             {
-                ConsoleSink.WriteLine($"{percent}%");
+                ConsoleSink.WriteLine(percent.ToString(CultureInfo.InvariantCulture) + "%");
             }
             catch (IOException)
             {
-                ConsoleSink.WriteLine($"{percent}%");
+                ConsoleSink.WriteLine(percent.ToString(CultureInfo.InvariantCulture) + "%");
             }
         }
 
@@ -236,12 +245,12 @@ namespace TopSpeed.Server.Updates
             const double gigabyte = 1024d * 1024d * 1024d;
 
             if (bytes >= gigabyte)
-                return $"{bytes / gigabyte:0.00} GB";
+                return LocalizationService.Format(LocalizationService.Mark("{0:0.00} GB"), bytes / gigabyte);
             if (bytes >= megabyte)
-                return $"{bytes / megabyte:0.00} MB";
+                return LocalizationService.Format(LocalizationService.Mark("{0:0.00} MB"), bytes / megabyte);
             if (bytes >= kilobyte)
-                return $"{bytes / kilobyte:0.00} KB";
-            return $"{bytes} B";
+                return LocalizationService.Format(LocalizationService.Mark("{0:0.00} KB"), bytes / kilobyte);
+            return LocalizationService.Format(LocalizationService.Mark("{0} B"), bytes);
         }
 
         private void ResetProgress()
@@ -268,3 +277,7 @@ namespace TopSpeed.Server.Updates
         }
     }
 }
+
+
+
+

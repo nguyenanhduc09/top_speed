@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Vehicles
@@ -6,7 +7,7 @@ namespace TopSpeed.Vehicles
     internal sealed class VehicleDefinition
     {
         public CarType CarType { get; set; }
-        public string Name { get; set; } = "Vehicle";
+        public string Name { get; set; } = LocalizationService.Mark("Vehicle");
         public bool UserDefined { get; set; }
         public string? CustomFile { get; set; }
         public string? CustomVersion { get; set; }

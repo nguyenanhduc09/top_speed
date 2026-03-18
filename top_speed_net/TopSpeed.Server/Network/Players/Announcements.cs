@@ -1,4 +1,5 @@
 using TopSpeed.Protocol;
+using TopSpeed.Localization;
 using TopSpeed.Server.Protocol;
 
 namespace TopSpeed.Server.Network
@@ -7,8 +8,10 @@ namespace TopSpeed.Server.Network
     {
         private void BroadcastServerConnectAnnouncement(PlayerConnection connected)
         {
-            var name = string.IsNullOrWhiteSpace(connected.Name) ? "A player" : connected.Name;
-            var text = $"{name} has connected to the server.";
+            var name = string.IsNullOrWhiteSpace(connected.Name)
+                ? LocalizationService.Translate(LocalizationService.Mark("A player"))
+                : connected.Name;
+            var text = LocalizationService.Format(LocalizationService.Mark("{0} has connected to the server."), name);
             foreach (var player in _players.Values)
             {
                 if (player.Id == connected.Id || !player.ServerPresenceAnnounced)
@@ -20,11 +23,13 @@ namespace TopSpeed.Server.Network
 
         private void BroadcastServerDisconnectAnnouncement(PlayerConnection disconnected, string reason)
         {
-            var name = string.IsNullOrWhiteSpace(disconnected.Name) ? "A player" : disconnected.Name;
+            var name = string.IsNullOrWhiteSpace(disconnected.Name)
+                ? LocalizationService.Translate(LocalizationService.Mark("A player"))
+                : disconnected.Name;
             var normalizedReason = (reason ?? string.Empty).Trim();
             var text = string.Equals(normalizedReason, "timeout", System.StringComparison.OrdinalIgnoreCase)
-                ? $"{name} has lost connection to the server."
-                : $"{name} has disconnected from the server.";
+                ? LocalizationService.Format(LocalizationService.Mark("{0} has lost connection to the server."), name)
+                : LocalizationService.Format(LocalizationService.Mark("{0} has disconnected from the server."), name);
 
             foreach (var player in _players.Values)
             {

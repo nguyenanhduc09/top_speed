@@ -4,6 +4,7 @@ using SharpDX.DirectInput;
 using TopSpeed.Core;
 using TopSpeed.Input;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Menu
 {
     internal sealed partial class MenuRegistry
@@ -52,8 +53,8 @@ namespace TopSpeed.Menu
             _menuSoundPresets = LoadMenuSoundPresets();
             _sharedLobbyChatScreen = new MenuView(
                 "shared_lobby_chat",
-                new[] { new MenuItem("No messages yet.", MenuAction.None) },
-                title: "History",
+                new[] { new MenuItem(LocalizationService.Mark("No messages yet."), MenuAction.None) },
+                title: LocalizationService.Mark("History"),
                 preserveSelection: true,
                 titleSpeakFlag: TopSpeed.Speech.SpeechService.SpeakFlag.None);
         }
@@ -117,34 +118,34 @@ namespace TopSpeed.Menu
         {
             _menu.RegisterShortcutAction(
                 PreviousChatCategoryShortcutActionId,
-                "Previous chat category",
-                "Switches chat history to the previous category in the shared lobby chat view.",
+                LocalizationService.Mark("Previous chat category"),
+                LocalizationService.Mark("Switches chat history to the previous category in the shared lobby chat view."),
                 Key.Left,
                 _server.PreviousChatCategory);
             _menu.RegisterShortcutAction(
                 NextChatCategoryShortcutActionId,
-                "Next chat category",
-                "Switches chat history to the next category in the shared lobby chat view.",
+                LocalizationService.Mark("Next chat category"),
+                LocalizationService.Mark("Switches chat history to the next category in the shared lobby chat view."),
                 Key.Right,
                 _server.NextChatCategory);
             _menu.SetViewShortcutActions(
                 _sharedLobbyChatScreen.Id,
                 new[] { PreviousChatCategoryShortcutActionId, NextChatCategoryShortcutActionId },
-                "Shared lobby chat");
+                LocalizationService.Mark("Shared lobby chat"));
         }
 
         private void RegisterMainMenu()
         {
             var mainMenu = _menu.CreateMenu("main", new[]
             {
-                new MenuItem("Quick start", MenuAction.QuickStart),
-                new MenuItem("Time trial", MenuAction.None, nextMenuId: "time_trial_type", onActivate: () => PrepareMode(RaceMode.TimeTrial)),
-                new MenuItem("Single race", MenuAction.None, nextMenuId: "single_race_type", onActivate: () => PrepareMode(RaceMode.SingleRace)),
-                new MenuItem("MultiPlayer game", MenuAction.None, nextMenuId: "multiplayer"),
-                new MenuItem("Options", MenuAction.None, nextMenuId: "options_main"),
-                new MenuItem("Check for updates", MenuAction.None, onActivate: _settingsActions.CheckForUpdates),
-                new MenuItem("Exit Game", MenuAction.Exit)
-            }, "Main menu", titleProvider: MainMenuTitle);
+                new MenuItem(LocalizationService.Mark("Quick start"), MenuAction.QuickStart),
+                new MenuItem(LocalizationService.Mark("Time trial"), MenuAction.None, nextMenuId: "time_trial_type", onActivate: () => PrepareMode(RaceMode.TimeTrial)),
+                new MenuItem(LocalizationService.Mark("Single race"), MenuAction.None, nextMenuId: "single_race_type", onActivate: () => PrepareMode(RaceMode.SingleRace)),
+                new MenuItem(LocalizationService.Mark("MultiPlayer game"), MenuAction.None, nextMenuId: "multiplayer"),
+                new MenuItem(LocalizationService.Mark("Options"), MenuAction.None, nextMenuId: "options_main"),
+                new MenuItem(LocalizationService.Mark("Check for updates"), MenuAction.None, onActivate: _settingsActions.CheckForUpdates),
+                new MenuItem(LocalizationService.Mark("Exit Game"), MenuAction.Exit)
+            }, LocalizationService.Mark("Main menu"), titleProvider: MainMenuTitle);
 
             mainMenu.MusicFile = "theme1.ogg";
             mainMenu.MusicVolume = _settings.MusicVolume;
@@ -153,3 +154,6 @@ namespace TopSpeed.Menu
         }
     }
 }
+
+
+

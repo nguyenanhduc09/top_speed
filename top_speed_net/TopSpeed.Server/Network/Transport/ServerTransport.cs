@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LiteNetLib;
 using TopSpeed.Protocol;
+using TopSpeed.Localization;
 using TopSpeed.Server.Logging;
 
 namespace TopSpeed.Server.Network
@@ -61,11 +62,13 @@ namespace TopSpeed.Server.Network
             };
 
             if (!_server.Start(port))
-                throw new InvalidOperationException($"Failed to start transport on port {port}.");
+                throw new InvalidOperationException(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to start transport on port {0}."),
+                    port));
 
             _cts = new CancellationTokenSource();
             _pollTask = Task.Run(() => PollLoop(_cts.Token));
-            _logger.Info($"LiteNetLib transport listening on {port}.");
+            _logger.Info(LocalizationService.Format(LocalizationService.Mark("LiteNetLib transport listening on {0}."), port));
         }
 
         public void Stop()
@@ -81,7 +84,7 @@ namespace TopSpeed.Server.Network
             lock (_peerLock)
                 _peers.Clear();
             _listener = null;
-            _logger.Info("LiteNetLib transport stopped.");
+            _logger.Info(LocalizationService.Mark("LiteNetLib transport stopped."));
         }
 
         public void Send(IPEndPoint endPoint, byte[] payload, DeliveryMethod deliveryMethod = DeliveryMethod.ReliableOrdered)
@@ -107,7 +110,9 @@ namespace TopSpeed.Server.Network
             }
             catch (Exception ex)
             {
-                _logger.Warning($"LiteNetLib send failed: {ex.Message}");
+                _logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("LiteNetLib send failed: {0}"),
+                    ex.Message));
             }
         }
 
@@ -121,7 +126,9 @@ namespace TopSpeed.Server.Network
                 }
                 catch (Exception ex)
                 {
-                    _logger.Warning($"LiteNetLib poll failed: {ex.Message}");
+                    _logger.Warning(LocalizationService.Format(
+                        LocalizationService.Mark("LiteNetLib poll failed: {0}"),
+                        ex.Message));
                 }
 
                 Thread.Sleep(1);

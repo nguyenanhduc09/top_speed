@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TopSpeed.Core.Multiplayer.Chat;
+using TopSpeed.Localization;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
@@ -28,7 +29,7 @@ namespace TopSpeed.Core.Multiplayer
             var rooms = _state.Rooms.RoomList.Rooms ?? Array.Empty<RoomSummaryInfo>();
             if (rooms.Length == 0)
             {
-                effects.Add(PacketEffect.Speak("No game rooms are currently available."));
+                effects.Add(PacketEffect.Speak(LocalizationService.Mark("No game rooms are currently available.")));
                 DispatchPacketEffects(effects);
                 return;
             }
@@ -156,7 +157,7 @@ namespace TopSpeed.Core.Multiplayer
             var players = _state.Rooms.OnlinePlayers.Players ?? Array.Empty<OnlinePlayerInfo>();
             if (players.Length < 2)
             {
-                _speech.Speak("Only you are connected right now.");
+                _speech.Speak(LocalizationService.Mark("Only you are connected right now."));
                 return;
             }
 

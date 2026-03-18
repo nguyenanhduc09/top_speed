@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
     {
-        private static string[] BuildNumericOptions(int min, int max, string suffix)
+        private static string[] BuildNumericOptions(int min, int max, string singularUnit, string pluralUnit)
         {
             if (max < min)
                 return Array.Empty<string>();
@@ -15,10 +16,8 @@ namespace TopSpeed.Core.Multiplayer
             for (var i = min; i <= max; i++)
             {
                 var index = i - min;
-                var unit = i == 1
-                    ? suffix.TrimEnd('s')
-                    : suffix;
-                options[index] = $"{i} {unit}";
+                var unit = i == 1 ? singularUnit : pluralUnit;
+                options[index] = i + " " + LocalizationService.Translate(unit);
             }
 
             return options;
@@ -44,12 +43,12 @@ namespace TopSpeed.Core.Multiplayer
             return tracks.ToArray();
         }
 
-        private bool TrySend(bool sent, string action)
+        private bool TrySend(bool sent)
         {
             if (sent)
                 return true;
 
-            _speech.Speak($"Failed to send {action}. Please check your connection.");
+            _speech.Speak(LocalizationService.Mark("Failed to send data. Please check your connection."));
             return false;
         }
     }

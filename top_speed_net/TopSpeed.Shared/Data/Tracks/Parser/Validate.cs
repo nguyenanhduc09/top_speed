@@ -36,7 +36,7 @@ namespace TopSpeed.Data
                         sectionKind != "room" &&
                         sectionKind != "sound")
                     {
-                        issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Unknown section '{nextKind}'."));
+                        issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Unknown section '{0}'.", nextKind)));
                         sectionKind = string.Empty;
                         continue;
                     }
@@ -44,7 +44,7 @@ namespace TopSpeed.Data
                     if ((sectionKind == "segment" || sectionKind == "room" || sectionKind == "sound") &&
                         currentSectionId.Length == 0)
                     {
-                        issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Section '{sectionKind}' requires an id."));
+                        issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Section '{0}' requires an id.", sectionKind)));
                         sectionKind = string.Empty;
                         continue;
                     }
@@ -52,19 +52,19 @@ namespace TopSpeed.Data
                     if (sectionKind == "segment")
                     {
                         if (!segmentIds.Add(currentSectionId))
-                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Duplicate segment id '{currentSectionId}'."));
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Duplicate segment id '{0}'.", currentSectionId)));
                         if (!segmentSounds.ContainsKey(currentSectionId))
                             segmentSounds[currentSectionId] = Array.Empty<string>();
                     }
                     else if (sectionKind == "room")
                     {
                         if (!roomIds.Add(currentSectionId))
-                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Duplicate room id '{currentSectionId}'."));
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Duplicate room id '{0}'.", currentSectionId)));
                     }
                     else if (sectionKind == "sound")
                     {
                         if (!soundIds.Add(currentSectionId))
-                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Duplicate sound id '{currentSectionId}'."));
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Duplicate sound id '{0}'.", currentSectionId)));
                     }
 
                     continue;
@@ -72,13 +72,13 @@ namespace TopSpeed.Data
 
                 if (!TryParseKeyValue(line, out var rawKey, out var rawValue))
                 {
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, "Malformed line. Expected '[section]' or 'key = value'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Malformed line. Expected '[section]' or 'key = value'.")));
                     continue;
                 }
 
                 if (sectionKind.Length == 0)
                 {
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Property '{rawKey.Trim()}' is outside any section."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Property '{0}' is outside any section.", rawKey.Trim())));
                     continue;
                 }
 
@@ -86,7 +86,7 @@ namespace TopSpeed.Data
                 var value = rawValue.Trim();
                 if (value.Length == 0)
                 {
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Key '{rawKey.Trim()}' is missing a value."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Key '{0}' is missing a value.", rawKey.Trim())));
                     continue;
                 }
 
@@ -94,9 +94,9 @@ namespace TopSpeed.Data
                 {
                     case "meta":
                         if (key == "weather" && !IsValidWeather(value))
-                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid weather value '{value}'."));
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid weather value '{0}'.", value)));
                         else if (key == "ambience" && !IsValidAmbience(value))
-                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid ambience value '{value}'."));
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid ambience value '{0}'.", value)));
                         break;
                     case "segment":
                         ValidateSegmentField(
@@ -126,7 +126,7 @@ namespace TopSpeed.Data
             }
 
             if (segmentIds.Count == 0)
-                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, 0, "Track must include at least one [segment:<id>] section."));
+                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, 0, Localized("Track must include at least one [segment:<id>] section.")));
 
             foreach (var pair in segmentRooms)
             {
@@ -138,7 +138,7 @@ namespace TopSpeed.Data
                     issues.Add(new TrackTsmIssue(
                         TrackTsmIssueSeverity.Error,
                         0,
-                        $"Segment '{pair.Key}' references room '{roomId}', but no matching [room:{roomId}] section or preset exists."));
+                        Localized("Segment '{0}' references room '{1}', but no matching [room:{1}] section or preset exists.", pair.Key, roomId)));
                 }
             }
 
@@ -151,7 +151,7 @@ namespace TopSpeed.Data
                         issues.Add(new TrackTsmIssue(
                             TrackTsmIssueSeverity.Error,
                             0,
-                            $"Segment '{pair.Key}' references sound source '{soundId}', but no matching [sound:{soundId}] section exists."));
+                            Localized("Segment '{0}' references sound source '{1}', but no matching [sound:{1}] section exists.", pair.Key, soundId)));
                     }
                 }
             }
@@ -163,7 +163,7 @@ namespace TopSpeed.Data
                     issues.Add(new TrackTsmIssue(
                         TrackTsmIssueSeverity.Error,
                         0,
-                        $"Sound '{pair.Key}' references start_area '{pair.Value}', but no matching segment id exists."));
+                        Localized("Sound '{0}' references start_area '{1}', but no matching segment id exists.", pair.Key, pair.Value)));
                 }
             }
 
@@ -174,7 +174,7 @@ namespace TopSpeed.Data
                     issues.Add(new TrackTsmIssue(
                         TrackTsmIssueSeverity.Error,
                         0,
-                        $"Sound '{pair.Key}' references end_area '{pair.Value}', but no matching segment id exists."));
+                        Localized("Sound '{0}' references end_area '{1}', but no matching segment id exists.", pair.Key, pair.Value)));
                 }
             }
 

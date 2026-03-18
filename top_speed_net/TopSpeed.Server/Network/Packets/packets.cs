@@ -1,4 +1,5 @@
 using System.Net;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 
@@ -10,12 +11,18 @@ namespace TopSpeed.Server.Network
         {
             if (!PacketSerializer.TryReadHeader(payload, out var header))
             {
-                _logger.Warning($"Dropped packet with invalid header from {endPoint}.");
+                _logger.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("Dropped packet with invalid header from {0}."),
+                    endPoint));
                 return;
             }
             if (header.Version != ProtocolConstants.Version)
             {
-                _logger.Debug($"Dropped packet with protocol version mismatch from {endPoint}: received={header.Version}, expected={ProtocolConstants.Version}.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Dropped packet with protocol version mismatch from {0}: received={1}, expected={2}."),
+                    endPoint,
+                    header.Version,
+                    ProtocolConstants.Version));
                 return;
             }
 
@@ -30,7 +37,10 @@ namespace TopSpeed.Server.Network
                     return;
 
                 if (!_pktReg.TryDispatch(header.Command, player, payload, endPoint))
-                    _logger.Warning($"Ignoring unknown packet command {(byte)header.Command} from {endPoint}.");
+                    _logger.Warning(LocalizationService.Format(
+                        LocalizationService.Mark("Ignoring unknown packet command {0} from {1}."),
+                        (byte)header.Command,
+                        endPoint));
             }
         }
 

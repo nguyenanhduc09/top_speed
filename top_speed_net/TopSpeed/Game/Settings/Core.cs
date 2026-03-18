@@ -1,5 +1,6 @@
 using System;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Game
 {
@@ -13,6 +14,7 @@ namespace TopSpeed.Game
         private void RestoreDefaults()
         {
             _settings.RestoreDefaults();
+            ApplyLanguage(_settings.Language, saveSettings: false, announceChange: false);
             _raceInput.SetDevice(_settings.DeviceMode);
             _input.SetDeviceMode(_settings.DeviceMode);
             _speech.ScreenReaderRateMs = _settings.ScreenReaderRateMs;
@@ -23,7 +25,7 @@ namespace TopSpeed.Game
             _menu.ResetShortcutBindings();
             ApplyAudioSettings();
             SaveSettings();
-            _speech.Speak("Defaults restored.");
+            _speech.Speak(LocalizationService.Mark("Defaults restored."));
         }
 
         private void SetDevice(InputDeviceMode mode)

@@ -45,7 +45,7 @@ namespace TopSpeed.Race
             SpeakRaceIntro(_soundYouAre, _soundPlayer, _playerNumber + 1);
 
             _currentState = PlayerState.AwaitingStart;
-            TrySendRace(_session.SendPlayerState(_currentState), "awaiting-start state");
+            TrySendRace(_session.SendPlayerState(_currentState));
         }
 
         public void FinalizeMultiplayerMode()

@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race
 {
@@ -75,10 +76,10 @@ namespace TopSpeed.Race
         private static string FormatPanelAnnouncement(string panelName)
         {
             if (string.IsNullOrWhiteSpace(panelName))
-                return "Panel";
-            if (panelName.EndsWith("panel", StringComparison.OrdinalIgnoreCase))
+                return LocalizationService.Mark("Panel");
+            if (panelName.EndsWith(LocalizationService.Mark("panel"), StringComparison.OrdinalIgnoreCase))
                 return panelName;
-            return panelName + " panel";
+            return LocalizationService.Format(LocalizationService.Mark("{0} panel"), panelName);
         }
     }
 }

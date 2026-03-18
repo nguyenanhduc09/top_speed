@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Commands;
 using TopSpeed.Server.Config;
@@ -14,6 +15,8 @@ namespace TopSpeed.Server
     {
         private static int Main(string[] args)
         {
+            LocalizationBootstrap.Configure("en", LocalizationBootstrap.ServerCatalogGroup);
+
             if (IsHelpRequested(args))
             {
                 ShowHelp();
@@ -32,21 +35,27 @@ namespace TopSpeed.Server
             var serverRelease = $"{ReleaseVersionInfo.ServerYear}.{ReleaseVersionInfo.ServerMonth}.{ReleaseVersionInfo.ServerDay} (r{ReleaseVersionInfo.ServerRevision})";
             if (loggingEnabled)
             {
-                logger.InfoAlways($"Logging enabled. Levels: {FormatLogLevels(levels)}. File: {(string.IsNullOrWhiteSpace(logFile) ? "none" : logFile)}.");
-                logger.InfoAlways($"Server release: {serverRelease}.");
-                logger.InfoAlways($"Protocol current: {ProtocolProfile.Current}. Supported: {ProtocolProfile.ServerSupported}.");
-                logger.Info("TopSpeed Server starting.");
+                logger.InfoAlways(LocalizationService.Format(
+                    LocalizationService.Mark("Logging enabled. Levels: {0}. File: {1}."),
+                    FormatLogLevels(levels),
+                    string.IsNullOrWhiteSpace(logFile)
+                        ? LocalizationService.Translate(LocalizationService.Mark("none"))
+                        : logFile));
+                logger.InfoAlways(LocalizationService.Format(LocalizationService.Mark("Server release: {0}."), serverRelease));
+                logger.InfoAlways(LocalizationService.Format(LocalizationService.Mark("Protocol current: {0}. Supported: {1}."), ProtocolProfile.Current, ProtocolProfile.ServerSupported));
+                logger.Info(LocalizationService.Mark("TopSpeed Server starting."));
             }
             else
             {
-                ConsoleSink.WriteLine("TopSpeed Server starting...");
-                ConsoleSink.WriteLine($"Server release: {serverRelease}");
-                ConsoleSink.WriteLine($"Protocol version: {ProtocolProfile.Current}");
+                ConsoleSink.WriteLine(LocalizationService.Mark("TopSpeed Server starting..."));
+                ConsoleSink.WriteLineFormat(LocalizationService.Mark("Server release: {0}"), serverRelease);
+                ConsoleSink.WriteLineFormat(LocalizationService.Mark("Protocol version: {0}"), ProtocolProfile.Current);
             }
 
             var settingsPath = Path.Combine(AppContext.BaseDirectory, "settings.json");
             var store = new ServerSettingsStore(settingsPath);
             var settings = store.LoadOrCreate(logger);
+            LocalizationBootstrap.Configure(settings.Language, LocalizationBootstrap.ServerCatalogGroup);
             ApplyArgumentOverrides(settings, args, logger);
             store.Save(settings, logger);
             var updater = new ServerUpdateRunner(ServerUpdateConfig.Default, logger);
@@ -61,7 +70,11 @@ namespace TopSpeed.Server
                 Motd = settings.Motd
             };
             if (loggingEnabled)
-                logger.Info($"Server configuration: port={config.Port}, discoveryPort={config.DiscoveryPort}, maxPlayers={config.MaxPlayers}.");
+                logger.Info(LocalizationService.Format(
+                    LocalizationService.Mark("Server configuration: port={0}, discoveryPort={1}, maxPlayers={2}."),
+                    config.Port,
+                    config.DiscoveryPort,
+                    config.MaxPlayers));
 
             using var server = new RaceServer(config, logger);
             using var discovery = new ServerDiscoveryService(server, config, logger);
@@ -77,15 +90,19 @@ namespace TopSpeed.Server
             discovery.Start();
             commandHost.Start();
             if (!loggingEnabled)
-                ConsoleSink.WriteLine("Server started. Press Ctrl+C to stop.");
+                ConsoleSink.WriteLine(LocalizationService.Mark("Server started. Press Ctrl+C to stop."));
             RunLoop(server, cts.Token);
             discovery.Stop();
             server.Stop();
             if (loggingEnabled)
-                logger.Info("TopSpeed Server stopped.");
+                logger.Info(LocalizationService.Mark("TopSpeed Server stopped."));
             else
-                ConsoleSink.WriteLine("Server stopped.");
+                ConsoleSink.WriteLine(LocalizationService.Mark("Server stopped."));
             return 0;
         }
     }
 }
+
+
+
+

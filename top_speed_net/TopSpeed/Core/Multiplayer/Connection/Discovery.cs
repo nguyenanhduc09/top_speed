@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -19,7 +20,7 @@ namespace TopSpeed.Core.Multiplayer
             if (_state.Connection.DiscoveryTask != null && !_state.Connection.DiscoveryTask.IsCompleted)
                 return;
 
-            _speech.Speak("Please wait. Scanning for servers on the local network.");
+            _speech.Speak(LocalizationService.Mark("Please wait. Scanning for servers on the local network."));
             var discoveryCts = _lifetime.BeginDiscoveryOperation();
             _lifetime.SetDiscoveryTask(Task.Run(async () =>
             {
@@ -32,7 +33,7 @@ namespace TopSpeed.Core.Multiplayer
         {
             if (servers == null || servers.Count == 0)
             {
-                _speech.Speak("No servers were found on the local network. You can enter an address manually.");
+                _speech.Speak(LocalizationService.Mark("No servers were found on the local network. You can enter an address manually."));
                 return;
             }
 
@@ -40,11 +41,11 @@ namespace TopSpeed.Core.Multiplayer
             foreach (var server in servers)
             {
                 var info = server;
-                var label = $"{info.Address}:{info.Port}";
+                var label = info.Address + ":" + info.Port;
                 items.Add(new MenuItem(label, MenuAction.None, onActivate: () => SelectDiscoveredServer(info), suppressPostActivateAnnouncement: true));
             }
 
-            items.Add(new MenuItem("Go back", MenuAction.Back));
+            items.Add(new MenuItem(LocalizationService.Mark("Go back"), MenuAction.Back));
             _menu.UpdateItems(MultiplayerMenuKeys.DiscoveredServers, items);
             _menu.Push(MultiplayerMenuKeys.DiscoveredServers);
         }
@@ -57,5 +58,8 @@ namespace TopSpeed.Core.Multiplayer
         }
     }
 }
+
+
+
 
 

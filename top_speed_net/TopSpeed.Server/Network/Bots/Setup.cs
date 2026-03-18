@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -14,9 +15,9 @@ namespace TopSpeed.Server.Network
     {
         private RoomBot CreateBot(RaceRoom room)
         {
-            var name = (_faker.Name.FirstName() ?? "Bot").Trim();
+            var name = (_faker.Name.FirstName() ?? LocalizationService.Mark("Bot")).Trim();
             if (string.IsNullOrWhiteSpace(name))
-                name = "Bot";
+                name = LocalizationService.Mark("Bot");
             if (name.Length > ProtocolConstants.MaxPlayerNameLength)
                 name = name.Substring(0, ProtocolConstants.MaxPlayerNameLength);
 
@@ -46,9 +47,9 @@ namespace TopSpeed.Server.Network
         {
             return difficulty switch
             {
-                BotDifficulty.Easy => "easy",
-                BotDifficulty.Hard => "hard",
-                _ => "normal"
+                BotDifficulty.Easy => LocalizationService.Mark("easy"),
+                BotDifficulty.Hard => LocalizationService.Mark("hard"),
+                _ => LocalizationService.Mark("normal")
             };
         }
 
@@ -72,7 +73,7 @@ namespace TopSpeed.Server.Network
 
         private static string FormatBotJoinName(RoomBot bot)
         {
-            var label = $"Bot {bot.Name}";
+            var label = LocalizationService.Format(LocalizationService.Mark("Bot {0}"), bot.Name);
             if (label.Length > ProtocolConstants.MaxPlayerNameLength)
                 return label.Substring(0, ProtocolConstants.MaxPlayerNameLength);
             return label;

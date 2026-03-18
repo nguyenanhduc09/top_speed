@@ -5,6 +5,8 @@ namespace TopSpeed.Menu
 {
     internal interface IMenuSettingsActions
     {
+        string GetLanguageName();
+        void ChangeLanguage();
         void RestoreDefaults();
         void RecalibrateScreenReaderRate();
         void CheckForUpdates();

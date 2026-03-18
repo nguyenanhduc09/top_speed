@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SharpDX.DirectInput;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Shortcuts
 {
@@ -105,7 +106,7 @@ namespace TopSpeed.Shortcuts
         {
             var groups = new List<ShortcutGroup>
             {
-                new ShortcutGroup(GlobalGroupId, "Global shortcuts", isGlobal: true)
+                new ShortcutGroup(GlobalGroupId, LocalizationService.Mark("Global shortcuts"), isGlobal: true)
             };
 
             AddGroups(groups, ScopeGroupPrefix, _scopeActionIds, _scopeNames);

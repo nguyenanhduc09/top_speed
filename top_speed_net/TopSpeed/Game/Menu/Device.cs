@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Game
 {
@@ -26,15 +27,15 @@ namespace TopSpeed.Game
                 var choiceId = i + 1;
                 var choice = discovered[i];
                 var label = choice.IsRacingWheel
-                    ? $"{choice.DisplayName} (Racing wheel)"
+                    ? $"{choice.DisplayName} ({LocalizationService.Translate(LocalizationService.Mark("Racing wheel"))})"
                     : choice.DisplayName;
                 items[choiceId] = label;
                 guidByChoiceId[choiceId] = choice.InstanceGuid;
             }
 
             ShowChoiceDialog(
-                "Choose controller",
-                "Multiple game controllers were detected. Select one controller to use.",
+                LocalizationService.Mark("Choose controller"),
+                LocalizationService.Mark("Multiple game controllers were detected. Select one controller to use."),
                 items,
                 cancelable: false,
                 cancelLabel: null,
@@ -49,13 +50,13 @@ namespace TopSpeed.Game
                     if (_input.TrySelectJoystick(instanceGuid))
                     {
                         if (items.TryGetValue(result.ChoiceId, out var label))
-                            _speech.Speak($"Controller selected. {label}.");
+                            _speech.Speak(LocalizationService.Format(LocalizationService.Mark("Controller selected. {0}."), label));
                         else
-                            _speech.Speak("Controller selected.");
+                            _speech.Speak(LocalizationService.Mark("Controller selected."));
                         return;
                     }
 
-                    _speech.Speak("Unable to activate the selected controller.");
+                    _speech.Speak(LocalizationService.Mark("Unable to activate the selected controller."));
                 });
         }
     }

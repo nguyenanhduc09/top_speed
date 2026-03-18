@@ -1,4 +1,5 @@
 using TopSpeed.Protocol;
+using TopSpeed.Localization;
 using TopSpeed.Server.Protocol;
 
 namespace TopSpeed.Server.Network
@@ -21,7 +22,13 @@ namespace TopSpeed.Server.Network
             if (finished.PlayerId != player.Id || finished.PlayerNumber != player.PlayerNumber)
             {
                 _authorityDropsPlayerFinished++;
-                _logger.Debug($"PlayerFinished payload mismatch: room={room.Id}, connectionPlayer={player.Id}/{player.PlayerNumber}, payload={finished.PlayerId}/{finished.PlayerNumber}.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("PlayerFinished payload mismatch: room={0}, connectionPlayer={1}/{2}, payload={3}/{4}."),
+                    room.Id,
+                    player.Id,
+                    player.PlayerNumber,
+                    finished.PlayerId,
+                    finished.PlayerNumber));
             }
 
             player.State = PlayerState.Finished;
@@ -29,7 +36,12 @@ namespace TopSpeed.Server.Network
                 room.RaceResults.Add(player.PlayerNumber);
 
             SendToRoomExceptOnStream(room, player.Id, PacketSerializer.WritePlayer(Command.PlayerFinished, player.Id, player.PlayerNumber), PacketStream.RaceEvent);
-            _logger.Debug($"Player finished: room={room.Id}, player={player.Id}, number={player.PlayerNumber}, results={room.RaceResults.Count}.");
+            _logger.Debug(LocalizationService.Format(
+                LocalizationService.Mark("Player finished: room={0}, player={1}, number={2}, results={3}."),
+                room.Id,
+                player.Id,
+                player.PlayerNumber,
+                room.RaceResults.Count));
             if (CountActiveRaceParticipants(room) == 0)
                 StopRace(room);
         }
@@ -50,7 +62,13 @@ namespace TopSpeed.Server.Network
             if (crashed.PlayerId != player.Id || crashed.PlayerNumber != player.PlayerNumber)
             {
                 _authorityDropsPlayerCrashed++;
-                _logger.Debug($"PlayerCrashed payload mismatch: room={room.Id}, connectionPlayer={player.Id}/{player.PlayerNumber}, payload={crashed.PlayerId}/{crashed.PlayerNumber}.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("PlayerCrashed payload mismatch: room={0}, connectionPlayer={1}/{2}, payload={3}/{4}."),
+                    room.Id,
+                    player.Id,
+                    player.PlayerNumber,
+                    crashed.PlayerId,
+                    crashed.PlayerNumber));
             }
 
             SendToRoomExceptOnStream(room, player.Id, PacketSerializer.WritePlayer(Command.PlayerCrashed, player.Id, player.PlayerNumber), PacketStream.RaceEvent);

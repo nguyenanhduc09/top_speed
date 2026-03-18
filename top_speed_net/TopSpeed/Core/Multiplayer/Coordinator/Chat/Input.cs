@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 using TopSpeed.Speech;
 using TopSpeed.Windowing;
 
@@ -11,12 +12,12 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
             _promptTextInput(
-                "Enter your global chat message.",
+                LocalizationService.Mark("Enter your global chat message."),
                 null,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -28,18 +29,18 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
             if (!_state.Rooms.CurrentRoom.InRoom)
             {
-                _speech.Speak("You are not in a game room.");
+                _speech.Speak(LocalizationService.Mark("You are not in a game room."));
                 return;
             }
 
             _promptTextInput(
-                "Enter your room chat message.",
+                LocalizationService.Mark("Enter your room chat message."),
                 null,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -54,19 +55,19 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
             var text = (result.Text ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(text))
             {
-                _speech.Speak("Chat message cannot be empty.");
+                _speech.Speak(LocalizationService.Mark("Chat message cannot be empty."));
                 return;
             }
 
             if (!session.SendChatMessage(text))
-                _speech.Speak("Failed to send chat message.");
+                _speech.Speak(LocalizationService.Mark("Failed to send chat message."));
         }
 
         private void HandleRoomChatInput(TextInputResult result)
@@ -77,25 +78,25 @@ namespace TopSpeed.Core.Multiplayer
             var session = SessionOrNull();
             if (session == null)
             {
-                _speech.Speak("Not connected to a server.");
+                _speech.Speak(LocalizationService.Mark("Not connected to a server."));
                 return;
             }
 
             if (!_state.Rooms.CurrentRoom.InRoom)
             {
-                _speech.Speak("You are not in a game room.");
+                _speech.Speak(LocalizationService.Mark("You are not in a game room."));
                 return;
             }
 
             var text = (result.Text ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(text))
             {
-                _speech.Speak("Chat message cannot be empty.");
+                _speech.Speak(LocalizationService.Mark("Chat message cannot be empty."));
                 return;
             }
 
             if (!session.SendRoomChatMessage(text))
-                _speech.Speak("Failed to send room chat message.");
+                _speech.Speak(LocalizationService.Mark("Failed to send room chat message."));
         }
 
         internal void OpenGlobalChatHotkey()

@@ -4,6 +4,7 @@ using TopSpeed.Common;
 using TopSpeed.Core;
 using TopSpeed.Data;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Menu
 {
     internal sealed partial class MenuRegistry
@@ -24,13 +25,13 @@ namespace TopSpeed.Menu
         {
             var items = new List<MenuItem>
             {
-                new MenuItem("Race track", MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.RaceTrack), onActivate: () => _setup.TrackCategory = TrackCategory.RaceTrack),
-                new MenuItem("Street adventure", MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.StreetAdventure), onActivate: () => _setup.TrackCategory = TrackCategory.StreetAdventure),
-                new MenuItem("Custom track", MenuAction.None, onActivate: () => OpenCustomTrackMenuOrAnnounce(mode)),
-                new MenuItem("Random", MenuAction.None, onActivate: () => PushRandomTrackType(mode)),
+                new MenuItem(LocalizationService.Mark("Race track"), MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.RaceTrack), onActivate: () => _setup.TrackCategory = TrackCategory.RaceTrack),
+                new MenuItem(LocalizationService.Mark("Street adventure"), MenuAction.None, nextMenuId: TrackMenuId(mode, TrackCategory.StreetAdventure), onActivate: () => _setup.TrackCategory = TrackCategory.StreetAdventure),
+                new MenuItem(LocalizationService.Mark("Custom track"), MenuAction.None, onActivate: () => OpenCustomTrackMenuOrAnnounce(mode)),
+                new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, onActivate: () => PushRandomTrackType(mode)),
                 BackItem()
             };
-            return _menu.CreateMenu(id, items, "Choose track type");
+            return _menu.CreateMenu(id, items, LocalizationService.Mark("Choose track type"));
         }
 
         private MenuScreen BuildTrackMenu(string id, RaceMode mode, TrackCategory category)
@@ -45,14 +46,14 @@ namespace TopSpeed.Menu
                 items.Add(new MenuItem(track.Display, MenuAction.None, nextMenuId: nextMenuId, onActivate: () => _selection.SelectTrack(category, key)));
             }
 
-            items.Add(new MenuItem("Random", MenuAction.None, nextMenuId: nextMenuId, onActivate: () => _selection.SelectRandomTrack(category)));
+            items.Add(new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, nextMenuId: nextMenuId, onActivate: () => _selection.SelectRandomTrack(category)));
             items.Add(BackItem());
-            return _menu.CreateMenu(id, items, "Select a track");
+            return _menu.CreateMenu(id, items, LocalizationService.Mark("Select a track"));
         }
 
         private MenuScreen BuildCustomTrackMenu(string id, RaceMode mode)
         {
-            return _menu.CreateMenu(id, BuildCustomTrackItems(mode), "Select a custom track");
+            return _menu.CreateMenu(id, BuildCustomTrackItems(mode), LocalizationService.Mark("Select a custom track"));
         }
 
         private void RefreshCustomTrackMenu(RaceMode mode)
@@ -79,7 +80,7 @@ namespace TopSpeed.Menu
                     onActivate: () => _selection.SelectTrack(TrackCategory.CustomTrack, key)));
             }
 
-            items.Add(new MenuItem("Random", MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomCustomTrack));
+            items.Add(new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomCustomTrack));
             items.Add(BackItem());
             return items;
         }
@@ -96,15 +97,15 @@ namespace TopSpeed.Menu
                 items.Add(new MenuItem(name, MenuAction.None, nextMenuId: nextMenuId, onActivate: () => _selection.SelectVehicle(index)));
             }
 
-            items.Add(new MenuItem("Custom", MenuAction.None, onActivate: () => OpenCustomVehicleMenuOrAnnounce(mode)));
-            items.Add(new MenuItem("Random", MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomCustomVehicle));
+            items.Add(new MenuItem(LocalizationService.Mark("Custom"), MenuAction.None, onActivate: () => OpenCustomVehicleMenuOrAnnounce(mode)));
+            items.Add(new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomCustomVehicle));
             items.Add(BackItem());
-            return _menu.CreateMenu(id, items, "Select a vehicle");
+            return _menu.CreateMenu(id, items, LocalizationService.Mark("Select a vehicle"));
         }
 
         private MenuScreen BuildCustomVehicleMenu(string id, RaceMode mode)
         {
-            return _menu.CreateMenu(id, BuildCustomVehicleItems(mode), "Select a custom vehicle");
+            return _menu.CreateMenu(id, BuildCustomVehicleItems(mode), LocalizationService.Mark("Select a custom vehicle"));
         }
 
         private void RefreshCustomVehicleMenu(RaceMode mode)
@@ -126,11 +127,13 @@ namespace TopSpeed.Menu
             foreach (var vehicle in customVehicles)
             {
                 var filePath = vehicle.Key;
-                var displayName = string.IsNullOrWhiteSpace(vehicle.Display) ? "Custom vehicle" : vehicle.Display;
+                var displayName = string.IsNullOrWhiteSpace(vehicle.Display)
+                    ? LocalizationService.Mark("Custom vehicle")
+                    : vehicle.Display;
                 items.Add(new MenuItem(displayName, MenuAction.None, nextMenuId: nextMenuId, onActivate: () => _selection.SelectCustomVehicle(filePath)));
             }
 
-            items.Add(new MenuItem("Random", MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomVehicle));
+            items.Add(new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, nextMenuId: nextMenuId, onActivate: _selection.SelectRandomVehicle));
             items.Add(BackItem());
             return items;
         }
@@ -139,12 +142,12 @@ namespace TopSpeed.Menu
         {
             var items = new List<MenuItem>
             {
-                new MenuItem("Automatic", MenuAction.None, onActivate: () => CompleteTransmission(mode, TransmissionMode.Automatic)),
-                new MenuItem("Manual", MenuAction.None, onActivate: () => CompleteTransmission(mode, TransmissionMode.Manual)),
-                new MenuItem("Random", MenuAction.None, onActivate: () => CompleteTransmission(mode, Algorithm.RandomInt(2) == 0 ? TransmissionMode.Automatic : TransmissionMode.Manual)),
+                new MenuItem(LocalizationService.Mark("Automatic"), MenuAction.None, onActivate: () => CompleteTransmission(mode, TransmissionMode.Automatic)),
+                new MenuItem(LocalizationService.Mark("Manual"), MenuAction.None, onActivate: () => CompleteTransmission(mode, TransmissionMode.Manual)),
+                new MenuItem(LocalizationService.Mark("Random"), MenuAction.None, onActivate: () => CompleteTransmission(mode, Algorithm.RandomInt(2) == 0 ? TransmissionMode.Automatic : TransmissionMode.Manual)),
                 BackItem()
             };
-            return _menu.CreateMenu(id, items, "Select transmission mode");
+            return _menu.CreateMenu(id, items, LocalizationService.Mark("Select transmission mode"));
         }
 
         private void PushRandomTrackType(RaceMode mode)
@@ -173,13 +176,13 @@ namespace TopSpeed.Menu
                 if (issues.Count > 0)
                 {
                     _ui.ShowMessageDialog(
-                        "Custom track errors",
-                        "Some custom track files are invalid and were skipped.",
+                        LocalizationService.Mark("Custom track errors"),
+                        LocalizationService.Mark("Some custom track files are invalid and were skipped."),
                         issues);
                 }
                 else
                 {
-                    _ui.SpeakMessage("No custom tracks found.");
+                    _ui.SpeakMessage(LocalizationService.Mark("No custom tracks found."));
                 }
                 return;
             }
@@ -191,8 +194,8 @@ namespace TopSpeed.Menu
             if (issues.Count > 0)
             {
                 _ui.ShowMessageDialog(
-                    "Custom track errors",
-                    "Some custom track files are invalid and were skipped.",
+                    LocalizationService.Mark("Custom track errors"),
+                    LocalizationService.Mark("Some custom track files are invalid and were skipped."),
                     issues);
             }
         }
@@ -206,13 +209,13 @@ namespace TopSpeed.Menu
                 if (issues.Count > 0)
                 {
                     _ui.ShowMessageDialog(
-                        "Custom vehicle errors",
-                        "Some custom vehicle files are invalid and were skipped.",
+                        LocalizationService.Mark("Custom vehicle errors"),
+                        LocalizationService.Mark("Some custom vehicle files are invalid and were skipped."),
                         issues);
                 }
                 else
                 {
-                    _ui.SpeakMessage("No custom vehicles found.");
+                    _ui.SpeakMessage(LocalizationService.Mark("No custom vehicles found."));
                 }
                 return;
             }
@@ -223,8 +226,8 @@ namespace TopSpeed.Menu
             if (issues.Count > 0)
             {
                 _ui.ShowMessageDialog(
-                    "Custom vehicle errors",
-                    "Some custom vehicle files are invalid and were skipped.",
+                    LocalizationService.Mark("Custom vehicle errors"),
+                    LocalizationService.Mark("Some custom vehicle files are invalid and were skipped."),
                     issues);
             }
         }
@@ -257,7 +260,11 @@ namespace TopSpeed.Menu
 
         private static MenuItem BackItem()
         {
-            return new MenuItem("Go back", MenuAction.Back);
+            return new MenuItem(LocalizationService.Mark("Go back"), MenuAction.Back);
         }
     }
 }
+
+
+
+

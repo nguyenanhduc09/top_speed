@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -20,9 +21,11 @@ namespace TopSpeed.Core.Settings
                 issues.Add(new SettingsIssue(
                     SettingsIssueSeverity.Info,
                     "settings",
-                    $"Settings file '{Path.GetFileName(_settingsPath)}' was not found. Default settings were created."));
+                    LocalizationService.Format(
+                        LocalizationService.Mark("Settings file '{0}' was not found. Default settings were created."),
+                        Path.GetFileName(_settingsPath))));
                 Save(settings);
-                return new SettingsLoadResult(settings, new ReadOnlyCollection<SettingsIssue>(issues));
+                return new SettingsLoadResult(settings, new ReadOnlyCollection<SettingsIssue>(issues), settingsFileMissing: true);
             }
 
             SettingsFileDocument? document;
@@ -81,7 +84,9 @@ namespace TopSpeed.Core.Settings
                 issues.Add(new SettingsIssue(
                     SettingsIssueSeverity.Error,
                     "settings",
-                    $"Settings file '{Path.GetFileName(_settingsPath)}' is empty or invalid. Defaults were used."));
+                    LocalizationService.Format(
+                        LocalizationService.Mark("Settings file '{0}' is empty or invalid. Defaults were used."),
+                        Path.GetFileName(_settingsPath))));
                 Save(settings);
                 return new SettingsLoadResult(settings, new ReadOnlyCollection<SettingsIssue>(issues));
             }
@@ -91,7 +96,10 @@ namespace TopSpeed.Core.Settings
                 issues.Add(new SettingsIssue(
                     SettingsIssueSeverity.Error,
                     "schemaVersion",
-                    $"Unsupported settings schema version '{document.SchemaVersion?.ToString(CultureInfo.InvariantCulture) ?? "missing"}'. Expected {CurrentSchemaVersion}. Defaults were used."));
+                    LocalizationService.Format(
+                        LocalizationService.Mark("Unsupported settings schema version '{0}'. Expected {1}. Defaults were used."),
+                        document.SchemaVersion?.ToString(CultureInfo.InvariantCulture) ?? LocalizationService.Mark("missing"),
+                        CurrentSchemaVersion)));
                 Save(settings);
                 return new SettingsLoadResult(settings, new ReadOnlyCollection<SettingsIssue>(issues));
             }

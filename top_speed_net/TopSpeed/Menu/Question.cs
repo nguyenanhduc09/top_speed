@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Menu
 {
     internal static class QuestionId
@@ -86,7 +87,7 @@ namespace TopSpeed.Menu
         public QuestionDialog(MenuManager menu)
         {
             _menu = menu ?? throw new ArgumentNullException(nameof(menu));
-            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem("Question", MenuAction.None) }, string.Empty));
+            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem(LocalizationService.Mark("Question"), MenuAction.None) }, string.Empty));
             _menu.SetCloseHandler(MenuId, HandleQuestionClose);
         }
 
@@ -125,7 +126,10 @@ namespace TopSpeed.Menu
             }
 
             _menu.UpdateItems(MenuId, items);
-            var announcement = $"{question.Title}  dialog  {question.Caption}";
+            var announcement = LocalizationService.Format(
+                LocalizationService.Mark("{0} dialog {1}"),
+                question.Title,
+                question.Caption);
             _menu.Push(MenuId, announcement, defaultIndex);
         }
 
@@ -153,3 +157,6 @@ namespace TopSpeed.Menu
         }
     }
 }
+
+
+

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Multiplayer
 {
@@ -13,7 +14,9 @@ namespace TopSpeed.Core.Multiplayer
             var players = new List<RoomParticipant>(_state.Rooms.CurrentRoom.Players ?? Array.Empty<RoomParticipant>());
             var index = players.FindIndex(p => p.PlayerId == roomEvent.SubjectPlayerId);
             var name = string.IsNullOrWhiteSpace(roomEvent.SubjectPlayerName)
-                ? $"Player {roomEvent.SubjectPlayerNumber + 1}"
+                ? LocalizationService.Format(
+                    LocalizationService.Mark("Player {0}"),
+                    roomEvent.SubjectPlayerNumber + 1)
                 : roomEvent.SubjectPlayerName;
             var item = new RoomParticipant
             {

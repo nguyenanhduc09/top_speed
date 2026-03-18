@@ -1,5 +1,6 @@
 using System;
 using TopSpeed.Menu;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Multiplayer
 {
@@ -38,22 +39,22 @@ namespace TopSpeed.Core.Multiplayer
         {
             _menu.RegisterShortcutAction(
                 MultiplayerPingShortcutActionId,
-                "Check ping",
-                "Speaks your current ping while you are in multiplayer menus.",
+                LocalizationService.Mark("Check ping"),
+                LocalizationService.Mark("Speaks your current ping while you are in multiplayer menus."),
                 SharpDX.DirectInput.Key.F1,
                 CheckCurrentPing);
 
             _menu.RegisterShortcutAction(
                 MultiplayerChatShortcutActionId,
-                "Open global chat",
-                "Opens chat input for the global multiplayer lobby chat.",
+                LocalizationService.Mark("Open global chat"),
+                LocalizationService.Mark("Opens chat input for the global multiplayer lobby chat."),
                 SharpDX.DirectInput.Key.Slash,
                 OpenGlobalChatInput);
 
             _menu.RegisterShortcutAction(
                 MultiplayerRoomChatShortcutActionId,
-                "Open room chat",
-                "Opens chat input for the current room chat when you are inside a room.",
+                LocalizationService.Mark("Open room chat"),
+                LocalizationService.Mark("Opens chat input for the current room chat when you are inside a room."),
                 SharpDX.DirectInput.Key.Backslash,
                 OpenRoomChatInput,
                 () => IsInRoomCore);
@@ -66,7 +67,7 @@ namespace TopSpeed.Core.Multiplayer
                     MultiplayerChatShortcutActionId,
                     MultiplayerRoomChatShortcutActionId
                 },
-                "Multiplayer shortcuts");
+                LocalizationService.Mark("Multiplayer shortcuts"));
 
             for (var i = 0; i < MultiplayerScopeMenus.Length; i++)
             {

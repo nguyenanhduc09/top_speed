@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Menu
 {
@@ -43,7 +44,8 @@ namespace TopSpeed.Menu
 
         public override string GetDisplayText()
         {
-            return $"{GetBaseText()}; radio button {GetValueLabel(_getIndex())}";
+            var typeLabel = LocalizationService.Translate(LocalizationService.Mark("radio button"));
+            return $"{GetBaseText()}; {typeLabel} {GetValueLabel(_getIndex())}";
         }
 
         public override string? ActivateAndGetAnnouncement()
@@ -80,7 +82,7 @@ namespace TopSpeed.Menu
         private string GetValueLabel(int index)
         {
             var normalized = NormalizeIndex(index);
-            return _values[normalized];
+            return LocalizationService.Translate(_values[normalized]);
         }
 
         private int NormalizeIndex(int index)

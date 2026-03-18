@@ -19,44 +19,44 @@ namespace TopSpeed.Data
             if (key == "type")
             {
                 if (!TryParseTrackType(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid segment type '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid segment type '{0}'.", value)));
                 return;
             }
 
             if (key == "surface")
             {
                 if (!TryParseTrackSurface(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid segment surface '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid segment surface '{0}'.", value)));
                 return;
             }
 
             if (key == "noise")
             {
                 if (!TryParseTrackNoise(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid segment noise '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid segment noise '{0}'.", value)));
                 return;
             }
 
             if (key == "length")
             {
                 if (!TryParseFloat(value, out var length))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid segment length '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid segment length '{0}'.", value)));
                 else if (length < minPart)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Warning, lineNumber, $"Segment length '{length}' is below minimum {minPart} and will be clamped."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Warning, lineNumber, Localized("Segment length '{0}' is below minimum {1} and will be clamped.", length, minPart)));
                 return;
             }
 
             if (key == "width")
             {
                 if (!TryParseFloat(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid segment width '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid segment width '{0}'.", value)));
                 return;
             }
 
             if (key == "height")
             {
                 if (!TryParseFloat(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid segment height '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid segment height '{0}'.", value)));
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace TopSpeed.Data
             {
                 var roomId = NormalizeNullable(value);
                 if (roomId == null)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, "Segment room id cannot be empty."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Segment room id cannot be empty.")));
                 else
                     segmentRooms[sectionId] = roomId;
                 return;
@@ -77,7 +77,7 @@ namespace TopSpeed.Data
             {
                 var list = ParseCsvList(value);
                 if (list.Count == 0)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, "Segment sound source list cannot be empty."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Segment sound source list cannot be empty.")));
                 else
                     segmentSounds[sectionId] = list;
                 return;
@@ -87,7 +87,7 @@ namespace TopSpeed.Data
                 return;
 
             if (!IsMetadataKey(key))
-                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Unknown segment key '{key}'."));
+                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Unknown segment key '{0}'.", key)));
         }
 
         private static void ValidateRoomField(string key, string value, int lineNumber, List<TrackTsmIssue> issues)
@@ -98,19 +98,19 @@ namespace TopSpeed.Data
             if (key == "room_preset")
             {
                 if (!TrackRoomLibrary.IsPreset(value.Trim()))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Unknown room preset '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Unknown room preset '{0}'.", value)));
                 return;
             }
 
             if (IsRoomNumericKey(key))
             {
                 if (!TryParseFloat(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid room value '{value}' for key '{key}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid room value '{0}' for key '{1}'.", value, key)));
                 return;
             }
 
             if (!IsMetadataKey(key))
-                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Unknown room key '{key}'."));
+                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Unknown room key '{0}'.", key)));
         }
 
         private static void ValidateSoundField(
@@ -125,14 +125,14 @@ namespace TopSpeed.Data
             if (key == "type")
             {
                 if (!TryParseSoundType(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid sound type '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid sound type '{0}'.", value)));
                 return;
             }
 
             if (key == "path" || key == "file")
             {
                 if (!IsValidTrackRelativeSoundPath(value))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound key '{key}' must be a track-relative path and cannot escape the track folder."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Sound key '{0}' must be a track-relative path and cannot escape the track folder.", key)));
                 return;
             }
 
@@ -140,13 +140,13 @@ namespace TopSpeed.Data
             {
                 var list = ParseCsvList(value);
                 if (list.Count == 0)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound list for '{key}' cannot be empty."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Sound list for '{0}' cannot be empty.", key)));
                 else
                 {
                     for (var i = 0; i < list.Count; i++)
                     {
                         if (!IsValidTrackRelativeSoundPath(list[i]))
-                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound key '{key}' contains invalid path '{list[i]}'. Paths must be track-relative."));
+                            issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Sound key '{0}' contains invalid path '{1}'. Paths must be track-relative.", key, list[i])));
                     }
                 }
                 return;
@@ -156,21 +156,21 @@ namespace TopSpeed.Data
             {
                 var list = ParseCsvList(value);
                 if (list.Count == 0)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Sound list for '{key}' cannot be empty."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Sound list for '{0}' cannot be empty.", key)));
                 return;
             }
 
             if (key == "random_mode")
             {
                 if (!TryParseSoundRandomMode(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid sound random mode '{value}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid sound random mode '{0}'.", value)));
                 return;
             }
 
             if (IsSoundBooleanKey(key))
             {
                 if (!TryParseBool(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid boolean '{value}' for key '{key}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid boolean '{0}' for key '{1}'.", value, key)));
                 return;
             }
 
@@ -178,7 +178,7 @@ namespace TopSpeed.Data
             {
                 var area = NormalizeNullable(value);
                 if (area == null)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, "start_area cannot be empty."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("start_area cannot be empty.")));
                 else
                     soundStartAreas[sectionId] = area;
                 return;
@@ -188,7 +188,7 @@ namespace TopSpeed.Data
             {
                 var area = NormalizeNullable(value);
                 if (area == null)
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, "end_area cannot be empty."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("end_area cannot be empty.")));
                 else
                     soundEndAreas[sectionId] = area;
                 return;
@@ -197,19 +197,19 @@ namespace TopSpeed.Data
             if (IsSoundVectorKey(key))
             {
                 if (!TryParseVector(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid vector '{value}' for key '{key}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid vector '{0}' for key '{1}'.", value, key)));
                 return;
             }
 
             if (IsSoundNumericKey(key))
             {
                 if (!TryParseFloat(value, out _))
-                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid numeric value '{value}' for key '{key}'."));
+                    issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid numeric value '{0}' for key '{1}'.", value, key)));
                 return;
             }
 
             if (!IsMetadataKey(key))
-                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Unknown sound key '{key}'."));
+                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Unknown sound key '{0}'.", key)));
         }
 
         private static bool TryValidateRoomOverride(string key, string value, int lineNumber, List<TrackTsmIssue> issues)
@@ -219,7 +219,7 @@ namespace TopSpeed.Data
 
             if (!TryParseFloat(value, out _))
             {
-                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, $"Invalid room override value '{value}' for key '{key}'."));
+                issues.Add(new TrackTsmIssue(TrackTsmIssueSeverity.Error, lineNumber, Localized("Invalid room override value '{0}' for key '{1}'.", value, key)));
             }
 
             return true;

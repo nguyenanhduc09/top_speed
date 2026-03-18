@@ -84,6 +84,14 @@
     <ProjectReference Include="..\TopSpeed.Shared\TopSpeed.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\languages\server\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>languages\server\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <TargetPath>languages\server\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
+  </ItemGroup>
+
   <Target Name="CopyUpdaterToServerOutput" AfterTargets="Build">
     <MSBuild Projects="..\Updater\Updater.csproj" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform);RuntimeIdentifier=" />
     <Copy SourceFiles="..\Updater\bin\$(Configuration)\net472\Updater.exe" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />

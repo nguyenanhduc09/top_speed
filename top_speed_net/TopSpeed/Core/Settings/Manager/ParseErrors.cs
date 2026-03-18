@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -8,13 +9,20 @@ namespace TopSpeed.Core.Settings
     {
         private static string BuildSettingsParseErrorMessage(string settingsPath, Exception ex)
         {
-            var details = ex?.Message ?? "Unknown error.";
+            var details = ex?.Message ?? LocalizationService.Mark("Unknown error.");
             if (TryFindInvalidBooleanToken(settingsPath, out var key, out var value))
             {
-                details = $"The value '{value}' for the key '{key}' could not be parsed as Boolean. {details}";
+                details = LocalizationService.Format(
+                    LocalizationService.Mark("The value '{0}' for the key '{1}' could not be parsed as Boolean. {2}"),
+                    value,
+                    key,
+                    details);
             }
 
-            return $"Settings file '{Path.GetFileName(settingsPath)}' could not be read as valid JSON. Defaults were used. Details: {details}";
+            return LocalizationService.Format(
+                LocalizationService.Mark("Settings file '{0}' could not be read as valid JSON. Defaults were used. Details: {1}"),
+                Path.GetFileName(settingsPath),
+                details);
         }
 
         private static bool TryFindInvalidBooleanToken(string settingsPath, out string key, out string value)

@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using LiteNetLib;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network
@@ -13,7 +14,7 @@ namespace TopSpeed.Network
         public async Task<ConnectResult> ConnectAsync(string host, int port, string callSign, TimeSpan timeout, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(host))
-                return ConnectResult.CreateFail("No server address was provided.");
+                return ConnectResult.CreateFail(LocalizationService.Mark("No server address was provided."));
 
             var resolve = await Task.Run(() => TryResolveHost(host), token).ConfigureAwait(false);
             if (!resolve.Success)
@@ -57,7 +58,7 @@ namespace TopSpeed.Network
             };
 
             if (!manager.Start())
-                return ConnectResult.CreateFail("Failed to initialize network client.");
+                return ConnectResult.CreateFail(LocalizationService.Mark("Failed to initialize network client."));
 
             manager.Connect(endpoint.Address.ToString(), endpoint.Port, ProtocolConstants.ConnectionKey);
 
@@ -82,7 +83,9 @@ namespace TopSpeed.Network
                 if (disconnected && connectedPeer == null)
                 {
                     manager.Stop();
-                    return ConnectResult.CreateFail($"Connection failed: {disconnectReason}");
+                    return ConnectResult.CreateFail(LocalizationService.Format(
+                        LocalizationService.Mark("Connection failed: {0}"),
+                        disconnectReason));
                 }
 
                 if (!protocolHelloSent && connectedPeer != null && connectedPeer.ConnectionState == ConnectionState.Connected)
@@ -135,8 +138,8 @@ namespace TopSpeed.Network
 
             manager.Stop();
             if (protocolHelloSent && !protocolNegotiated)
-                return ConnectResult.CreateFail("No protocol negotiation response from server. The server may be outdated or incompatible.");
-            return ConnectResult.CreateFail("No response from server. The server may be offline or unreachable.");
+                return ConnectResult.CreateFail(LocalizationService.Mark("No protocol negotiation response from server. The server may be outdated or incompatible."));
+            return ConnectResult.CreateFail(LocalizationService.Mark("No response from server. The server may be offline or unreachable."));
         }
     }
 }

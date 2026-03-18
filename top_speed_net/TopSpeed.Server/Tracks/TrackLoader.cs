@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Server.Logging;
 
 namespace TopSpeed.Server.Tracks
@@ -53,13 +54,17 @@ namespace TopSpeed.Server.Tracks
         {
             if (issues == null || issues.Count == 0)
             {
-                logger?.Warning($"[TrackLoader] Failed to load '{filename}'.");
+                logger?.Warning(LocalizationService.Format(
+                    LocalizationService.Mark("[TrackLoader] Failed to load '{0}'."),
+                    filename));
                 return;
             }
 
-            logger?.Warning($"[TrackLoader] Failed to load '{filename}':");
+            logger?.Warning(LocalizationService.Format(
+                LocalizationService.Mark("[TrackLoader] Failed to load '{0}':"),
+                filename));
             for (var i = 0; i < issues.Count; i++)
-                logger?.Warning($"  - {issues[i]}");
+                logger?.Warning("  - " + issues[i]);
         }
     }
 }

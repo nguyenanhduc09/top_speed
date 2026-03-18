@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -138,7 +139,9 @@ namespace TopSpeed.Server.Network
                     PlayerId = p.Id,
                     PlayerNumber = p.PlayerNumber,
                     State = p.State,
-                    Name = string.IsNullOrWhiteSpace(p.Name) ? $"Player {p.PlayerNumber + 1}" : p.Name
+                    Name = string.IsNullOrWhiteSpace(p.Name)
+                        ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), p.PlayerNumber + 1)
+                        : p.Name
                 })
                 .Concat(room.Bots.Select(bot => new PacketRoomPlayer
                 {

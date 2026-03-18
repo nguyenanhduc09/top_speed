@@ -53,20 +53,20 @@ namespace TopSpeed.Vehicles.Parsing
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                issueList.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, "Vehicle file path is empty."));
+                issueList.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, Localized("Vehicle file path is empty.")));
                 return false;
             }
 
             if (!File.Exists(path))
             {
-                issueList.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, $"Vehicle file not found: {path}"));
+                issueList.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, Localized("Vehicle file not found: {0}", path)));
                 return false;
             }
 
             var fullPath = Path.GetFullPath(path);
             if (!string.Equals(Path.GetExtension(fullPath), ".tsv", StringComparison.OrdinalIgnoreCase))
             {
-                issueList.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, "Custom vehicle file must use .tsv extension."));
+                issueList.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, Localized("Custom vehicle file must use .tsv extension.")));
                 return false;
             }
 
@@ -93,14 +93,14 @@ namespace TopSpeed.Vehicles.Parsing
                 {
                     if (!s_allowedKeys.ContainsKey(sectionName))
                     {
-                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, $"Unknown section [{sectionName}]."));
+                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, Localized("Unknown section [{0}].", sectionName)));
                         currentSection = null;
                         continue;
                     }
 
                     if (sections.ContainsKey(sectionName))
                     {
-                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, $"Duplicate section [{sectionName}] is not allowed."));
+                        issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, Localized("Duplicate section [{0}] is not allowed.", sectionName)));
                         currentSection = null;
                         continue;
                     }
@@ -112,27 +112,27 @@ namespace TopSpeed.Vehicles.Parsing
 
                 if (!TryParseKeyValue(line, out var rawKey, out var rawValue))
                 {
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, "Invalid line. Expected [section] or key=value."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, Localized("Invalid line. Expected [section] or key=value.")));
                     continue;
                 }
 
                 if (string.IsNullOrWhiteSpace(currentSection))
                 {
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, $"Top-level key '{rawKey.Trim()}' is not supported."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, Localized("Top-level key '{0}' is not supported.", rawKey.Trim())));
                     continue;
                 }
 
                 var key = NormalizeKey(rawKey);
                 if (!IsAllowedKey(currentSection!, key))
                 {
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, $"Unknown key '{key}' in section [{currentSection}]."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, Localized("Unknown key '{0}' in section [{1}].", key, currentSection ?? string.Empty)));
                     continue;
                 }
 
                 var section = sections[currentSection!];
                 if (section.Entries.ContainsKey(key))
                 {
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, $"Duplicate key '{key}' in section [{currentSection}] is not allowed."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, lineNo, Localized("Duplicate key '{0}' in section [{1}] is not allowed.", key, currentSection ?? string.Empty)));
                     continue;
                 }
 
@@ -143,7 +143,7 @@ namespace TopSpeed.Vehicles.Parsing
             {
                 var required = s_requiredSections[i];
                 if (!sections.ContainsKey(required))
-                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, $"Missing required section [{required}]."));
+                    issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, 0, Localized("Missing required section [{0}].", required)));
             }
 
             return !HasErrors(issues);

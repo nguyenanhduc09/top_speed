@@ -1,5 +1,6 @@
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Game
 {
     internal sealed partial class Game
@@ -15,13 +16,12 @@ namespace TopSpeed.Game
 
             _multiplayerRaceQuitConfirmActive = true;
 
-            var question = new Question(
-                "Quit race?",
-                "Are you sure you want to quit this multiplayer race?",
+            var question = new Question(LocalizationService.Mark("Quit race?"),
+                LocalizationService.Mark("Are you sure you want to quit this multiplayer race?"),
                 QuestionId.No,
                 HandleMultiplayerRaceQuitQuestionResult,
-                new QuestionButton(QuestionId.Yes, "Yes, quit the race"),
-                new QuestionButton(QuestionId.No, "No, continue racing", flags: QuestionButtonFlags.Default))
+                new QuestionButton(QuestionId.Yes, LocalizationService.Mark("Yes, quit the race")),
+                new QuestionButton(QuestionId.No, LocalizationService.Mark("No, continue racing"), flags: QuestionButtonFlags.Default))
             {
                 OpenAsOverlay = true
             };
@@ -51,7 +51,7 @@ namespace TopSpeed.Game
 
             _multiplayerRaceQuitConfirmActive = false;
             if (_session != null)
-                TrySendSession(_session.SendRoomLeave(), "room leave request");
+                TrySendSession(_session.SendRoomLeave());
 
             _multiplayerRace?.FinalizeMultiplayerMode();
             _multiplayerRace?.Dispose();
@@ -62,14 +62,18 @@ namespace TopSpeed.Game
             _menu.ShowRoot("multiplayer_lobby");
         }
 
-        private bool TrySendSession(bool sent, string action)
+        private bool TrySendSession(bool sent)
         {
             if (sent)
                 return true;
 
-            _speech.Speak($"Failed to send {action}. Please check your connection.");
+            _speech.Speak(LocalizationService.Mark("Failed to send data. Please check your connection."));
             return false;
         }
     }
 }
+
+
+
+
 

@@ -4,6 +4,7 @@ using System.Globalization;
 using SharpDX.DirectInput;
 using TopSpeed.Input;
 using TopSpeed.Input.Devices.Joystick;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Settings
 {
@@ -13,7 +14,7 @@ namespace TopSpeed.Core.Settings
         {
             var clamped = AudioVolumeSettings.ClampPercent(value);
             if (clamped != value)
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value}, which was replaced with {clamped}."));
+                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(field, value, clamped)));
             return clamped;
         }
 
@@ -29,7 +30,7 @@ namespace TopSpeed.Core.Settings
             issues.Add(new SettingsIssue(
                 SettingsIssueSeverity.Warning,
                 field,
-                $"The key {field} has invalid value {current}, which was replaced with {fallback}."));
+                BuildInvalidValueMessage(field, current, fallback)));
             return fallback;
         }
 
@@ -41,13 +42,13 @@ namespace TopSpeed.Core.Settings
             var current = value.Value;
             if (current < min)
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {current}, which was replaced with {min}."));
+                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(field, current, min)));
                 return min;
             }
 
             if (current > max)
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {current}, which was replaced with {max}."));
+                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(field, current, max)));
                 return max;
             }
 
@@ -58,19 +59,28 @@ namespace TopSpeed.Core.Settings
         {
             if (float.IsNaN(value) || float.IsInfinity(value))
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value.ToString(CultureInfo.InvariantCulture)}, which was replaced with {min.ToString(CultureInfo.InvariantCulture)}."));
+                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(
+                    field,
+                    value.ToString(CultureInfo.InvariantCulture),
+                    min.ToString(CultureInfo.InvariantCulture))));
                 return min;
             }
 
             if (value < min)
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value.ToString(CultureInfo.InvariantCulture)}, which was replaced with {min.ToString(CultureInfo.InvariantCulture)}."));
+                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(
+                    field,
+                    value.ToString(CultureInfo.InvariantCulture),
+                    min.ToString(CultureInfo.InvariantCulture))));
                 return min;
             }
 
             if (value > max)
             {
-                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value.ToString(CultureInfo.InvariantCulture)}, which was replaced with {max.ToString(CultureInfo.InvariantCulture)}."));
+                issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(
+                    field,
+                    value.ToString(CultureInfo.InvariantCulture),
+                    max.ToString(CultureInfo.InvariantCulture))));
                 return max;
             }
 
@@ -85,7 +95,7 @@ namespace TopSpeed.Core.Settings
             if (Enum.IsDefined(typeof(Key), value.Value) && value.Value >= 0)
                 return (Key)value.Value;
 
-            issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value.Value}, which was replaced with {(int)fallback}."));
+            issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(field, value.Value, (int)fallback)));
             return fallback;
         }
 
@@ -97,7 +107,7 @@ namespace TopSpeed.Core.Settings
             if (Enum.IsDefined(typeof(JoystickAxisOrButton), value.Value) && value.Value >= 0)
                 return (JoystickAxisOrButton)value.Value;
 
-            issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, $"The key {field} has invalid value {value.Value}, which was replaced with {(int)fallback}."));
+            issues.Add(new SettingsIssue(SettingsIssueSeverity.Warning, field, BuildInvalidValueMessage(field, value.Value, (int)fallback)));
             return fallback;
         }
 
@@ -127,8 +137,17 @@ namespace TopSpeed.Core.Settings
             issues.Add(new SettingsIssue(
                 SettingsIssueSeverity.Warning,
                 field,
-                $"The key {field} has invalid value {value.Value}, which was replaced with {Enum.Format(enumType, fallback, "D")}."));
+                BuildInvalidValueMessage(field, value.Value, Enum.Format(enumType, fallback, "D"))));
             return fallback;
+        }
+
+        private static string BuildInvalidValueMessage(string field, object invalidValue, object replacementValue)
+        {
+            return LocalizationService.Format(
+                LocalizationService.Mark("The key {0} has invalid value {1}, which was replaced with {2}."),
+                field,
+                invalidValue,
+                replacementValue);
         }
     }
 }

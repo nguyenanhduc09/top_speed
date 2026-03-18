@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TopSpeed.Common;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core
 {
@@ -21,34 +22,34 @@ namespace TopSpeed.Core
     {
         public static readonly TrackInfo[] RaceTracks =
         {
-            new TrackInfo("america", "America"),
-            new TrackInfo("austria", "Austria"),
-            new TrackInfo("belgium", "Belgium"),
-            new TrackInfo("brazil", "Brazil"),
-            new TrackInfo("china", "China"),
-            new TrackInfo("england", "England"),
-            new TrackInfo("finland", "Finland"),
-            new TrackInfo("france", "France"),
-            new TrackInfo("germany", "Germany"),
-            new TrackInfo("ireland", "Ireland"),
-            new TrackInfo("italy", "Italy"),
-            new TrackInfo("netherlands", "Netherlands"),
-            new TrackInfo("portugal", "Portugal"),
-            new TrackInfo("russia", "Russia"),
-            new TrackInfo("spain", "Spain"),
-            new TrackInfo("sweden", "Sweden"),
-            new TrackInfo("switserland", "Switserland")
+            new TrackInfo("america", LocalizationService.Mark("America")),
+            new TrackInfo("austria", LocalizationService.Mark("Austria")),
+            new TrackInfo("belgium", LocalizationService.Mark("Belgium")),
+            new TrackInfo("brazil", LocalizationService.Mark("Brazil")),
+            new TrackInfo("china", LocalizationService.Mark("China")),
+            new TrackInfo("england", LocalizationService.Mark("England")),
+            new TrackInfo("finland", LocalizationService.Mark("Finland")),
+            new TrackInfo("france", LocalizationService.Mark("France")),
+            new TrackInfo("germany", LocalizationService.Mark("Germany")),
+            new TrackInfo("ireland", LocalizationService.Mark("Ireland")),
+            new TrackInfo("italy", LocalizationService.Mark("Italy")),
+            new TrackInfo("netherlands", LocalizationService.Mark("Netherlands")),
+            new TrackInfo("portugal", LocalizationService.Mark("Portugal")),
+            new TrackInfo("russia", LocalizationService.Mark("Russia")),
+            new TrackInfo("spain", LocalizationService.Mark("Spain")),
+            new TrackInfo("sweden", LocalizationService.Mark("Sweden")),
+            new TrackInfo("switserland", LocalizationService.Mark("Switserland"))
         };
 
         public static readonly TrackInfo[] AdventureTracks =
         {
-            new TrackInfo("advHills", "Rally hills"),
-            new TrackInfo("advCoast", "French coast"),
-            new TrackInfo("advCountry", "English country"),
-            new TrackInfo("advAirport", "Ride airport"),
-            new TrackInfo("advDesert", "Rally desert"),
-            new TrackInfo("advRush", "Rush hour"),
-            new TrackInfo("advEscape", "Polar escape")
+            new TrackInfo("advHills", LocalizationService.Mark("Rally hills")),
+            new TrackInfo("advCoast", LocalizationService.Mark("French coast")),
+            new TrackInfo("advCountry", LocalizationService.Mark("English country")),
+            new TrackInfo("advAirport", LocalizationService.Mark("Ride airport")),
+            new TrackInfo("advDesert", LocalizationService.Mark("Rally desert")),
+            new TrackInfo("advRush", LocalizationService.Mark("Rush hour")),
+            new TrackInfo("advEscape", LocalizationService.Mark("Polar escape"))
         };
 
         public static IReadOnlyList<TrackInfo> GetTracks(TrackCategory category)

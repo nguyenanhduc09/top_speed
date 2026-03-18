@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Race.Panels
 {
@@ -12,7 +13,7 @@ namespace TopSpeed.Race.Panels
             if (string.IsNullOrWhiteSpace(folderPath))
             {
                 if (announceErrors)
-                    _announce("No folder was selected.");
+                    _announce(LocalizationService.Mark("No folder was selected."));
                 return false;
             }
 
@@ -24,14 +25,14 @@ namespace TopSpeed.Race.Panels
             catch
             {
                 if (announceErrors)
-                    _announce("The selected folder path is invalid.");
+                    _announce(LocalizationService.Mark("The selected folder path is invalid."));
                 return false;
             }
 
             if (!Directory.Exists(fullFolder))
             {
                 if (announceErrors)
-                    _announce("The selected folder does not exist.");
+                    _announce(LocalizationService.Mark("The selected folder does not exist."));
                 return false;
             }
 
@@ -47,14 +48,14 @@ namespace TopSpeed.Race.Panels
             catch
             {
                 if (announceErrors)
-                    _announce("Could not read files from the selected folder.");
+                    _announce(LocalizationService.Mark("Could not read files from the selected folder."));
                 return false;
             }
 
             if (files.Count == 0)
             {
                 if (announceErrors)
-                    _announce("No supported audio files were found in the selected folder.");
+                    _announce(LocalizationService.Mark("No supported audio files were found in the selected folder."));
                 return false;
             }
 

@@ -1,4 +1,5 @@
 using TopSpeed.Protocol;
+using TopSpeed.Localization;
 using TopSpeed.Server.Protocol;
 
 namespace TopSpeed.Server.Network
@@ -25,7 +26,9 @@ namespace TopSpeed.Server.Network
                     player.Id,
                     player.PlayerNumber,
                     player.State,
-                    string.IsNullOrWhiteSpace(player.Name) ? $"Player {player.PlayerNumber + 1}" : player.Name);
+                    string.IsNullOrWhiteSpace(player.Name)
+                        ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1)
+                        : player.Name);
             }
         }
 
@@ -62,7 +65,13 @@ namespace TopSpeed.Server.Network
             }
 
             if (previousState != player.State)
-                _logger.Debug($"Player state transition: room={room.Id}, player={player.Id}, {previousState} -> {player.State} (packet={state.State}).");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Player state transition: room={0}, player={1}, {2} -> {3} (packet={4})."),
+                    room.Id,
+                    player.Id,
+                    previousState,
+                    player.State,
+                    state.State));
             if (previousState != player.State)
             {
                 TouchRoomVersion(room);
@@ -72,7 +81,9 @@ namespace TopSpeed.Server.Network
                     player.Id,
                     player.PlayerNumber,
                     player.State,
-                    string.IsNullOrWhiteSpace(player.Name) ? $"Player {player.PlayerNumber + 1}" : player.Name);
+                    string.IsNullOrWhiteSpace(player.Name)
+                        ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), player.PlayerNumber + 1)
+                        : player.Name);
             }
         }
 
@@ -123,7 +134,12 @@ namespace TopSpeed.Server.Network
 
             player.State = nextState;
             if (previousState != nextState)
-                _logger.Debug($"Player state transition from data: room={room.Id}, player={player.Id}, {previousState} -> {nextState}.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Player state transition from data: room={0}, player={1}, {2} -> {3}."),
+                    room.Id,
+                    player.Id,
+                    previousState,
+                    nextState));
         }
 
         private void HandlePlayerStarted(PlayerConnection player)

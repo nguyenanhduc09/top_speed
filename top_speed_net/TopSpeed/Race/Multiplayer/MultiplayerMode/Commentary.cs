@@ -1,5 +1,6 @@
 using TopSpeed.Common;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Vehicles;
 
 namespace TopSpeed.Race
@@ -152,7 +153,7 @@ namespace TopSpeed.Race
             if (_remotePlayers.TryGetValue(targetNumber, out var remote))
                 return VehicleCatalog.Vehicles[remote.Player.VehicleIndex].Name;
 
-            return "Vehicle";
+            return LocalizationService.Mark("Vehicle");
         }
 
         private bool HasPlayerInRace(int playerIndex)

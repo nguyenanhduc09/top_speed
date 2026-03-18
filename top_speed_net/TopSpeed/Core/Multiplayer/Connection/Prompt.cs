@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 using TopSpeed.Network;
 using TopSpeed.Speech;
 
@@ -13,20 +14,22 @@ namespace TopSpeed.Core.Multiplayer
             {
                 _settings.DefaultServerPort = ClientProtocol.DefaultServerPort;
                 _saveSettings();
-                _speech.Speak($"Default server port reset to {ClientProtocol.DefaultServerPort}.");
+                _speech.Speak(LocalizationService.Format(
+                    LocalizationService.Mark("Default server port reset to {0}."),
+                    ClientProtocol.DefaultServerPort));
                 return;
             }
 
             if (!int.TryParse(trimmed, out var port) || port < 1 || port > 65535)
             {
-                _speech.Speak("Invalid port. Enter a number between 1 and 65535.");
+                _speech.Speak(LocalizationService.Mark("Invalid port. Enter a number between 1 and 65535."));
                 BeginServerPortEntry();
                 return;
             }
 
             _settings.DefaultServerPort = port;
             _saveSettings();
-            _speech.Speak($"Default server port set to {port}.");
+            _speech.Speak(LocalizationService.Format(LocalizationService.Mark("Default server port set to {0}."), port));
         }
 
         private int ResolveServerPort()
@@ -39,7 +42,7 @@ namespace TopSpeed.Core.Multiplayer
         private void PromptServerAddressInput(string? initialValue)
         {
             _promptTextInput(
-                "Enter the server IP address or domain.",
+                LocalizationService.Mark("Enter the server IP address or domain."),
                 initialValue,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -59,7 +62,7 @@ namespace TopSpeed.Core.Multiplayer
         private void PromptCallSignInput(string? initialValue)
         {
             _promptTextInput(
-                "Enter your call sign.",
+                LocalizationService.Mark("Enter your call sign."),
                 initialValue,
                 SpeechService.SpeakFlag.None,
                 true,

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Game
 {
@@ -13,18 +14,23 @@ namespace TopSpeed.Game
             if (!File.Exists(updaterPath))
             {
                 ShowMessageDialog(
-                    "Updater not found",
-                    "The update could not be installed automatically.",
-                    new[] { $"Missing file: {_updateConfig.UpdaterExeName}" });
+                    LocalizationService.Mark("Updater not found"),
+                    LocalizationService.Mark("The update could not be installed automatically."),
+                    new[]
+                    {
+                        LocalizationService.Format(
+                            LocalizationService.Mark("Missing file: {0}"),
+                            _updateConfig.UpdaterExeName)
+                    });
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(_updateZipPath) || !File.Exists(_updateZipPath))
             {
                 ShowMessageDialog(
-                    "Update package missing",
-                    "The update package file was not found.",
-                    new[] { "You can download the update again or install manually." });
+                    LocalizationService.Mark("Update package missing"),
+                    LocalizationService.Mark("The update package file was not found."),
+                    new[] { LocalizationService.Mark("You can download the update again or install manually.") });
                 return;
             }
 
@@ -47,8 +53,8 @@ namespace TopSpeed.Game
             catch (Exception ex)
             {
                 ShowMessageDialog(
-                    "Updater launch failed",
-                    "The updater could not be started.",
+                    LocalizationService.Mark("Updater launch failed"),
+                    LocalizationService.Mark("The updater could not be started."),
                     new[] { ex.Message });
             }
         }

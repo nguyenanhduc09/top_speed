@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Server.Logging
 {
@@ -8,7 +9,7 @@ namespace TopSpeed.Server.Logging
         {
             try
             {
-                Console.WriteLine(text);
+                Console.WriteLine(LocalizationService.Translate(text));
                 return true;
             }
             catch (ObjectDisposedException)
@@ -23,6 +24,11 @@ namespace TopSpeed.Server.Logging
             {
                 return false;
             }
+        }
+
+        public static bool WriteLineFormat(string template, params object[] args)
+        {
+            return WriteLine(LocalizationService.Format(template, args));
         }
     }
 }

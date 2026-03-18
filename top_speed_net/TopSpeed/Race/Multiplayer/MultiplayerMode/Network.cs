@@ -93,7 +93,7 @@ namespace TopSpeed.Race
             {
                 _sentFinish = true;
                 _currentState = PlayerState.Finished;
-                TrySendRace(_session.SendPlayerState(_currentState), "finished state");
+                TrySendRace(_session.SendPlayerState(_currentState));
             }
 
             RequestExitWhenQueueIdle();

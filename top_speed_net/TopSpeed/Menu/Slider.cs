@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Menu
 {
@@ -64,7 +65,8 @@ namespace TopSpeed.Menu
 
         public override string GetDisplayText()
         {
-            return $"{GetBaseText()}; slider {GetValueLabel(_getValue())}";
+            var typeLabel = LocalizationService.Translate(LocalizationService.Mark("slider"));
+            return $"{GetBaseText()}; {typeLabel} {GetValueLabel(_getValue())}";
         }
 
         public override string? ActivateAndGetAnnouncement()

@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using LiteNetLib;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network
@@ -61,16 +62,16 @@ namespace TopSpeed.Network
             if (peer == null)
             {
                 manager.Stop();
-                return CreateFail("Connection lost before session initialization.");
+                return CreateFail(LocalizationService.Mark("Connection lost before session initialization."));
             }
 
             var session = new MultiplayerSession(manager, peer, endPoint, playerId, playerNumber, motd, playerName, incoming);
-            return new ConnectResult(true, "Connected.", session, motd, BuildCompatibilityNotice(protocolWelcome));
+            return new ConnectResult(true, LocalizationService.Mark("Connected."), session, motd, BuildCompatibilityNotice(protocolWelcome));
         }
 
         public static ConnectResult CreateFail(string message)
         {
-            return new ConnectResult(false, message ?? "Connection failed.", null, null, null);
+            return new ConnectResult(false, message ?? LocalizationService.Mark("Connection failed."), null, null, null);
         }
 
         private static CompatibilityNotice? BuildCompatibilityNotice(PacketProtocolWelcome? welcome)
@@ -82,7 +83,7 @@ namespace TopSpeed.Network
 
             var range = new ProtocolRange(welcome.ServerMinSupported, welcome.ServerMaxSupported);
             var message = string.IsNullOrWhiteSpace(welcome.Message)
-                ? "The server supports an older protocol range. You can continue, but some features may behave differently."
+                ? LocalizationService.Mark("The server supports an older protocol range. You can continue, but some features may behave differently.")
                 : welcome.Message;
             return new CompatibilityNotice(
                 welcome.Status,

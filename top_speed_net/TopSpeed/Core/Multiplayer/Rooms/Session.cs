@@ -1,5 +1,6 @@
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -8,7 +9,7 @@ namespace TopSpeed.Core.Multiplayer
         {
             _state.Connection.IsPingPending = false;
             _clearSession();
-            _speech.Speak("Disconnected from server.");
+            _speech.Speak(LocalizationService.Mark("Disconnected from server."));
             _menu.ShowRoot("main");
             _menu.FadeInMenuMusic();
             _enterMenuState();
@@ -19,13 +20,12 @@ namespace TopSpeed.Core.Multiplayer
             if (_questions.IsQuestionMenu(_menu.CurrentId))
                 return;
 
-            _questions.Show(new Question(
-                "Leave server?",
-                "Are you sure you want to disconnect?",
+            _questions.Show(new Question(LocalizationService.Mark("Leave server?"),
+                LocalizationService.Mark("Are you sure you want to disconnect?"),
                 QuestionId.No,
                 HandleDisconnectQuestionResult,
-                new QuestionButton(QuestionId.Yes, "Yes, disconnect from the server"),
-                new QuestionButton(QuestionId.No, "No, stay connected", flags: QuestionButtonFlags.Default)));
+                new QuestionButton(QuestionId.Yes, LocalizationService.Mark("Yes, disconnect from the server")),
+                new QuestionButton(QuestionId.No, LocalizationService.Mark("No, stay connected"), flags: QuestionButtonFlags.Default)));
         }
 
         private void HandleDisconnectQuestionResult(int resultId)
@@ -35,4 +35,8 @@ namespace TopSpeed.Core.Multiplayer
         }
     }
 }
+
+
+
+
 

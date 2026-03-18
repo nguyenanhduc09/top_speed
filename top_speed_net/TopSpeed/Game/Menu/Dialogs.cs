@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Game
 {
     internal sealed partial class Game
@@ -26,7 +27,7 @@ namespace TopSpeed.Game
                 QuestionId.Ok,
                 dialogItems,
                 onResult: null,
-                new DialogButton(QuestionId.Ok, "OK"));
+                new DialogButton(QuestionId.Ok, LocalizationService.Mark("OK")));
             _dialogs.Show(dialog);
         }
 
@@ -44,3 +45,6 @@ namespace TopSpeed.Game
         }
     }
 }
+
+
+

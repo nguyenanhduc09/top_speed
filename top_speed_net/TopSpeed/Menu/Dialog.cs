@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Menu
 {
     [Flags]
@@ -58,6 +59,7 @@ namespace TopSpeed.Menu
         public int CloseResultId { get; }
         public Action<int>? OnResult { get; }
         public bool OpenAsOverlay { get; set; }
+        public bool IsCancelable { get; set; } = true;
         public IReadOnlyList<DialogItem> Items { get; }
         public IReadOnlyList<DialogButton> Buttons { get; }
     }
@@ -65,13 +67,17 @@ namespace TopSpeed.Menu
     internal sealed class DialogManager
     {
         private const string MenuId = "dialog";
+        private static readonly string NotCancelableMessage =
+            LocalizationService.Mark("This dialog is not cancelable. You need to choose an option.");
         private readonly MenuManager _menu;
+        private readonly Action<string> _speak;
         private Dialog? _activeDialog;
 
-        public DialogManager(MenuManager menu)
+        public DialogManager(MenuManager menu, Action<string> speak)
         {
             _menu = menu ?? throw new ArgumentNullException(nameof(menu));
-            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem("Dialog", MenuAction.None) }, string.Empty));
+            _speak = speak ?? throw new ArgumentNullException(nameof(speak));
+            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem(LocalizationService.Mark("Dialog"), MenuAction.None) }, string.Empty));
             _menu.SetCloseHandler(MenuId, HandleDialogClose);
         }
 
@@ -103,8 +109,13 @@ namespace TopSpeed.Menu
                 return;
 
             var announcement = string.IsNullOrWhiteSpace(dialog.Caption)
-                ? $"{dialog.Title} dialog"
-                : $"{dialog.Title} dialog {dialog.Caption}";
+                ? LocalizationService.Format(
+                    LocalizationService.Mark("{0} dialog"),
+                    dialog.Title)
+                : LocalizationService.Format(
+                    LocalizationService.Mark("{0} dialog {1}"),
+                    dialog.Title,
+                    dialog.Caption);
             _menu.Push(MenuId, announcement, defaultIndex);
         }
 
@@ -151,6 +162,12 @@ namespace TopSpeed.Menu
             if (_activeDialog == null)
                 return false;
 
+            if (!_activeDialog.IsCancelable)
+            {
+                _speak(NotCancelableMessage);
+                return true;
+            }
+
             Complete(_activeDialog, _activeDialog.CloseResultId, null);
             return true;
         }
@@ -170,3 +187,6 @@ namespace TopSpeed.Menu
         }
     }
 }
+
+
+

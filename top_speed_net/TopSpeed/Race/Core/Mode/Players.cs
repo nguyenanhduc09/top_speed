@@ -101,7 +101,7 @@ namespace TopSpeed.Race
                 && hasPlayer(positionPlayer))
             {
                 var perc = playerPercent(positionPlayer);
-                SpeakText(FormatPercentageText(string.Empty, perc));
+                SpeakText(FormatPlayerPercentageText(perc));
             }
         }
 

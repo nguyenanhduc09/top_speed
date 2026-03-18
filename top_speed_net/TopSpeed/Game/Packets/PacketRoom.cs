@@ -1,5 +1,6 @@
 using System;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
 
@@ -28,9 +29,9 @@ namespace TopSpeed.Game
                 if (joined.PlayerNumber != session.PlayerNumber)
                 {
                     var name = string.IsNullOrWhiteSpace(joined.Name)
-                        ? $"Player {joined.PlayerNumber + 1}"
+                        ? LocalizationService.Format(LocalizationService.Mark("Player {0}"), joined.PlayerNumber + 1)
                         : joined.Name;
-                    _speech.Speak($"{name} has joined the game.");
+                    _speech.Speak(LocalizationService.Format(LocalizationService.Mark("{0} has joined the game."), name));
                 }
             }
 

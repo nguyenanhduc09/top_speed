@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Speech.Synthesis;
 using System.Threading;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Speech
 {
@@ -54,6 +55,7 @@ namespace TopSpeed.Speech
                 Purge();
 
             text = text.Trim();
+            text = LocalizationService.Translate(text);
             _lastSpoken = text;
 
             var spoke = false;

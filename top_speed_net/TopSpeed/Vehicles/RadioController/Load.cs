@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using TopSpeed.Audio;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Vehicles
@@ -12,14 +13,14 @@ namespace TopSpeed.Vehicles
             error = string.Empty;
             if (string.IsNullOrWhiteSpace(path))
             {
-                error = "No media file selected.";
+                error = LocalizationService.Mark("No media file selected.");
                 return false;
             }
 
             var fullPath = Path.GetFullPath(path);
             if (!File.Exists(fullPath))
             {
-                error = "The selected media file does not exist.";
+                error = LocalizationService.Mark("The selected media file does not exist.");
                 return false;
             }
 
@@ -74,7 +75,7 @@ namespace TopSpeed.Vehicles
             error = string.Empty;
             if (data == null || data.Length == 0)
             {
-                error = "Received media is empty.";
+                error = LocalizationService.Mark("Received media is empty.");
                 return false;
             }
 

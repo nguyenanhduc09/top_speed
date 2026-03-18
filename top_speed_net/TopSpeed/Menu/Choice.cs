@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Menu
 {
     [Flags]
@@ -46,7 +47,9 @@ namespace TopSpeed.Menu
             Caption = string.IsNullOrWhiteSpace(caption) ? string.Empty : (caption ?? string.Empty).Trim();
             Items = items;
             Flags = flags;
-            CancelLabel = string.IsNullOrWhiteSpace(cancelLabel) ? "Cancel" : (cancelLabel ?? string.Empty).Trim();
+            CancelLabel = string.IsNullOrWhiteSpace(cancelLabel)
+                ? LocalizationService.Mark("Cancel")
+                : (cancelLabel ?? string.Empty).Trim();
             OnResult = onResult;
         }
 
@@ -63,7 +66,8 @@ namespace TopSpeed.Menu
     internal sealed class ChoiceDialogManager
     {
         private const string MenuId = "choice_dialog";
-        private const string NotCancelableMessage = "This dialog is not cancelable. You need to choose an option.";
+        private static readonly string NotCancelableMessage =
+            LocalizationService.Mark("This dialog is not cancelable. You need to choose an option.");
 
         private readonly MenuManager _menu;
         private readonly Action<string> _speak;
@@ -73,7 +77,7 @@ namespace TopSpeed.Menu
         {
             _menu = menu ?? throw new ArgumentNullException(nameof(menu));
             _speak = speak ?? throw new ArgumentNullException(nameof(speak));
-            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem("Choice", MenuAction.None) }, string.Empty));
+            _menu.Register(_menu.CreateMenu(MenuId, new[] { new MenuItem(LocalizationService.Mark("Choice"), MenuAction.None) }, string.Empty));
             _menu.SetCloseHandler(MenuId, HandleClose);
         }
 
@@ -117,8 +121,13 @@ namespace TopSpeed.Menu
 
             _menu.UpdateItems(MenuId, items);
             var announcement = string.IsNullOrWhiteSpace(dialog.Caption)
-                ? $"{dialog.Title} dialog"
-                : $"{dialog.Title} dialog {dialog.Caption}";
+                ? LocalizationService.Format(
+                    LocalizationService.Mark("{0} dialog"),
+                    dialog.Title)
+                : LocalizationService.Format(
+                    LocalizationService.Mark("{0} dialog {1}"),
+                    dialog.Title,
+                    dialog.Caption);
             _menu.Push(MenuId, announcement, firstChoiceIndex);
         }
 
@@ -151,3 +160,6 @@ namespace TopSpeed.Menu
         }
     }
 }
+
+
+

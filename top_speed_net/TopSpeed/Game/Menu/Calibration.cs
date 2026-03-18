@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Game
 {
     internal sealed partial class Game
@@ -26,11 +27,11 @@ namespace TopSpeed.Game
 
             var introItems = new[]
             {
-                new MenuItem("Ok", MenuAction.None, onActivate: BeginCalibrationSample)
+                new MenuItem(LocalizationService.Mark("Ok"), MenuAction.None, onActivate: BeginCalibrationSample)
             };
             var sampleItems = new[]
             {
-                new MenuItem("Ok", MenuAction.None, onActivate: CompleteCalibration)
+                new MenuItem(LocalizationService.Mark("Ok"), MenuAction.None, onActivate: CompleteCalibration)
             };
 
             _menu.Register(_menu.CreateMenu(CalibrationIntroMenuId, introItems, CalibrationInstructions));
@@ -70,6 +71,11 @@ namespace TopSpeed.Game
             _calibrationOverlay = false;
             _menu.FadeInMenuMusic(force: true);
             _state = AppState.Menu;
+            if (_autoUpdateAfterCalibration)
+            {
+                _autoUpdateAfterCalibration = false;
+                StartAutoUpdateCheck();
+            }
         }
 
         private static bool IsCalibrationMenu(string? id)
@@ -78,3 +84,6 @@ namespace TopSpeed.Game
         }
     }
 }
+
+
+

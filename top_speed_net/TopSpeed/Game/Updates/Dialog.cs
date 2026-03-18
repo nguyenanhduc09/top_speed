@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Game
 {
     internal sealed partial class Game
@@ -13,18 +14,17 @@ namespace TopSpeed.Game
             var percent = System.Threading.Volatile.Read(ref _updatePercent);
             var items = new List<DialogItem>
             {
-                new DialogItem($"File size: {FormatBytes(total)}"),
-                new DialogItem($"Downloaded size: {FormatBytes(downloaded)}"),
-                new DialogItem($"Percentage: {percent}%")
+                new DialogItem(LocalizationService.Format(LocalizationService.Mark("File size: {0}"), FormatBytes(total))),
+                new DialogItem(LocalizationService.Format(LocalizationService.Mark("Downloaded size: {0}"), FormatBytes(downloaded))),
+                new DialogItem(LocalizationService.Format(LocalizationService.Mark("Percentage: {0}%"), percent))
             };
 
-            var dialog = new Dialog(
-                "Downloading update...",
+            var dialog = new Dialog(LocalizationService.Mark("Downloading update..."),
                 null,
                 QuestionId.Close,
                 items,
                 onResult: _ => _updateProgressOpen = false,
-                new DialogButton(QuestionId.Close, "Cancel"));
+                new DialogButton(QuestionId.Close, LocalizationService.Mark("Cancel")));
             _dialogs.Show(dialog);
         }
 
@@ -36,12 +36,11 @@ namespace TopSpeed.Game
             _updateCompleteOpen = true;
             var items = new List<DialogItem>
             {
-                new DialogItem("The update download is complete."),
-                new DialogItem("Press OK to close the game and install the update.")
+                new DialogItem(LocalizationService.Mark("The update download is complete.")),
+                new DialogItem(LocalizationService.Mark("Press OK to close the game and install the update."))
             };
 
-            var dialog = new Dialog(
-                "Update download complete.",
+            var dialog = new Dialog(LocalizationService.Mark("Update download complete."),
                 null,
                 QuestionId.Cancel,
                 items,
@@ -51,15 +50,21 @@ namespace TopSpeed.Game
                     if (resultId == QuestionId.Ok)
                         LaunchUpdaterAndExit();
                 },
-                new DialogButton(QuestionId.Ok, "OK"));
+                new DialogButton(QuestionId.Ok, LocalizationService.Mark("OK")));
             _dialogs.Show(dialog);
         }
 
         private static string FormatBytes(long bytes)
         {
             if (bytes <= 0)
-                return "Unknown";
-            var units = new[] { "B", "KB", "MB", "GB" };
+                return LocalizationService.Translate(LocalizationService.Mark("Unknown"));
+            var units = new[]
+            {
+                "B",
+                "KB",
+                "MB",
+                "GB"
+            };
             var index = 0;
             var value = (double)bytes;
             while (value >= 1024d && index < units.Length - 1)
@@ -68,7 +73,11 @@ namespace TopSpeed.Game
                 index++;
             }
 
-            return $"{value.ToString("0.##", CultureInfo.InvariantCulture)} {units[index]}";
+            return value.ToString("0.##", CultureInfo.InvariantCulture) + " " + units[index];
         }
     }
 }
+
+
+
+

@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using TopSpeed.Game;
+using TopSpeed.Localization;
 
 namespace TopSpeed
 {
@@ -17,7 +18,7 @@ namespace TopSpeed
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += (_, args) => HandleException(args.Exception);
             AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-                HandleException(args.ExceptionObject as Exception ?? new Exception("Unknown exception."));
+                HandleException(args.ExceptionObject as Exception ?? new Exception(LocalizationService.Mark("Unknown exception.")));
 
             using (var app = new GameApp())
             {
@@ -82,8 +83,10 @@ namespace TopSpeed
             try
             {
                 MessageBox.Show(
-                    $"An unexpected error occurred. A log file was created: {logName}",
-                    "Top Speed",
+                    LocalizationService.Format(
+                        LocalizationService.Mark("An unexpected error occurred. A log file was created: {0}"),
+                        logName),
+                    LocalizationService.Translate(LocalizationService.Mark("Top Speed")),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }

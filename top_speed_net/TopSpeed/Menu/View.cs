@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TopSpeed.Localization;
 using TopSpeed.Speech;
 
 namespace TopSpeed.Menu
@@ -34,7 +35,14 @@ namespace TopSpeed.Menu
         public bool PreserveSelection { get; set; }
         public SpeechService.SpeakFlag TitleSpeakFlag { get; set; }
         public IReadOnlyList<MenuItem> Items => _items;
-        public string DisplayTitle => TitleProvider?.Invoke() ?? Title;
+        public string DisplayTitle
+        {
+            get
+            {
+                var title = TitleProvider?.Invoke() ?? Title;
+                return LocalizationService.Translate(title);
+            }
+        }
 
         internal int SavedSelection
         {

@@ -39,6 +39,14 @@ namespace TopSpeed.Game
                 _game._logo?.Dispose();
                 _game._logo = null;
                 _game._menu.ShowRoot("main");
+                if (_game._settingsFileMissing)
+                {
+                    _game._autoUpdateAfterCalibration = true;
+                    _game.StartSetupWizard();
+                    _game._state = AppState.Menu;
+                    return;
+                }
+
                 if (_game._needsCalibration)
                 {
                     if (!_game.ShowSettingsIssuesDialog(() => _game.StartCalibrationSequence()))

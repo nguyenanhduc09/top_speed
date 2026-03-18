@@ -3,6 +3,7 @@ using System.Linq;
 using LiteNetLib;
 using TopSpeed.Bots;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Server.Protocol;
 using TopSpeed.Server.Tracks;
@@ -25,7 +26,7 @@ namespace TopSpeed.Server.Network
         {
             foreach (var bot in room.Bots.OrderBy(b => b.PlayerNumber))
             {
-                SendProtocolMessageToRoom(room, $"{FormatBotJoinName(bot)} is ready.");
+                SendProtocolMessageToRoom(room, LocalizationService.Format(LocalizationService.Mark("{0} is ready."), FormatBotJoinName(bot)));
             }
         }
 
@@ -41,8 +42,14 @@ namespace TopSpeed.Server.Network
                 room.PrepareSkips.Clear();
                 TouchRoomVersion(room);
                 EmitRoomLifecycleEvent(room, RoomEventKind.PrepareCancelled);
-                SendProtocolMessageToRoom(room, "Race start cancelled because there are not enough players.");
-                _logger.Info($"Race prepare cancelled: room={room.Id} \"{room.Name}\", participants={GetRoomParticipantCount(room)}, minStart={minimumParticipants}, capacity={room.PlayersToStart}.");
+                SendProtocolMessageToRoom(room, LocalizationService.Mark("Race start cancelled because there are not enough players."));
+                _logger.Info(LocalizationService.Format(
+                    LocalizationService.Mark("Race prepare cancelled: room={0} \"{1}\", participants={2}, minStart={3}, capacity={4}."),
+                    room.Id,
+                    room.Name,
+                    GetRoomParticipantCount(room),
+                    minimumParticipants,
+                    room.PlayersToStart));
                 return;
             }
 
@@ -51,7 +58,12 @@ namespace TopSpeed.Server.Network
             var unresolvedHumans = Math.Max(0, room.PlayerIds.Count - (readyHumans + skippedHumans));
             if (unresolvedHumans > 0)
             {
-                _logger.Debug($"Waiting for loadouts: room={room.Id}, ready={readyHumans}, skipped={skippedHumans}, totalHumans={room.PlayerIds.Count}.");
+                _logger.Debug(LocalizationService.Format(
+                    LocalizationService.Mark("Waiting for loadouts: room={0}, ready={1}, skipped={2}, totalHumans={3}."),
+                    room.Id,
+                    readyHumans,
+                    skippedHumans,
+                    room.PlayerIds.Count));
                 return;
             }
 
@@ -63,14 +75,22 @@ namespace TopSpeed.Server.Network
                 room.PrepareSkips.Clear();
                 TouchRoomVersion(room);
                 EmitRoomLifecycleEvent(room, RoomEventKind.PrepareCancelled);
-                SendProtocolMessageToRoom(room, "Race start cancelled because there are not enough ready players.");
-                _logger.Info($"Race prepare cancelled after loadout: room={room.Id} \"{room.Name}\", active={activeParticipants}, minStart={minimumParticipants}.");
+                SendProtocolMessageToRoom(room, LocalizationService.Mark("Race start cancelled because there are not enough ready players."));
+                _logger.Info(LocalizationService.Format(
+                    LocalizationService.Mark("Race prepare cancelled after loadout: room={0} \"{1}\", active={2}, minStart={3}."),
+                    room.Id,
+                    room.Name,
+                    activeParticipants,
+                    minimumParticipants));
                 return;
             }
 
             room.PreparingRace = false;
-            SendProtocolMessageToRoom(room, "All players are ready. Starting game.");
-            _logger.Info($"All loadouts ready: room={room.Id} \"{room.Name}\", starting race.");
+            SendProtocolMessageToRoom(room, LocalizationService.Mark("All players are ready. Starting game."));
+            _logger.Info(LocalizationService.Format(
+                LocalizationService.Mark("All loadouts ready: room={0} \"{1}\", starting race."),
+                room.Id,
+                room.Name));
             StartRace(room);
         }
 

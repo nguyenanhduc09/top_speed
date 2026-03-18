@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Core.Updates
 {
@@ -27,10 +28,10 @@ namespace TopSpeed.Core.Updates
             {
                 var info = await ReadInfoAsync(cancellationToken).ConfigureAwait(false);
                 if (info == null)
-                    return Fail("The update info file could not be read.");
+                    return Fail(LocalizationService.Mark("The update info file could not be read."));
 
                 if (!GameVersion.TryParse(info.Version, out var remoteVersion))
-                    return Fail("The update info file has an invalid version format.");
+                    return Fail(LocalizationService.Mark("The update info file has an invalid version format."));
 
                 if (remoteVersion.CompareTo(current) <= 0)
                     return new UpdateCheckResult { IsSuccess = true };
@@ -39,7 +40,9 @@ namespace TopSpeed.Core.Updates
                 var expectedAsset = _config.BuildExpectedAssetName(info.Version ?? string.Empty);
                 var asset = FindAsset(release, expectedAsset);
                 if (asset == null || string.IsNullOrWhiteSpace(asset.DownloadUrl))
-                    return Fail($"Update package '{expectedAsset}' was not found in the latest release.");
+                    return Fail(LocalizationService.Format(
+                        LocalizationService.Mark("Update package '{0}' was not found in the latest release."),
+                        expectedAsset));
 
                 return new UpdateCheckResult
                 {
@@ -56,11 +59,13 @@ namespace TopSpeed.Core.Updates
             }
             catch (TaskCanceledException)
             {
-                return Fail("Update check timed out.");
+                return Fail(LocalizationService.Mark("Update check timed out."));
             }
             catch (Exception ex)
             {
-                return Fail($"Update check failed: {ex.Message}");
+                return Fail(LocalizationService.Format(
+                    LocalizationService.Mark("Update check failed: {0}"),
+                    ex.Message));
             }
         }
 
@@ -85,7 +90,9 @@ namespace TopSpeed.Core.Updates
                         return new DownloadResult
                         {
                             IsSuccess = false,
-                            ErrorMessage = $"Download failed with status code {(int)response.StatusCode}.",
+                            ErrorMessage = LocalizationService.Format(
+                                LocalizationService.Mark("Download failed with status code {0}."),
+                                (int)response.StatusCode),
                             ZipPath = zipPath
                         };
 
@@ -144,7 +151,7 @@ namespace TopSpeed.Core.Updates
                 return new DownloadResult
                 {
                     IsSuccess = false,
-                    ErrorMessage = "Download timed out or was canceled.",
+                    ErrorMessage = LocalizationService.Mark("Download timed out or was canceled."),
                     ZipPath = zipPath
                 };
             }
@@ -153,7 +160,9 @@ namespace TopSpeed.Core.Updates
                 return new DownloadResult
                 {
                     IsSuccess = false,
-                    ErrorMessage = $"Download failed: {ex.Message}",
+                    ErrorMessage = LocalizationService.Format(
+                        LocalizationService.Mark("Download failed: {0}"),
+                        ex.Message),
                     ZipPath = zipPath
                 };
             }
@@ -215,7 +224,7 @@ namespace TopSpeed.Core.Updates
             return new UpdateCheckResult
             {
                 IsSuccess = false,
-                ErrorMessage = message ?? "Unknown update error."
+                ErrorMessage = message ?? LocalizationService.Mark("Unknown update error.")
             };
         }
     }

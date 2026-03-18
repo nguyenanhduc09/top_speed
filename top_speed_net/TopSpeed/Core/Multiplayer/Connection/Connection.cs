@@ -1,4 +1,5 @@
 using TopSpeed.Network;
+using TopSpeed.Localization;
 using TopSpeed.Speech;
 
 namespace TopSpeed.Core.Multiplayer
@@ -24,7 +25,7 @@ namespace TopSpeed.Core.Multiplayer
         {
             var current = _settings.DefaultServerPort.ToString();
             _promptTextInput(
-                "Enter the default server port used for manual connections.",
+                LocalizationService.Mark("Enter the default server port used for manual connections."),
                 current,
                 SpeechService.SpeakFlag.None,
                 true,

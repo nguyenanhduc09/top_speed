@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TopSpeed.Input;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Menu
 {
@@ -11,59 +12,59 @@ namespace TopSpeed.Menu
             var items = new List<MenuItem>
             {
                 BuildVolumeSlider(
-                    "Master audio volume",
+                    LocalizationService.Mark("Master audio volume"),
                     () => _settings.AudioVolumes.MasterPercent,
                     value => _settings.AudioVolumes.MasterPercent = value,
-                    "Controls the overall audio volume for the game. Set lower to reduce every sound category."),
+                    LocalizationService.Mark("Controls the overall audio volume for the game. Set lower to reduce every sound category.")),
                 BuildVolumeSlider(
-                    "Vehicle engine sounds",
+                    LocalizationService.Mark("Vehicle engine sounds"),
                     () => _settings.AudioVolumes.PlayerVehicleEnginePercent,
                     value => _settings.AudioVolumes.PlayerVehicleEnginePercent = value,
-                    "Controls your own engine and throttle sounds, including engine start and stop."),
+                    LocalizationService.Mark("Controls your own engine and throttle sounds, including engine start and stop.")),
                 BuildVolumeSlider(
-                    "Vehicle event sounds",
+                    LocalizationService.Mark("Vehicle event sounds"),
                     () => _settings.AudioVolumes.PlayerVehicleEventsPercent,
                     value => _settings.AudioVolumes.PlayerVehicleEventsPercent = value,
-                    "Controls events related to your own vehicle, such as horn, back-fire, and other vehicle events."),
+                    LocalizationService.Mark("Controls events related to your own vehicle, such as horn, back-fire, and other vehicle events.")),
                 BuildVolumeSlider(
-                    "Other vehicles engine sounds",
+                    LocalizationService.Mark("Other vehicles engine sounds"),
                     () => _settings.AudioVolumes.OtherVehicleEnginePercent,
                     value => _settings.AudioVolumes.OtherVehicleEnginePercent = value,
-                    "Controls engine-related sounds for bots and other players, including engine start and stop."),
+                    LocalizationService.Mark("Controls engine-related sounds for bots and other players, including engine start and stop.")),
                 BuildVolumeSlider(
-                    "Other vehicles event sounds",
+                    LocalizationService.Mark("Other vehicles event sounds"),
                     () => _settings.AudioVolumes.OtherVehicleEventsPercent,
                     value => _settings.AudioVolumes.OtherVehicleEventsPercent = value,
-                    "Controls horns, crashes, bumps, brakes, and similar event sounds for bots and other players."),
+                    LocalizationService.Mark("Controls horns, crashes, bumps, brakes, and similar event sounds for bots and other players.")),
                 BuildVolumeSlider(
-                    "Surface loop sounds",
+                    LocalizationService.Mark("Surface loop sounds"),
                     () => _settings.AudioVolumes.SurfaceLoopsPercent,
                     value => _settings.AudioVolumes.SurfaceLoopsPercent = value,
-                    "Controls road and surface loops like asphalt, gravel, etc."),
+                    LocalizationService.Mark("Controls road and surface loops like asphalt, gravel, etc.")),
                 BuildVolumeSlider(
-                    "Radio volume",
+                    LocalizationService.Mark("Radio volume"),
                     () => _settings.AudioVolumes.RadioPercent,
                     value => _settings.AudioVolumes.RadioPercent = value,
-                    "Controls radio playback volume from other players only. Your own radio playback is not affected."),
+                    LocalizationService.Mark("Controls radio playback volume from other players only. Your own radio playback is not affected.")),
                 BuildVolumeSlider(
-                    "Ambients and sound sources",
+                    LocalizationService.Mark("Ambients and sound sources"),
                     () => _settings.AudioVolumes.AmbientsAndSourcesPercent,
                     value => _settings.AudioVolumes.AmbientsAndSourcesPercent = value,
-                    "Controls track ambients, weather loops, noise sounds, and custom track sound sources."),
+                    LocalizationService.Mark("Controls track ambients, weather loops, noise sounds, and custom track sound sources.")),
                 BuildVolumeSlider(
-                    "Music volume",
+                    LocalizationService.Mark("Music volume"),
                     () => _settings.AudioVolumes.MusicPercent,
                     value =>
                     {
                         _settings.AudioVolumes.MusicPercent = value;
                         _settings.SyncMusicVolumeFromAudioCategories();
                     },
-                    "Controls menu and race music volume. This stays synchronized with the menu music volume setting."),
+                    LocalizationService.Mark("Controls menu and race music volume. This stays synchronized with the menu music volume setting.")),
                 BuildVolumeSlider(
-                    "Online server event sounds",
+                    LocalizationService.Mark("Online server event sounds"),
                     () => _settings.AudioVolumes.OnlineServerEventsPercent,
                     value => _settings.AudioVolumes.OnlineServerEventsPercent = value,
-                    "Controls server and multiplayer event sounds such as connection and other events."),
+                    LocalizationService.Mark("Controls server and multiplayer event sounds such as connection and other events.")),
                 BackItem()
             };
 
@@ -84,7 +85,9 @@ namespace TopSpeed.Menu
                     _settings.SyncMusicVolumeFromAudioCategories();
                 }),
                 onChanged: _ => _audio.ApplyAudioSettings(),
-                hint: $"{hint} Use LEFT or RIGHT to change by 1, PAGE UP or PAGE DOWN to change by 10, HOME for maximum, END for minimum.");
+                hint: LocalizationService.Format(
+                    LocalizationService.Mark("{0} Use LEFT or RIGHT to change by 1, PAGE UP or PAGE DOWN to change by 10, HOME for maximum, END for minimum."),
+                    hint));
         }
     }
 }

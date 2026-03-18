@@ -2,6 +2,7 @@ using System;
 using SharpDX.DirectInput;
 using TopSpeed.Core;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Race;
 
@@ -99,7 +100,7 @@ namespace TopSpeed.Game
 
             if (_session != null)
             {
-                TrySendSession(_session.SendPlayerState(PlayerState.NotReady), "not-ready state");
+                TrySendSession(_session.SendPlayerState(PlayerState.NotReady));
                 _state = AppState.Menu;
                 _multiplayerCoordinator.ShowMultiplayerMenuAfterRace();
             }

@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Network.Live
@@ -45,7 +46,7 @@ namespace TopSpeed.Network.Live
             ClearSource();
             if (!Source.TryOpen(mediaPath, out var source))
             {
-                error = "Failed to open local radio media for live streaming.";
+                error = LocalizationService.Mark("Failed to open local radio media for live streaming.");
                 return false;
             }
 
@@ -115,7 +116,7 @@ namespace TopSpeed.Network.Live
             {
                 if (!_session.SendLiveStart(_streamId, _encoder.Profile))
                 {
-                    error = "Network send failed while sending live start.";
+                    error = LocalizationService.Mark("Network send failed while sending live start.");
                     return false;
                 }
 
@@ -129,7 +130,7 @@ namespace TopSpeed.Network.Live
                 _frameClock -= FrameSeconds;
                 if (!_source.TryRead(out var samples))
                 {
-                    error = "Live streaming stopped because media decoding failed.";
+                    error = LocalizationService.Mark("Live streaming stopped because media decoding failed.");
                     return false;
                 }
 
@@ -142,13 +143,13 @@ namespace TopSpeed.Network.Live
 
                 if (!_encoder.TryEncode(in pcm, out var frame))
                 {
-                    error = "Live streaming stopped because Opus encoding failed.";
+                    error = LocalizationService.Mark("Live streaming stopped because Opus encoding failed.");
                     return false;
                 }
 
                 if (!_session.SendLiveFrame(_streamId, in frame))
                 {
-                    error = "Network send failed while sending live frame.";
+                    error = LocalizationService.Mark("Network send failed while sending live frame.");
                     return false;
                 }
 
@@ -172,7 +173,7 @@ namespace TopSpeed.Network.Live
 
             if (!_session.SendLiveStop(_streamId))
             {
-                error = "Network send failed while sending live stop.";
+                error = LocalizationService.Mark("Network send failed while sending live stop.");
                 return false;
             }
 

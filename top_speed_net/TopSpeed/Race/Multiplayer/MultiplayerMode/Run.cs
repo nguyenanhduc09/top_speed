@@ -1,4 +1,5 @@
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Race.Events;
 using TopSpeed.Vehicles;
@@ -27,7 +28,7 @@ namespace TopSpeed.Race
                 && _lastCarState != CarState.Crashed
                 && (_car.State == CarState.Crashing || _car.State == CarState.Crashed))
             {
-                TrySendRace(_session.SendPlayerCrashed(), "crash event");
+                TrySendRace(_session.SendPlayerCrashed());
             }
             _lastCarState = _car.State;
 
@@ -39,8 +40,8 @@ namespace TopSpeed.Race
                     {
                         _sentFinish = true;
                         _currentState = PlayerState.Finished;
-                        TrySendRace(_session.SendPlayerFinished(), "finish event");
-                        TrySendRace(_session.SendPlayerState(_currentState), "finished state");
+                        TrySendRace(_session.SendPlayerFinished());
+                        TrySendRace(_session.SendPlayerState(_currentState));
                     }
                     PushEvent(RaceEventType.RaceFinish, 1.0f + _speakTime - _elapsedTotal);
                 });
@@ -89,11 +90,10 @@ namespace TopSpeed.Race
                     _car.EngineRunning,
                     _car.Braking,
                     _car.Horning,
-                    _car.Backfiring(),
-                    LocalMediaLoaded,
-                    LocalMediaPlaying,
-                    LocalMediaId),
-                    "player state update");
+                _car.Backfiring(),
+                LocalMediaLoaded,
+                LocalMediaPlaying,
+                LocalMediaId));
             }
 
             if (CompleteFrame(elapsed))
@@ -108,11 +108,11 @@ namespace TopSpeed.Race
 
             _sentStart = true;
             _currentState = PlayerState.Racing;
-            TrySendRace(_session.SendPlayerStarted(), "race start event");
-            TrySendRace(_session.SendPlayerState(_currentState), "racing state");
+            TrySendRace(_session.SendPlayerStarted());
+            TrySendRace(_session.SendPlayerState(_currentState));
         }
 
-        private bool TrySendRace(bool sent, string action)
+        private bool TrySendRace(bool sent)
         {
             if (sent)
                 return true;
@@ -121,7 +121,7 @@ namespace TopSpeed.Race
                 return false;
 
             _sendFailureAnnounced = true;
-            SpeakText($"Network send failed while sending {action}.");
+            SpeakText(LocalizationService.Mark("Network send failed. Please check your connection."));
             return false;
         }
     }

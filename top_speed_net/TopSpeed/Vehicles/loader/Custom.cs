@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using TopSpeed.Core;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 using TopSpeed.Tracks;
 using TopSpeed.Vehicles.Parsing;
@@ -20,9 +21,12 @@ namespace TopSpeed.Vehicles.Loader
             if (!VehicleTsvParser.TryLoadFromFile(filePath, out var parsed, out var issues))
             {
                 var message = issues == null || issues.Count == 0
-                    ? "Unknown parse error."
+                    ? LocalizationService.Mark("Unknown parse error.")
                     : string.Join(" ", issues);
-                throw new InvalidDataException($"Failed to load custom vehicle '{filePath}'. {message}");
+                throw new InvalidDataException(LocalizationService.Format(
+                    LocalizationService.Mark("Failed to load custom vehicle '{0}'. {1}"),
+                    filePath,
+                    message));
             }
 
             var spec = Spec.FromCustom(parsed, weather);

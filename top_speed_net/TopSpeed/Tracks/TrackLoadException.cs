@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using TopSpeed.Data;
+using TopSpeed.Localization;
 
 namespace TopSpeed.Tracks
 {
     internal sealed class TrackLoadException : Exception
     {
         public TrackLoadException(string trackReference, IReadOnlyList<string> details)
-            : base($"Failed to load track '{trackReference}'.")
+            : base(LocalizationService.Format(
+                LocalizationService.Mark("Failed to load track '{0}'."),
+                trackReference))
         {
             TrackReference = trackReference ?? string.Empty;
             Details = details ?? Array.Empty<string>();
@@ -21,9 +24,11 @@ namespace TopSpeed.Tracks
         {
             var details = new List<string>();
             var label = string.IsNullOrWhiteSpace(trackReference)
-                ? "Track"
+                ? LocalizationService.Translate(LocalizationService.Mark("Track"))
                 : Path.GetFileName(trackReference);
-            details.Add($"Track: {label}");
+            details.Add(LocalizationService.Format(
+                LocalizationService.Mark("Track: {0}"),
+                label));
 
             if (issues != null)
             {
@@ -32,7 +37,7 @@ namespace TopSpeed.Tracks
             }
 
             if (details.Count == 1)
-                details.Add("Failed to load this track file.");
+                details.Add(LocalizationService.Mark("Failed to load this track file."));
 
             return new TrackLoadException(trackReference, details);
         }

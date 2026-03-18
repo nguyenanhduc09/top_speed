@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TopSpeed.Input;
 using TopSpeed.Menu;
 
+using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -16,8 +17,8 @@ namespace TopSpeed.Core.Multiplayer
                 var index = i;
                 var server = servers[i];
                 var displayName = string.IsNullOrWhiteSpace(server.Name)
-                    ? $"{server.Host}:{ResolveSavedServerPort(server)}"
-                    : $"{server.Name}, {server.Host}:{ResolveSavedServerPort(server)}";
+                    ? server.Host + ":" + ResolveSavedServerPort(server)
+                    : server.Name + ", " + server.Host + ":" + ResolveSavedServerPort(server);
 
                 items.Add(new MenuItem(
                     displayName,
@@ -25,13 +26,13 @@ namespace TopSpeed.Core.Multiplayer
                     onActivate: () => ConnectUsingSavedServer(index),
                     actions: new[]
                     {
-                        new MenuItemAction("Edit", () => OpenEditSavedServerForm(index)),
-                        new MenuItemAction("Delete", () => OpenDeleteSavedServerConfirm(index))
+                        new MenuItemAction(LocalizationService.Mark("Edit"), () => OpenEditSavedServerForm(index)),
+                        new MenuItemAction(LocalizationService.Mark("Delete"), () => OpenDeleteSavedServerConfirm(index))
                     }));
             }
 
-            items.Add(new MenuItem("Add a new server", MenuAction.None, onActivate: OpenAddSavedServerForm));
-            items.Add(new MenuItem("Go back", MenuAction.Back));
+            items.Add(new MenuItem(LocalizationService.Mark("Add a new server"), MenuAction.None, onActivate: OpenAddSavedServerForm));
+            items.Add(new MenuItem(LocalizationService.Mark("Go back"), MenuAction.Back));
             _menu.UpdateItems(MultiplayerMenuKeys.SavedServers, items, preserveSelection: true);
         }
 
@@ -68,7 +69,7 @@ namespace TopSpeed.Core.Multiplayer
             var host = (server.Host ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(host))
             {
-                _speech.Speak("Saved server host is empty.");
+                _speech.Speak(LocalizationService.Mark("Saved server host is empty."));
                 return;
             }
 
@@ -78,5 +79,8 @@ namespace TopSpeed.Core.Multiplayer
         }
     }
 }
+
+
+
 
 

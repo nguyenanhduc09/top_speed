@@ -1,4 +1,5 @@
 using System;
+using TopSpeed.Localization;
 using TopSpeed.Speech;
 
 namespace TopSpeed.Core.Multiplayer
@@ -8,7 +9,7 @@ namespace TopSpeed.Core.Multiplayer
         private void UpdateSavedServerDraftName()
         {
             _promptTextInput(
-                "Enter the server name.",
+                LocalizationService.Mark("Enter the server name."),
                 _state.SavedServers.Draft.Name,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -25,7 +26,7 @@ namespace TopSpeed.Core.Multiplayer
         private void UpdateSavedServerDraftHost()
         {
             _promptTextInput(
-                "Enter the server IP address or host name.",
+                LocalizationService.Mark("Enter the server IP address or host name."),
                 _state.SavedServers.Draft.Host,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -43,7 +44,7 @@ namespace TopSpeed.Core.Multiplayer
         {
             var current = _state.SavedServers.Draft.Port > 0 ? _state.SavedServers.Draft.Port.ToString() : string.Empty;
             _promptTextInput(
-                "Enter the server port, or leave empty for default.",
+                LocalizationService.Mark("Enter the server port, or leave empty for default."),
                 current,
                 SpeechService.SpeakFlag.None,
                 true,
@@ -62,7 +63,7 @@ namespace TopSpeed.Core.Multiplayer
 
                     if (!int.TryParse(trimmed, out var port) || port < 1 || port > 65535)
                     {
-                        _speech.Speak("Invalid port. Enter a number between 1 and 65535.");
+                        _speech.Speak(LocalizationService.Mark("Invalid port. Enter a number between 1 and 65535."));
                         return;
                     }
 

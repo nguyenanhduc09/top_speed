@@ -1,4 +1,5 @@
 using TopSpeed.Network;
+using TopSpeed.Localization;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Game
@@ -14,7 +15,7 @@ namespace TopSpeed.Game
 
         private bool HandleMpDisconnectPacket(IncomingPacket packet)
         {
-            var message = "Disconnected from server.";
+            var message = LocalizationService.Mark("Disconnected from server.");
             if (ClientPacketSerializer.TryReadDisconnect(packet.Payload, out var disconnectMessage) &&
                 !string.IsNullOrWhiteSpace(disconnectMessage))
             {
