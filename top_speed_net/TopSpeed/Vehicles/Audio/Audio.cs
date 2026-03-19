@@ -17,37 +17,8 @@ namespace TopSpeed.Vehicles
 
         private void UpdateEngineFreqManual()
         {
-            var driveGear = GetDriveGear();
-            var gearRange = _engine.GetGearRangeKmh(driveGear);
-            var gearMin = _engine.GetGearMinSpeedKmh(driveGear);
-
-            if (driveGear == FirstForwardGear)
-            {
-                if (_speed < (4.0f / 3.0f) * gearRange)
-                {
-                    _frequency = _idleFreq + (int)((_speed * 3.0f / (2.0f * gearRange)) * (_topFreq - _idleFreq));
-                }
-                else
-                {
-                    _frequency = _idleFreq + 2 * (_topFreq - _idleFreq);
-                }
-            }
-            else
-            {
-                var shiftPoint = gearMin + ((2.0f / 3.0f) * gearRange);
-                if (shiftPoint > 0f)
-                    _frequency = (int)((_speed / shiftPoint) * _topFreq);
-                else
-                    _frequency = _idleFreq;
-
-                if (_frequency > 2 * _topFreq)
-                    _frequency = 2 * _topFreq;
-                if (_frequency < _idleFreq / 2)
-                    _frequency = _idleFreq / 2;
-            }
-
-            if (_switchingGear != 0)
-                _frequency = (2 * _prevFrequency + _frequency) / 3;
+            var idleRpm = Math.Max(1f, _engine.IdleRpm);
+            _frequency = (int)(_idleFreq * (_engine.Rpm / idleRpm));
 
             if (_frequency == _prevFrequency)
                 return;

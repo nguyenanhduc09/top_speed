@@ -105,6 +105,10 @@ namespace TopSpeed.Vehicles
         }
 
         public float Rpm => _rpm;
+        public float IdleRpm => _idleRpm;
+        public float MaxRpm => _maxRpm;
+        public float RevLimiter => _revLimiter;
+        public float AutoShiftRpm => _autoShiftRpm;
         public float Horsepower => _grossHorsepower;
         public float GrossHorsepower => _grossHorsepower;
         public float NetHorsepower => _netHorsepower;
