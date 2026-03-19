@@ -65,7 +65,6 @@ namespace TopSpeed.Vehicles
             _frequency = _idleFreq;
             _prevBrakeFrequency = 0;
             _brakeFrequency = 0;
-            _switchingGear = 0;
             _state = ComputerState.Starting;
         }
 

@@ -1,6 +1,5 @@
 using System;
 using TopSpeed.Audio;
-using TopSpeed.Common;
 using TopSpeed.Data;
 using TopSpeed.Input;
 using TopSpeed.Tracks;
@@ -17,99 +16,14 @@ namespace TopSpeed.Vehicles
 
         private void UpdateEngineFreqManual()
         {
-            var idleRpm = Math.Max(1f, _engine.IdleRpm);
-            var revLimiter = Math.Max(idleRpm + 1f, _engine.RevLimiter);
-            var rpmNormalized = (_engine.Rpm - idleRpm) / (revLimiter - idleRpm);
-            if (rpmNormalized < 0f)
-                rpmNormalized = 0f;
-            else if (rpmNormalized > 1f)
-                rpmNormalized = 1f;
+            _frequency = EnginePitch.FromRpm(
+                _engine.Rpm,
+                _engine.IdleRpm,
+                _engine.RevLimiter,
+                _idleFreq,
+                _topFreq,
+                _pitchCurveExponent);
 
-            var curved = (float)Math.Pow(rpmNormalized, _pitchCurveExponent);
-            var minFrequency = Math.Min(_idleFreq, _topFreq);
-            var maxFrequency = Math.Max(_idleFreq, _topFreq);
-            if (maxFrequency <= minFrequency)
-            {
-                _frequency = minFrequency;
-            }
-            else
-            {
-                _frequency = minFrequency + (int)Math.Round(curved * (maxFrequency - minFrequency));
-                if (_frequency < minFrequency)
-                    _frequency = minFrequency;
-                else if (_frequency > maxFrequency)
-                    _frequency = maxFrequency;
-            }
-
-            if (_frequency == _prevFrequency)
-                return;
-
-            _soundEngine.SetFrequency(_frequency);
-            if (_soundThrottle != null)
-            {
-                if ((int)_throttleVolume != (int)_prevThrottleVolume)
-                {
-                    SetPlayerEngineVolumePercent(_soundThrottle, (int)_throttleVolume);
-                    _prevThrottleVolume = _throttleVolume;
-                }
-                _soundThrottle.SetFrequency(_frequency);
-            }
-            _prevFrequency = _frequency;
-        }
-
-        private void UpdateEngineFreqForGear(int gear)
-        {
-            var clampedGear = gear;
-            if (clampedGear > _gears)
-                clampedGear = _gears;
-            if (clampedGear < 1)
-                clampedGear = 1;
-
-            var gearRange = _engine.GetGearRangeKmh(clampedGear);
-            var gearMin = _engine.GetGearMinSpeedKmh(clampedGear);
-
-            if (clampedGear == 1)
-            {
-                var gearSpeed = gearRange <= 0f ? 0f : Math.Min(1.0f, _speed / gearRange);
-                _frequency = (int)(gearSpeed * (_topFreq - _idleFreq)) + _idleFreq;
-            }
-            else
-            {
-                var gearSpeed = (_speed - gearMin) / (float)gearRange;
-                if (gearSpeed <= 0f)
-                {
-                    _frequency = _idleFreq;
-                    if (_soundBackfireVariants.Length > 0 && _backfirePlayedAuto)
-                        _backfirePlayedAuto = false;
-                }
-                else
-                {
-                    if (gearSpeed > 1.0f)
-                        gearSpeed = 1.0f;
-                    if (gearSpeed < 0.07f)
-                    {
-                        _frequency = (int)(((0.07f - gearSpeed) / 0.07f) * (_topFreq - _shiftFreq) + _shiftFreq);
-                        if (_soundBackfireVariants.Length > 0)
-                        {
-                            if (!_backfirePlayedAuto)
-                            {
-                                if (Algorithm.RandomInt(5) == 1 && !AnyBackfirePlaying())
-                                    PlayRandomBackfire();
-                            }
-                            _backfirePlayedAuto = true;
-                        }
-                    }
-                    else
-                    {
-                        _frequency = (int)(gearSpeed * (_topFreq - _shiftFreq) + _shiftFreq);
-                        if (_soundBackfireVariants.Length > 0 && _backfirePlayedAuto)
-                            _backfirePlayedAuto = false;
-                    }
-                }
-            }
-
-            if (_switchingGear != 0)
-                _frequency = (2 * _prevFrequency + _frequency) / 3;
             if (_frequency == _prevFrequency)
                 return;
 

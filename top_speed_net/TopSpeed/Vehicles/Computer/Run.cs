@@ -149,9 +149,6 @@ namespace TopSpeed.Vehicles
                             _debugSpeak?.Invoke($"Debug: bot {_playerNumber + 1} restart trigger.");
                             Start();
                             break;
-                        case BotEventType.InGear:
-                            _switchingGear = 0;
-                            break;
                         case BotEventType.StopHorn:
                             _horning = false;
                             break;

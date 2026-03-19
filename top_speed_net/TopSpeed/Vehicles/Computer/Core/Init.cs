@@ -42,7 +42,6 @@ namespace TopSpeed.Vehicles
             _surface = TrackSurface.Asphalt;
             _gear = 1;
             _state = ComputerState.Stopped;
-            _switchingGear = 0;
             _horning = false;
             _difficulty = (int)settings.Difficulty;
             _prevFrequency = 0;
@@ -108,6 +107,7 @@ namespace TopSpeed.Vehicles
             _idleFreq = definition.IdleFreq;
             _topFreq = definition.TopFreq;
             _shiftFreq = definition.ShiftFreq;
+            _pitchCurveExponent = VehicleDefinition.ClampPitchCurveExponent(definition.PitchCurveExponent);
             _gears = definition.Gears;
             _steering = definition.Steering;
             _frequency = _idleFreq;

@@ -48,7 +48,6 @@ namespace TopSpeed.Vehicles
         private float _positionY;
         private bool _manualTransmission;
         private bool _backfirePlayed;
-        private bool _backfirePlayedAuto;
         private int _hasWipers;
         private int _switchingGear;
         private float _autoShiftCooldown;

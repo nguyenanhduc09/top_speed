@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using TopSpeed.Audio;
-using TopSpeed.Common;
 using TopSpeed.Input;
 using TS.Audio;
 
@@ -11,41 +10,13 @@ namespace TopSpeed.Vehicles
     {
         private void UpdateEngineFreq()
         {
-            var gearForSound = _engine.GetGearForSpeedKmh(_speed);
-            var gearRange = _engine.GetGearRangeKmh(gearForSound);
-            var gearMin = _engine.GetGearMinSpeedKmh(gearForSound);
-
-            if (gearForSound == 1)
-            {
-                var gearSpeed = gearRange <= 0f ? 0f : Math.Min(1.0f, _speed / gearRange);
-                _frequency = (int)(gearSpeed * (_topFreq - _idleFreq)) + _idleFreq;
-            }
-            else
-            {
-                var gearSpeed = (_speed - gearMin) / (float)gearRange;
-                if (gearSpeed < 0.07f)
-                {
-                    _frequency = (int)(((0.07f - gearSpeed) / 0.07f) * (_topFreq - _shiftFreq) + _shiftFreq);
-                    if (_soundBackfire != null)
-                    {
-                        if (!_backfirePlayedAuto)
-                        {
-                            if (Algorithm.RandomInt(5) == 1 && !_soundBackfire.IsPlaying)
-                                _soundBackfire.Play(loop: false);
-                        }
-                        _backfirePlayedAuto = true;
-                    }
-                }
-                else
-                {
-                    _frequency = (int)(gearSpeed * (_topFreq - _shiftFreq) + _shiftFreq);
-                    if (_soundBackfire != null && _backfirePlayedAuto)
-                        _backfirePlayedAuto = false;
-                }
-            }
-
-            if (_switchingGear != 0)
-                _frequency = (_frequency + _prevFrequency * 2) / 3;
+            _frequency = EnginePitch.FromRpm(
+                _engine.Rpm,
+                _engine.IdleRpm,
+                _engine.RevLimiter,
+                _idleFreq,
+                _topFreq,
+                _pitchCurveExponent);
 
             if (_frequency != _prevFrequency)
             {

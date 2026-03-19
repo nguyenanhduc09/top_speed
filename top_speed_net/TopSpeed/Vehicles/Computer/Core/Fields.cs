@@ -31,7 +31,6 @@ namespace TopSpeed.Vehicles
         private float _speed;
         private float _positionX;
         private float _positionY;
-        private int _switchingGear;
         private float _autoShiftCooldown;
         private float _trackLength;
 
@@ -69,6 +68,7 @@ namespace TopSpeed.Vehicles
         private int _idleFreq;
         private int _topFreq;
         private int _shiftFreq;
+        private float _pitchCurveExponent;
         private int _gears;
         private float _steering;
 
@@ -91,7 +91,6 @@ namespace TopSpeed.Vehicles
         private int _difficulty;
         private bool _finished;
         private bool _horning;
-        private bool _backfirePlayedAuto;
         private bool _networkBackfireActive;
         private bool _remoteEngineStartPending;
         private float _remoteEngineStartRemaining;
