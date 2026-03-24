@@ -4,8 +4,12 @@ namespace TopSpeed.Input
 {
     internal sealed partial class RaceInput
     {
+        private const float KeyboardClutchRampSeconds = 0.35f;
+
         private void UpdateSimulatedInputs(float deltaSeconds)
         {
+            UpdateSimulatedClutch(deltaSeconds);
+
             if (_settings.KeyboardProgressiveRate == KeyboardProgressiveRate.Off)
             {
                 _simThrottle = _lastState.IsDown(_kbThrottle) ? 1f : 0f;
@@ -65,6 +69,22 @@ namespace TopSpeed.Input
             {
                 _simSteer = Math.Min(0f, _simSteer + delta);
             }
+        }
+
+        private void UpdateSimulatedClutch(float deltaSeconds)
+        {
+            var clutchDown = IsClutchKeyDown();
+            if (deltaSeconds <= 0f)
+            {
+                _simClutch = clutchDown ? 1f : 0f;
+                return;
+            }
+
+            var delta = deltaSeconds / KeyboardClutchRampSeconds;
+            if (clutchDown)
+                _simClutch = Math.Min(1f, _simClutch + delta);
+            else
+                _simClutch = Math.Max(0f, _simClutch - delta);
         }
 
         private static float GetProgressiveRampSeconds(KeyboardProgressiveRate rate)

@@ -138,6 +138,7 @@ namespace TopSpeed.Input
         private float _simThrottle;
         private float _simBrake;
         private float _simSteer;
+        private float _simClutch;
         private bool UseJoystick => _deviceMode != InputDeviceMode.Keyboard && _joystickAvailable;
         private bool UseKeyboard => _deviceMode != InputDeviceMode.Joystick || !_joystickAvailable;
 

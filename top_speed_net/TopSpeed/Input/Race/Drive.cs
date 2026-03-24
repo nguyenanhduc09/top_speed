@@ -69,7 +69,7 @@ namespace TopSpeed.Input
             if (!UseKeyboard)
                 return joystickClutch;
 
-            var keyboardClutch = IsClutchKeyDown() ? 100 : 0;
+            var keyboardClutch = (int)Math.Round(_simClutch * 100f);
             return Math.Max(joystickClutch, keyboardClutch);
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using SharpDX;
 using SharpDX.DirectInput;
 using TopSpeed.Input.Devices.Joystick;
@@ -21,6 +22,7 @@ namespace TopSpeed.Input
             {
                 _current.Set(key, true);
             }
+            ApplyModifierFallbacks(state);
 
             if (!_joystickEnabled)
                 return;
@@ -112,5 +114,68 @@ namespace TopSpeed.Input
                 return false;
             }
         }
+
+        private void ApplyModifierFallbacks(KeyboardState state)
+        {
+            // Some setups intermittently miss right-side modifiers in DirectInput state while
+            // chorded with arrows. Use Win32 async key state as fallback.
+            var anyShift = state.IsPressed(Key.LeftShift)
+                || state.IsPressed(Key.RightShift)
+                || IsVirtualKeyDown(VkShift);
+            var leftShift = state.IsPressed(Key.LeftShift) || IsVirtualKeyDown(VkLeftShift);
+            var rightShift = state.IsPressed(Key.RightShift) || IsVirtualKeyDown(VkRightShift);
+            if (anyShift && !leftShift && !rightShift)
+            {
+                leftShift = true;
+                rightShift = true;
+            }
+
+            var anyCtrl = state.IsPressed(Key.LeftControl)
+                || state.IsPressed(Key.RightControl)
+                || IsVirtualKeyDown(VkControl);
+            var leftCtrl = state.IsPressed(Key.LeftControl) || IsVirtualKeyDown(VkLeftControl);
+            var rightCtrl = state.IsPressed(Key.RightControl) || IsVirtualKeyDown(VkRightControl);
+            if (anyCtrl && !leftCtrl && !rightCtrl)
+            {
+                leftCtrl = true;
+                rightCtrl = true;
+            }
+
+            var anyAlt = state.IsPressed(Key.LeftAlt)
+                || state.IsPressed(Key.RightAlt)
+                || IsVirtualKeyDown(VkMenu);
+            var leftAlt = state.IsPressed(Key.LeftAlt) || IsVirtualKeyDown(VkLeftMenu);
+            var rightAlt = state.IsPressed(Key.RightAlt) || IsVirtualKeyDown(VkRightMenu);
+            if (anyAlt && !leftAlt && !rightAlt)
+            {
+                leftAlt = true;
+                rightAlt = true;
+            }
+
+            _current.Set(Key.LeftShift, leftShift);
+            _current.Set(Key.RightShift, rightShift);
+            _current.Set(Key.LeftControl, leftCtrl);
+            _current.Set(Key.RightControl, rightCtrl);
+            _current.Set(Key.LeftAlt, leftAlt);
+            _current.Set(Key.RightAlt, rightAlt);
+        }
+
+        private static bool IsVirtualKeyDown(int vk)
+        {
+            return (GetAsyncKeyState(vk) & 0x8000) != 0;
+        }
+
+        private const int VkShift = 0x10;
+        private const int VkControl = 0x11;
+        private const int VkMenu = 0x12;
+        private const int VkLeftShift = 0xA0;
+        private const int VkRightShift = 0xA1;
+        private const int VkLeftControl = 0xA2;
+        private const int VkRightControl = 0xA3;
+        private const int VkLeftMenu = 0xA4;
+        private const int VkRightMenu = 0xA5;
+
+        [DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(int vKey);
     }
 }
