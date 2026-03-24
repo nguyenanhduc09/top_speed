@@ -31,6 +31,9 @@ namespace TopSpeed.Core
                 return (false, default);
             }
 
+            if (issues != null && issues.Count > 0)
+                AppendIssues(file, issues);
+
             var info = new CustomVehicleInfo(
                 file,
                 string.IsNullOrWhiteSpace(parsed.Meta.Name) ? LocalizationService.Mark("Custom vehicle") : parsed.Meta.Name,

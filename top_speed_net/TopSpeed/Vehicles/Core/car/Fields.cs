@@ -47,6 +47,7 @@ namespace TopSpeed.Vehicles
         private float _positionX;
         private float _positionY;
         private bool _manualTransmission;
+        private bool _engineStalled;
         private bool _backfirePlayed;
         private int _hasWipers;
         private int _switchingGear;
@@ -85,6 +86,11 @@ namespace TopSpeed.Vehicles
         private float _engineFrictionTorqueNm;
         private float _drivelineCouplingRate;
         private float _lastDriveRpm;
+        private float _drivelineCouplingFactor = 1f;
+        private float _stallTimer;
+        private float _cvtRatio;
+        private float _effectiveDriveRatioOverride;
+        private float _automaticCreepAccelMps2;
         private float _lateralGripCoefficient;
         private float _highSpeedStability;
         private float _wheelbaseM;
@@ -164,6 +170,11 @@ namespace TopSpeed.Vehicles
         private EngineModel _engine = default!;
         private Config _powertrainConfiguration = default!;
         private TransmissionPolicy _transmissionPolicy = TransmissionPolicy.Default;
+        private AutomaticDrivelineTuning _automaticTuning = AutomaticDrivelineTuning.Default;
+        private TransmissionType _primaryTransmissionType = TransmissionType.Atc;
+        private TransmissionType[] _supportedTransmissionTypes = new[] { TransmissionType.Atc };
+        private TransmissionType _activeTransmissionType = TransmissionType.Atc;
+        private DrivelineState _drivelineState = DrivelineState.Locked;
     }
 }
 

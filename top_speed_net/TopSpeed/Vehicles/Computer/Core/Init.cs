@@ -98,6 +98,11 @@ namespace TopSpeed.Vehicles
             _engineInertiaKgm2 = Math.Max(0.01f, definition.EngineInertiaKgm2);
             _engineFrictionTorqueNm = Math.Max(0f, definition.EngineFrictionTorqueNm);
             _drivelineCouplingRate = Math.Max(0.1f, definition.DrivelineCouplingRate);
+            _activeTransmissionType = definition.PrimaryTransmissionType;
+            _automaticTuning = definition.AutomaticTuning;
+            _automaticCouplingFactor = 1f;
+            _cvtRatio = _automaticTuning.Cvt.RatioMax;
+            _effectiveDriveRatio = 0f;
             _lateralGripCoefficient = Math.Max(0.1f, definition.LateralGripCoefficient);
             _highSpeedStability = Math.Max(0f, Math.Min(1.0f, definition.HighSpeedStability));
             _wheelbaseM = Math.Max(0.5f, definition.WheelbaseM);
@@ -187,7 +192,9 @@ namespace TopSpeed.Vehicles
                 _gears,
                 torqueCurve,
                 definition.GearRatios,
-                definition.TransmissionPolicy);
+                definition.TransmissionPolicy,
+                definition.PrimaryTransmissionType,
+                definition.AutomaticTuning);
 
             _soundEngine = CreateRequiredSound(definition.GetSoundPath(VehicleAction.Engine), "engine", looped: true);
             _soundStart = CreateRequiredSound(definition.GetSoundPath(VehicleAction.Start), "start");

@@ -1,7 +1,6 @@
 using System;
-using TopSpeed.Vehicles;
 
-namespace TopSpeed.Bots
+namespace TopSpeed.Vehicles
 {
     public readonly struct AutomaticShiftDecision
     {
@@ -138,7 +137,6 @@ namespace TopSpeed.Bots
                 return false;
             }
 
-            // Avoid automatic upshifts that immediately put the vehicle into a decelerating gear.
             if (input.UpAccel < policy.MinUpshiftNetAccelerationMps2 && !nearTopSpeed)
                 return false;
 
@@ -166,7 +164,6 @@ namespace TopSpeed.Bots
                 return false;
             }
 
-            // If next gear would immediately decelerate strongly, don't force the upshift unless we're already near top speed.
             if (input.UpAccel < policy.MinUpshiftNetAccelerationMps2 && !nearTopSpeed)
                 return false;
 

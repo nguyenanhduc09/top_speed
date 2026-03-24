@@ -17,6 +17,7 @@ namespace TopSpeed.Vehicles.Control
                 _input.GetSteering(),
                 _input.GetThrottle(),
                 _input.GetBrake(),
+                _input.GetClutch(),
                 _input.GetHorn(),
                 _input.GetGearUp(),
                 _input.GetGearDown(),

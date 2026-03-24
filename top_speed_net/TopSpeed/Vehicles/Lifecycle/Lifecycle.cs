@@ -56,6 +56,7 @@ namespace TopSpeed.Vehicles
             _surfaceFrequency = 0;
             _switchingGear = 0;
             _throttleVolume = 0.0f;
+            ClearStallState();
             _soundAsphalt.SetFrequency(_surfaceFrequency);
             _soundGravel.SetFrequency(_surfaceFrequency);
             _soundWater.SetFrequency(_surfaceFrequency);
@@ -64,6 +65,17 @@ namespace TopSpeed.Vehicles
             _stickReleased = true;
             SetState(CarState.Starting);
             _listener?.OnStart();
+            _vibration?.PlayEffect(VibrationEffectType.Start);
+            _vibration?.PlayEffect(VibrationEffectType.Engine);
+        }
+
+        public virtual void RestartFromStall()
+        {
+            var delay = Math.Max(0f, _soundStart.GetLengthSeconds() - 0.1f);
+            PushEvent(EventType.CarStart, delay);
+            _soundStart.Restart(loop: false);
+            _switchingGear = 0;
+            _throttleVolume = 0.0f;
             _vibration?.PlayEffect(VibrationEffectType.Start);
             _vibration?.PlayEffect(VibrationEffectType.Engine);
         }
@@ -87,6 +99,7 @@ namespace TopSpeed.Vehicles
             _surfaceFrequency = 0;
             _switchingGear = 0;
             _throttleVolume = 0.0f;
+            ClearStallState();
             _soundAsphalt.SetFrequency(_surfaceFrequency);
             _soundGravel.SetFrequency(_surfaceFrequency);
             _soundWater.SetFrequency(_surfaceFrequency);
@@ -158,6 +171,7 @@ namespace TopSpeed.Vehicles
             _soundHorn.SetPanPercent(0);
             _gear = 1;
             _switchingGear = 0;
+            ClearStallState();
             SetState(CarState.Crashing);
             PushEvent(EventType.CrashComplete, _soundCrash.GetLengthSeconds() + 1.25f);
             _listener?.OnCrash();

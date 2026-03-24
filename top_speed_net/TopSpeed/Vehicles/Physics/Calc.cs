@@ -44,6 +44,7 @@ namespace TopSpeed.Vehicles
             bool inReverse,
             bool reverseBlockedAtLapStart,
             float surfaceTractionMod,
+            float drivelineCouplingFactor,
             ref float longitudinalGripFactor)
         {
             if (reverseBlockedAtLapStart)
@@ -69,7 +70,9 @@ namespace TopSpeed.Vehicles
                     speedMpsCurrent,
                     throttle,
                     surfaceTractionMod,
-                    longitudinalGripFactor);
+                    longitudinalGripFactor,
+                    _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
+            accelMps2 *= Math.Max(0f, Math.Min(1f, drivelineCouplingFactor));
             accelMps2 *= (_factor1 / 100f);
             var newSpeedMps = speedMpsCurrent + (accelMps2 * elapsed);
             if (newSpeedMps < 0f)
@@ -79,7 +82,9 @@ namespace TopSpeed.Vehicles
             var wheelCircumference = _wheelRadiusM * 2.0f * (float)Math.PI;
             if (wheelCircumference > 0f)
             {
-                var gearRatio = inReverse ? _reverseGearRatio : _engine.GetGearRatio(GetDriveGear());
+                var gearRatio = inReverse
+                    ? _reverseGearRatio
+                    : (_effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : _engine.GetGearRatio(GetDriveGear()));
                 var coupledRpm = (newSpeedMps / wheelCircumference) * 60f * gearRatio * _finalDriveRatio;
                 _lastDriveRpm = Math.Max(_idleRpm, Math.Min(_revLimiter, coupledRpm));
             }
@@ -99,6 +104,8 @@ namespace TopSpeed.Vehicles
             var engineBrakeDecel = CalculateEngineBrakingDecel(surfaceDecelMod);
             var totalDecel = _thrust < -10 ? (brakeDecel + engineBrakeDecel) : engineBrakeDecel;
             _speedDiff = -totalDecel * elapsed;
+            if (_automaticCreepAccelMps2 > 0f)
+                _speedDiff += _automaticCreepAccelMps2 * elapsed * 3.6f;
             _lastDriveRpm = 0f;
         }
 
@@ -157,6 +164,13 @@ namespace TopSpeed.Vehicles
 
         private void SyncEngineFromSpeed(float elapsed)
         {
+            if (_engineStalled)
+            {
+                _engine.UpdateKinematicsOnly(_speed, elapsed);
+                _engine.StopEngine();
+                return;
+            }
+
             var couplingMode = ResolveEngineCouplingMode();
             _engine.SyncFromSpeed(
                 _speed,
@@ -165,16 +179,27 @@ namespace TopSpeed.Vehicles
                 _currentThrottle,
                 _gear == ReverseGear,
                 _reverseGearRatio,
-                couplingMode);
-            if (couplingMode == EngineCouplingMode.Blended && _lastDriveRpm > 0f && _lastDriveRpm > _engine.Rpm)
+                couplingMode,
+                _drivelineCouplingFactor,
+                _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
+            if (couplingMode == EngineCouplingMode.Blended
+                && _drivelineCouplingFactor > 0.65f
+                && _lastDriveRpm > 0f
+                && _lastDriveRpm > _engine.Rpm)
                 _engine.OverrideRpm(_lastDriveRpm);
         }
 
         private EngineCouplingMode ResolveEngineCouplingMode()
         {
-            if (_manualTransmission && _gear >= FirstForwardGear && _switchingGear == 0)
-                return EngineCouplingMode.Locked;
-            return EngineCouplingMode.Blended;
+            switch (_drivelineState)
+            {
+                case DrivelineState.Locked:
+                    return EngineCouplingMode.Locked;
+                case DrivelineState.Disengaged:
+                    return EngineCouplingMode.Disengaged;
+                default:
+                    return EngineCouplingMode.Blended;
+            }
         }
 
         private void UpdateBackfireStateAfterDrive()

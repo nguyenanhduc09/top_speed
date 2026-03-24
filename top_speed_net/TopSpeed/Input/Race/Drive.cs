@@ -60,6 +60,19 @@ namespace TopSpeed.Input
             return Math.Min(joystickBrake, keyboardBrake);
         }
 
+        public int GetClutch()
+        {
+            if (!_allowDrivingInput || _overlayInputBlocked)
+                return 0;
+
+            var joystickClutch = UseJoystick ? GetAxis(_clutch) : 0;
+            if (!UseKeyboard)
+                return joystickClutch;
+
+            var keyboardClutch = IsClutchKeyDown() ? 100 : 0;
+            return Math.Max(joystickClutch, keyboardClutch);
+        }
+
         public bool GetReverseRequested() => _allowDrivingInput && UseKeyboard && WasPressed(Key.Z);
 
         public bool GetForwardRequested() => _allowDrivingInput && UseKeyboard && WasPressed(Key.A);
@@ -71,6 +84,13 @@ namespace TopSpeed.Input
                 deadZone = 1;
 
             return Math.Abs(value) <= deadZone ? 0 : value;
+        }
+
+        private bool IsClutchKeyDown()
+        {
+            if (_kbClutch == Key.LeftShift || _kbClutch == Key.RightShift)
+                return _lastState.IsDown(Key.LeftShift) || _lastState.IsDown(Key.RightShift);
+            return _lastState.IsDown(_kbClutch);
         }
     }
 }

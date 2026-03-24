@@ -1,5 +1,4 @@
 using System;
-using TopSpeed.Bots;
 using TopSpeed.Physics.Powertrain;
 using TopSpeed.Vehicles.Events;
 
@@ -14,13 +13,21 @@ namespace TopSpeed.Vehicles
                 GetDriveGear(),
                 speedMps,
                 throttle,
-                _gear == ReverseGear);
+                _gear == ReverseGear,
+                _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
         }
 
         private void UpdateAutomaticGear(float elapsed, float speedMps, float throttle, float surfaceTractionMod, float longitudinalGripFactor)
         {
             if (_gears <= 1)
                 return;
+            if (EffectiveTransmissionType() == TransmissionType.Cvt)
+            {
+                _gear = FirstForwardGear;
+                _switchingGear = 0;
+                _autoShiftCooldown = 0f;
+                return;
+            }
 
             if (_autoShiftCooldown > 0f)
             {
@@ -28,13 +35,22 @@ namespace TopSpeed.Vehicles
                 return;
             }
 
-            var currentAccel = ComputeNetAccelForGear(_gear, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor);
-            var currentRpm = SpeedToRpm(speedMps, _gear);
+            var currentAccel = ComputeNetAccelForGear(
+                _gear,
+                speedMps,
+                throttle,
+                surfaceTractionMod,
+                longitudinalGripFactor,
+                _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
+            var currentRpm = SpeedToRpm(
+                speedMps,
+                _gear,
+                _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
             var upAccel = _gear < _gears
-                ? ComputeNetAccelForGear(_gear + 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor)
+                ? ComputeNetAccelForGear(_gear + 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor, null)
                 : float.NegativeInfinity;
             var downAccel = _gear > 1
-                ? ComputeNetAccelForGear(_gear - 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor)
+                ? ComputeNetAccelForGear(_gear - 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor, null)
                 : float.NegativeInfinity;
 
             var decision = AutomaticTransmissionLogic.Decide(
@@ -67,9 +83,15 @@ namespace TopSpeed.Vehicles
             _autoShiftCooldown = Math.Max(0f, cooldownSeconds);
         }
 
-        private float ComputeNetAccelForGear(int gear, float speedMps, float throttle, float surfaceTractionMod, float longitudinalGripFactor)
+        private float ComputeNetAccelForGear(
+            int gear,
+            float speedMps,
+            float throttle,
+            float surfaceTractionMod,
+            float longitudinalGripFactor,
+            float? driveRatioOverride)
         {
-            var rpm = SpeedToRpm(speedMps, gear);
+            var rpm = SpeedToRpm(speedMps, gear, driveRatioOverride);
             if (rpm <= 0f)
                 return float.NegativeInfinity;
             if (rpm > _revLimiter && gear < _gears)
@@ -80,12 +102,13 @@ namespace TopSpeed.Vehicles
                 speedMps,
                 throttle,
                 surfaceTractionMod,
-                longitudinalGripFactor);
+                longitudinalGripFactor,
+                driveRatioOverride);
         }
 
-        private float SpeedToRpm(float speedMps, int gear)
+        private float SpeedToRpm(float speedMps, int gear, float? driveRatioOverride = null)
         {
-            return Calculator.RpmAtSpeed(_powertrainConfiguration, speedMps, gear);
+            return Calculator.RpmAtSpeed(_powertrainConfiguration, speedMps, gear, driveRatioOverride);
         }
 
         private float CalculateEngineTorqueNm(float rpm)

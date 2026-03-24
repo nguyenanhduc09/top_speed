@@ -14,6 +14,7 @@ namespace TopSpeed.Vehicles
             _vibration?.StopEffect(VibrationEffectType.Start);
             _soundEngine.Play(loop: true);
             _soundWipers?.Play(loop: true);
+            ClearStallState();
             _engine.StartEngine();
             SetState(CarState.Running);
         }

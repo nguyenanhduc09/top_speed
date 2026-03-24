@@ -102,10 +102,10 @@ namespace TopSpeed.Core.Multiplayer
             {
                 var vehicleIndex = i;
                 var vehicleName = VehicleCatalog.Vehicles[i].Name;
-                items.Add(new MenuItem(vehicleName, MenuAction.None, nextMenuId: MultiplayerMenuKeys.LoadoutTransmission, onActivate: () => _state.Rooms.PendingLoadoutVehicleIndex = vehicleIndex));
+                items.Add(new MenuItem(vehicleName, MenuAction.None, onActivate: () => CompleteLoadoutVehicleSelection(vehicleIndex)));
             }
 
-            items.Add(new MenuItem(LocalizationService.Mark("Random vehicle"), MenuAction.None, nextMenuId: MultiplayerMenuKeys.LoadoutTransmission, onActivate: () => _state.Rooms.PendingLoadoutVehicleIndex = Algorithm.RandomInt(VehicleCatalog.VehicleCount)));
+            items.Add(new MenuItem(LocalizationService.Mark("Random vehicle"), MenuAction.None, onActivate: () => CompleteLoadoutVehicleSelection(Algorithm.RandomInt(VehicleCatalog.VehicleCount))));
             _menu.UpdateItems(MultiplayerMenuKeys.LoadoutVehicle, items);
         }
 
@@ -115,7 +115,7 @@ namespace TopSpeed.Core.Multiplayer
             {
                 new MenuItem(LocalizationService.Mark("Automatic transmission"), MenuAction.None, onActivate: () => SubmitLoadoutReady(true)),
                 new MenuItem(LocalizationService.Mark("Manual transmission"), MenuAction.None, onActivate: () => SubmitLoadoutReady(false)),
-                new MenuItem(LocalizationService.Mark("Random transmission mode"), MenuAction.None, onActivate: () => SubmitLoadoutReady(Algorithm.RandomInt(2) == 0)),
+                new MenuItem(LocalizationService.Mark("Random transmission mode"), MenuAction.None, onActivate: () => SubmitLoadoutReady(PickRandomLoadoutTransmission(_state.Rooms.PendingLoadoutVehicleIndex))),
                 new MenuItem(LocalizationService.Mark("Go back to vehicle selection"), MenuAction.Back)
             };
             _menu.UpdateItems(MultiplayerMenuKeys.LoadoutTransmission, items);

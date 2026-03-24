@@ -1,8 +1,10 @@
 using System;
+using TopSpeed.Common;
 using TopSpeed.Data;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
+using TopSpeed.Vehicles;
 
 using TopSpeed.Localization;
 namespace TopSpeed.Core.Multiplayer
@@ -122,12 +124,60 @@ namespace TopSpeed.Core.Multiplayer
             }
 
             var vehicleIndex = Math.Max(0, Math.Min(VehicleCatalog.VehicleCount - 1, _state.Rooms.PendingLoadoutVehicleIndex));
+            var parameters = VehicleCatalog.Vehicles[vehicleIndex];
+            if (!TransmissionSelect.TryResolveRequested(
+                    automaticRequested: automaticTransmission,
+                    primary: parameters.PrimaryTransmissionType,
+                    supported: parameters.SupportedTransmissionTypes,
+                    out _))
+            {
+                _speech.Speak(LocalizationService.Mark("This vehicle does not support the selected transmission mode."));
+                return;
+            }
+
             var selectedCar = (CarType)vehicleIndex;
             _setLocalMultiplayerLoadout(vehicleIndex, automaticTransmission);
             if (!TrySend(session.SendRoomPlayerReady(selectedCar, automaticTransmission), "ready state"))
                 return;
             _speech.Speak(LocalizationService.Mark("Ready. Waiting for other players."));
             _menu.ShowRoot(MultiplayerMenuKeys.RoomControls);
+        }
+
+        private void CompleteLoadoutVehicleSelection(int vehicleIndex)
+        {
+            vehicleIndex = Math.Max(0, Math.Min(VehicleCatalog.VehicleCount - 1, vehicleIndex));
+            _state.Rooms.PendingLoadoutVehicleIndex = vehicleIndex;
+            if (TryResolveSingleLoadoutTransmission(vehicleIndex, out var automaticTransmission))
+            {
+                SubmitLoadoutReady(automaticTransmission);
+                return;
+            }
+
+            _menu.Push(MultiplayerMenuKeys.LoadoutTransmission);
+        }
+
+        private static bool TryResolveSingleLoadoutTransmission(int vehicleIndex, out bool automaticTransmission)
+        {
+            automaticTransmission = true;
+            vehicleIndex = Math.Max(0, Math.Min(VehicleCatalog.VehicleCount - 1, vehicleIndex));
+            var parameters = VehicleCatalog.Vehicles[vehicleIndex];
+            return TransmissionSelect.TryResolveSingleMode(
+                parameters.PrimaryTransmissionType,
+                parameters.SupportedTransmissionTypes,
+                out automaticTransmission);
+        }
+
+        private bool PickRandomLoadoutTransmission(int vehicleIndex)
+        {
+            vehicleIndex = Math.Max(0, Math.Min(VehicleCatalog.VehicleCount - 1, vehicleIndex));
+            var parameters = VehicleCatalog.Vehicles[vehicleIndex];
+            var supportsAutomatic = TransmissionSelect.SupportsAutomatic(parameters.SupportedTransmissionTypes);
+            var supportsManual = TransmissionSelect.SupportsManual(parameters.SupportedTransmissionTypes);
+            if (supportsAutomatic && supportsManual)
+                return Algorithm.RandomInt(2) == 0;
+            if (supportsManual)
+                return false;
+            return true;
         }
 
         private void OpenLoadoutExitConfirmation()

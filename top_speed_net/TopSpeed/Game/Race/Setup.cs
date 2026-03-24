@@ -7,6 +7,8 @@ using TopSpeed.Data;
 using TopSpeed.Race;
 using TopSpeed.Tracks;
 using TopSpeed.Localization;
+using TopSpeed.Vehicles;
+using TopSpeed.Vehicles.Parsing;
 using CoreRaceMode = TopSpeed.Core.RaceMode;
 
 namespace TopSpeed.Game
@@ -19,7 +21,19 @@ namespace TopSpeed.Game
             _setup.ClearSelection();
             _selection.SelectRandomTrackAny(_settings.RandomCustomTracks);
             _selection.SelectRandomVehicle();
-            _setup.Transmission = TransmissionMode.Automatic;
+            var vehicleIndex = _setup.VehicleIndex ?? 0;
+            if (TryResolveTransmissionChoice(vehicleIndex, _setup.VehicleFile, automaticRequested: true, out var automaticTransmission))
+            {
+                _setup.Transmission = automaticTransmission ? TransmissionMode.Automatic : TransmissionMode.Manual;
+            }
+            else if (TryResolveTransmissionChoice(vehicleIndex, _setup.VehicleFile, automaticRequested: false, out automaticTransmission))
+            {
+                _setup.Transmission = automaticTransmission ? TransmissionMode.Automatic : TransmissionMode.Manual;
+            }
+            else
+            {
+                _setup.Transmission = TransmissionMode.Automatic;
+            }
         }
 
         private void QueueRaceStart(CoreRaceMode mode)
@@ -36,7 +50,17 @@ namespace TopSpeed.Game
                 : _setup.TrackNameOrFile!;
             var vehicleIndex = _setup.VehicleIndex ?? 0;
             var vehicleFile = _setup.VehicleFile;
-            var automatic = _setup.Transmission == TransmissionMode.Automatic;
+            var automaticRequested = _setup.Transmission == TransmissionMode.Automatic;
+            if (!TryResolveTransmissionChoice(vehicleIndex, vehicleFile, automaticRequested, out var automatic))
+            {
+                _state = AppState.Menu;
+                _menu.FadeInMenuMusic(force: true);
+                ShowMessageDialog(
+                    LocalizationService.Mark("Transmission not supported"),
+                    LocalizationService.Mark("The selected vehicle does not support the selected transmission mode."),
+                    Array.Empty<string>());
+                return;
+            }
 
             try
             {
@@ -85,6 +109,39 @@ namespace TopSpeed.Game
             {
                 HandleTrackLoadFailure(ex);
             }
+        }
+
+        private static bool TryResolveTransmissionChoice(
+            int vehicleIndex,
+            string? vehicleFile,
+            bool automaticRequested,
+            out bool automaticTransmission)
+        {
+            automaticTransmission = automaticRequested;
+            TransmissionType primaryType;
+            TransmissionType[] supportedTypes;
+
+            if (string.IsNullOrWhiteSpace(vehicleFile))
+            {
+                var index = Math.Max(0, Math.Min(VehicleCatalog.VehicleCount - 1, vehicleIndex));
+                var vehicle = VehicleCatalog.Vehicles[index];
+                primaryType = vehicle.PrimaryTransmissionType;
+                supportedTypes = vehicle.SupportedTransmissionTypes ?? new[] { primaryType };
+            }
+            else
+            {
+                if (!VehicleTsvParser.TryLoadFromFile(vehicleFile!, out var parsed, out _))
+                    return false;
+
+                primaryType = parsed.PrimaryTransmissionType;
+                supportedTypes = parsed.SupportedTransmissionTypes;
+            }
+
+            if (!TransmissionSelect.TryResolveRequested(automaticRequested, primaryType, supportedTypes, out var resolvedType))
+                return false;
+
+            automaticTransmission = resolvedType != TransmissionType.Manual;
+            return true;
         }
 
         private void HandleTrackLoadFailure(TrackLoadException ex)

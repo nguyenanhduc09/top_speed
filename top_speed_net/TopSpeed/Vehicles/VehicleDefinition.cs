@@ -28,6 +28,9 @@ namespace TopSpeed.Vehicles
         public float PitchCurveExponent { get; set; } = PitchCurveExponentDefault;
         public int Gears { get; set; }
         public float Steering { get; set; }
+        public TransmissionType PrimaryTransmissionType { get; set; } = TransmissionType.Atc;
+        public TransmissionType[] SupportedTransmissionTypes { get; set; } = new[] { TransmissionType.Atc };
+        public AutomaticDrivelineTuning AutomaticTuning { get; set; } = AutomaticDrivelineTuning.Default;
         public int HasWipers { get; set; }
 
         // Engine simulation parameters

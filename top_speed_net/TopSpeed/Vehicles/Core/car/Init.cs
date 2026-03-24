@@ -64,6 +64,7 @@ namespace TopSpeed.Vehicles
             _gear = 1;
             SetState(CarState.Stopped);
             _manualTransmission = false;
+            _engineStalled = false;
             _hasWipers = 0;
             _switchingGear = 0;
             _speed = 0;
@@ -85,6 +86,11 @@ namespace TopSpeed.Vehicles
             _currentDeceleration = 0;
             _currentSurfaceLateralMultiplier = 1f;
             _speedDiff = 0;
+            _drivelineCouplingFactor = 1f;
+            _stallTimer = 0f;
+            _cvtRatio = 0f;
+            _effectiveDriveRatioOverride = 0f;
+            _automaticCreepAccelMps2 = 0f;
             _factor1 = 100;
             _lateralVelocityMps = 0f;
             _yawRateRad = 0f;
@@ -168,6 +174,16 @@ namespace TopSpeed.Vehicles
             _pitchCurveExponent = VehicleDefinition.ClampPitchCurveExponent(definition.PitchCurveExponent);
             _gears = Math.Max(1, definition.Gears);
             _steering = SanitizeFinite(definition.Steering, 0.1f);
+            _primaryTransmissionType = definition.PrimaryTransmissionType;
+            _supportedTransmissionTypes = definition.SupportedTransmissionTypes == null || definition.SupportedTransmissionTypes.Length == 0
+                ? new[] { _primaryTransmissionType }
+                : (TransmissionType[])definition.SupportedTransmissionTypes.Clone();
+            _automaticTuning = definition.AutomaticTuning;
+            _activeTransmissionType = _primaryTransmissionType;
+            _drivelineState = DrivelineState.Locked;
+            _cvtRatio = _automaticTuning.Cvt.RatioMax;
+            _effectiveDriveRatioOverride = 0f;
+            _automaticCreepAccelMps2 = 0f;
             _frequency = _idleFreq;
         }
 

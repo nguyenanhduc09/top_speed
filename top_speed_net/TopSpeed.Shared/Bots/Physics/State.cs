@@ -9,5 +9,8 @@ namespace TopSpeed.Bots
         public float YawRateRad;
         public int Gear;
         public float AutoShiftCooldownSeconds;
+        public float AutomaticCouplingFactor;
+        public float CvtRatio;
+        public float EffectiveDriveRatio;
     }
 }

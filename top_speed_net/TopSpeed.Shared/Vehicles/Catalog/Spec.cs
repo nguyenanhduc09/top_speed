@@ -1,3 +1,4 @@
+using System;
 using TopSpeed.Protocol;
 
 namespace TopSpeed.Vehicles
@@ -67,6 +68,9 @@ namespace TopSpeed.Vehicles
             float[]? torqueCurveRpm = null,
             float[]? torqueCurveTorqueNm = null,
             string? torqueCurvePreset = null,
+            TransmissionType primaryTransmissionType = TransmissionType.Atc,
+            TransmissionType[]? supportedTransmissionTypes = null,
+            AutomaticDrivelineTuning? automaticTuning = null,
             TransmissionPolicy? transmissionPolicy = null)
         {
             CarType = carType;
@@ -131,6 +135,12 @@ namespace TopSpeed.Vehicles
             TorqueCurveRpm = torqueCurveRpm;
             TorqueCurveTorqueNm = torqueCurveTorqueNm;
             TorqueCurvePreset = torqueCurvePreset;
+            supportedTransmissionTypes ??= new[] { primaryTransmissionType };
+            if (!TransmissionTypes.TryValidate(primaryTransmissionType, supportedTransmissionTypes, out var validationError))
+                throw new ArgumentException(validationError, nameof(supportedTransmissionTypes));
+            PrimaryTransmissionType = primaryTransmissionType;
+            SupportedTransmissionTypes = (TransmissionType[])supportedTransmissionTypes.Clone();
+            AutomaticTuning = automaticTuning ?? AutomaticDrivelineTuning.Default;
             TransmissionPolicy = transmissionPolicy ?? TransmissionPolicy.Default;
         }
 
@@ -196,6 +206,9 @@ namespace TopSpeed.Vehicles
         public float[]? TorqueCurveRpm { get; }
         public float[]? TorqueCurveTorqueNm { get; }
         public string? TorqueCurvePreset { get; }
+        public TransmissionType PrimaryTransmissionType { get; }
+        public TransmissionType[] SupportedTransmissionTypes { get; }
+        public AutomaticDrivelineTuning AutomaticTuning { get; }
         public TransmissionPolicy TransmissionPolicy { get; }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using TopSpeed.Physics.Powertrain;
 using TopSpeed.Protocol;
 using TopSpeed.Vehicles;
@@ -23,6 +22,9 @@ namespace TopSpeed.Data
         public float PitchCurveExponent { get; }
         public int Gears { get; }
         public float Steering { get; }
+        public TransmissionType PrimaryTransmissionType { get; }
+        public TransmissionType[] SupportedTransmissionTypes { get; }
+        public AutomaticDrivelineTuning AutomaticTuning { get; }
         // Engine simulation parameters
         public float IdleRpm { get; }
         public float MaxRpm { get; }
@@ -95,6 +97,9 @@ namespace TopSpeed.Data
             int shiftFreq,
             int gears,
             float steering,
+            TransmissionType primaryTransmissionType,
+            TransmissionType[] supportedTransmissionTypes,
+            AutomaticDrivelineTuning automaticTuning,
             float pitchCurveExponent = VehicleDefinition.PitchCurveExponentDefault,
             float idleRpm = 800f,
             float maxRpm = 7000f,
@@ -168,6 +173,12 @@ namespace TopSpeed.Data
             PitchCurveExponent = VehicleDefinition.ClampPitchCurveExponent(pitchCurveExponent);
             Gears = gears;
             Steering = steering;
+            var normalizedSupportedTypes = supportedTransmissionTypes ?? Array.Empty<TransmissionType>();
+            if (!TransmissionTypes.TryValidate(primaryTransmissionType, normalizedSupportedTypes, out var validationError))
+                throw new ArgumentException(validationError, nameof(supportedTransmissionTypes));
+            PrimaryTransmissionType = primaryTransmissionType;
+            SupportedTransmissionTypes = (TransmissionType[])normalizedSupportedTypes.Clone();
+            AutomaticTuning = automaticTuning;
             IdleRpm = idleRpm;
             MaxRpm = maxRpm;
             RevLimiter = revLimiter;
@@ -251,6 +262,9 @@ namespace TopSpeed.Data
                 spec.ShiftFreq,
                 spec.Gears,
                 spec.Steering,
+                spec.PrimaryTransmissionType,
+                spec.SupportedTransmissionTypes,
+                spec.AutomaticTuning,
                 VehicleDefinition.PitchCurveExponentDefault,
                 spec.IdleRpm,
                 spec.MaxRpm,

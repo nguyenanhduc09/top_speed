@@ -20,6 +20,10 @@ namespace TopSpeed.Vehicles.Parsing
             var engine = sections["engine"];
             var torque = sections["torque"];
             var torqueCurve = sections["torque_curve"];
+            var transmission = sections["transmission"];
+            sections.TryGetValue("transmission_atc", out var transmissionAtc);
+            sections.TryGetValue("transmission_dct", out var transmissionDct);
+            sections.TryGetValue("transmission_cvt", out var transmissionCvt);
             var drivetrain = sections["drivetrain"];
             var gears = sections["gears"];
             var steeringSection = sections["steering"];
@@ -54,6 +58,8 @@ namespace TopSpeed.Vehicles.Parsing
 
             var gearCount = RequireIntRange(gears, "number_of_gears", 1, 10, issues);
             var gearRatios = RequireFloatCsv(gears, "gear_ratios", issues);
+            var primaryTransmissionType = RequireTransmissionType(transmission, "primary_type", issues);
+            var supportedTransmissionTypes = RequireTransmissionTypes(transmission, "supported_types", issues);
 
             var idleRpm = RequireFloatRange(engine, "idle_rpm", 300f, 3000f, issues);
             var maxRpm = RequireFloatRange(engine, "max_rpm", 1000f, 20000f, issues);
@@ -113,6 +119,15 @@ namespace TopSpeed.Vehicles.Parsing
             var tireWidth = OptionalInt(tires, "tire_width", issues);
             var tireAspect = OptionalInt(tires, "tire_aspect", issues);
             var tireRim = OptionalInt(tires, "tire_rim", issues);
+            var automaticTuning = BuildAutomaticTuning(
+                transmission,
+                transmissionAtc,
+                transmissionDct,
+                transmissionCvt,
+                supportedTransmissionTypes,
+                idleRpm,
+                revLimiter,
+                issues);
 
             if (gearRatios != null)
             {
@@ -139,6 +154,12 @@ namespace TopSpeed.Vehicles.Parsing
                     }
                 }
             }
+
+            ValidateTransmissionTypes(
+                transmission,
+                primaryTransmissionType,
+                supportedTransmissionTypes,
+                issues);
 
             if (maxRpm < idleRpm)
                 issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, engine.Entries["max_rpm"].Line, Localized("max_rpm must be greater than or equal to idle_rpm.")));
@@ -244,6 +265,9 @@ namespace TopSpeed.Vehicles.Parsing
                 PitchCurveExponent = TopSpeed.Vehicles.VehicleDefinition.ClampPitchCurveExponent(pitchCurveExponent),
                 Gears = gearCount,
                 GearRatios = gearRatios!.ToArray(),
+                PrimaryTransmissionType = primaryTransmissionType,
+                SupportedTransmissionTypes = supportedTransmissionTypes.ToArray(),
+                AutomaticTuning = automaticTuning,
                 IdleRpm = idleRpm,
                 MaxRpm = maxRpm,
                 RevLimiter = revLimiter,
@@ -299,6 +323,292 @@ namespace TopSpeed.Vehicles.Parsing
             };
 
             return true;
+        }
+
+        private static TransmissionType RequireTransmissionType(Section section, string key, List<VehicleTsvIssue> issues)
+        {
+            if (!section.Entries.TryGetValue(key, out var entry))
+            {
+                issues.Add(new VehicleTsvIssue(
+                    VehicleTsvIssueSeverity.Error,
+                    section.Line,
+                    Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
+                return TransmissionType.Atc;
+            }
+
+            var raw = entry.Value.Trim();
+            if (!TransmissionTypes.TryParse(raw, out var type))
+            {
+                issues.Add(new VehicleTsvIssue(
+                    VehicleTsvIssueSeverity.Error,
+                    entry.Line,
+                    Localized("Unsupported transmission type '{0}'. Valid values: atc, cvt, dct, manual.", raw)));
+                return TransmissionType.Atc;
+            }
+
+            return type;
+        }
+
+        private static IReadOnlyList<TransmissionType> RequireTransmissionTypes(Section section, string key, List<VehicleTsvIssue> issues)
+        {
+            if (!section.Entries.TryGetValue(key, out var entry))
+            {
+                issues.Add(new VehicleTsvIssue(
+                    VehicleTsvIssueSeverity.Error,
+                    section.Line,
+                    Localized("Missing required key '{0}' in section [{1}].", key, section.Name)));
+                return Array.Empty<TransmissionType>();
+            }
+
+            var tokens = entry.Value.Split(',');
+            var values = new List<TransmissionType>(tokens.Length);
+            for (var i = 0; i < tokens.Length; i++)
+            {
+                var token = tokens[i].Trim();
+                if (token.Length == 0)
+                    continue;
+
+                if (!TransmissionTypes.TryParse(token, out var type))
+                {
+                    issues.Add(new VehicleTsvIssue(
+                        VehicleTsvIssueSeverity.Error,
+                        entry.Line,
+                        Localized("Unsupported transmission type '{0}' in supported_types. Valid values: atc, cvt, dct, manual.", token)));
+                    continue;
+                }
+
+                values.Add(type);
+            }
+
+            if (values.Count == 0)
+            {
+                issues.Add(new VehicleTsvIssue(
+                    VehicleTsvIssueSeverity.Error,
+                    entry.Line,
+                    Localized("Key '{0}' must contain at least one transmission type.", key)));
+            }
+
+            return values;
+        }
+
+        private static void ValidateTransmissionTypes(
+            Section transmissionSection,
+            TransmissionType primaryType,
+            IReadOnlyList<TransmissionType> supportedTypes,
+            List<VehicleTsvIssue> issues)
+        {
+            if (!transmissionSection.Entries.ContainsKey("primary_type")
+                || !transmissionSection.Entries.ContainsKey("supported_types"))
+            {
+                return;
+            }
+
+            var line = transmissionSection.Line;
+            if (transmissionSection.Entries.TryGetValue("supported_types", out var supportedEntry))
+                line = supportedEntry.Line;
+            else if (transmissionSection.Entries.TryGetValue("primary_type", out var primaryEntry))
+                line = primaryEntry.Line;
+
+            if (!TransmissionTypes.TryValidate(primaryType, supportedTypes, out var validationError))
+            {
+                issues.Add(new VehicleTsvIssue(
+                    VehicleTsvIssueSeverity.Error,
+                    line,
+                    Localized(validationError)));
+            }
+        }
+
+        private static AutomaticDrivelineTuning BuildAutomaticTuning(
+            Section transmission,
+            Section? transmissionAtc,
+            Section? transmissionDct,
+            Section? transmissionCvt,
+            IReadOnlyList<TransmissionType> supportedTypes,
+            float idleRpm,
+            float revLimiter,
+            List<VehicleTsvIssue> issues)
+        {
+            var atc = AutomaticDrivelineTuning.Default.Atc;
+            var dct = AutomaticDrivelineTuning.Default.Dct;
+            var cvt = AutomaticDrivelineTuning.Default.Cvt;
+
+            var supportsAtc = Contains(supportedTypes, TransmissionType.Atc);
+            var supportsDct = Contains(supportedTypes, TransmissionType.Dct);
+            var supportsCvt = Contains(supportedTypes, TransmissionType.Cvt);
+
+            if (supportsAtc)
+            {
+                if (transmissionAtc == null)
+                {
+                    AddTransmissionIssue(
+                        issues,
+                        transmission,
+                        key: null,
+                        Localized("Missing required section [transmission_atc] for supported type 'atc'."));
+                }
+                else
+                {
+                    atc = new AtcDrivelineTuning(
+                        creepAccelKphPerSecond: RequireFloatRange(transmissionAtc, "creep_accel_kphps", 0f, 12f, issues),
+                        launchCouplingMin: RequireFloatRange(transmissionAtc, "launch_coupling_min", 0f, 1f, issues),
+                        launchCouplingMax: RequireFloatRange(transmissionAtc, "launch_coupling_max", 0f, 1f, issues),
+                        lockSpeedKph: RequireFloatRange(transmissionAtc, "lock_speed_kph", 2f, 300f, issues),
+                        lockThrottleMin: RequireFloatRange(transmissionAtc, "lock_throttle_min", 0f, 1f, issues),
+                        shiftReleaseCoupling: RequireFloatRange(transmissionAtc, "shift_release_coupling", 0f, 1f, issues),
+                        engageRate: RequireFloatRange(transmissionAtc, "engage_rate", 0.1f, 80f, issues),
+                        disengageRate: RequireFloatRange(transmissionAtc, "disengage_rate", 0.1f, 80f, issues));
+                    if (atc.LaunchCouplingMin > atc.LaunchCouplingMax)
+                    {
+                        AddTransmissionIssue(
+                            issues,
+                            transmissionAtc,
+                            "launch_coupling_max",
+                            Localized("launch_coupling_max must be greater than or equal to launch_coupling_min in [transmission_atc]."));
+                    }
+                }
+            }
+            else if (transmissionAtc != null)
+            {
+                AddTransmissionWarning(
+                    issues,
+                    transmissionAtc,
+                    Localized("Section [transmission_atc] is unused because supported_types does not include 'atc'."));
+            }
+
+            if (supportsDct)
+            {
+                if (transmissionDct == null)
+                {
+                    AddTransmissionIssue(
+                        issues,
+                        transmission,
+                        key: null,
+                        Localized("Missing required section [transmission_dct] for supported type 'dct'."));
+                }
+                else
+                {
+                    dct = new DctDrivelineTuning(
+                        launchCouplingMin: RequireFloatRange(transmissionDct, "launch_coupling_min", 0f, 1f, issues),
+                        launchCouplingMax: RequireFloatRange(transmissionDct, "launch_coupling_max", 0f, 1f, issues),
+                        lockSpeedKph: RequireFloatRange(transmissionDct, "lock_speed_kph", 2f, 300f, issues),
+                        lockThrottleMin: RequireFloatRange(transmissionDct, "lock_throttle_min", 0f, 1f, issues),
+                        shiftOverlapCoupling: RequireFloatRange(transmissionDct, "shift_overlap_coupling", 0f, 1f, issues),
+                        engageRate: RequireFloatRange(transmissionDct, "engage_rate", 0.1f, 80f, issues),
+                        disengageRate: RequireFloatRange(transmissionDct, "disengage_rate", 0.1f, 80f, issues));
+                    if (dct.LaunchCouplingMin > dct.LaunchCouplingMax)
+                    {
+                        AddTransmissionIssue(
+                            issues,
+                            transmissionDct,
+                            "launch_coupling_max",
+                            Localized("launch_coupling_max must be greater than or equal to launch_coupling_min in [transmission_dct]."));
+                    }
+                }
+            }
+            else if (transmissionDct != null)
+            {
+                AddTransmissionWarning(
+                    issues,
+                    transmissionDct,
+                    Localized("Section [transmission_dct] is unused because supported_types does not include 'dct'."));
+            }
+
+            if (supportsCvt)
+            {
+                if (transmissionCvt == null)
+                {
+                    AddTransmissionIssue(
+                        issues,
+                        transmission,
+                        key: null,
+                        Localized("Missing required section [transmission_cvt] for supported type 'cvt'."));
+                }
+                else
+                {
+                    cvt = new CvtDrivelineTuning(
+                        ratioMin: RequireFloatRange(transmissionCvt, "ratio_min", 0.1f, 8f, issues),
+                        ratioMax: RequireFloatRange(transmissionCvt, "ratio_max", 0.2f, 10f, issues),
+                        targetRpmLow: RequireFloatRange(transmissionCvt, "target_rpm_low", idleRpm, revLimiter, issues),
+                        targetRpmHigh: RequireFloatRange(transmissionCvt, "target_rpm_high", idleRpm, revLimiter, issues),
+                        ratioChangeRate: RequireFloatRange(transmissionCvt, "ratio_change_rate", 0.1f, 20f, issues),
+                        launchCouplingMin: RequireFloatRange(transmissionCvt, "launch_coupling_min", 0f, 1f, issues),
+                        launchCouplingMax: RequireFloatRange(transmissionCvt, "launch_coupling_max", 0f, 1f, issues),
+                        lockSpeedKph: RequireFloatRange(transmissionCvt, "lock_speed_kph", 2f, 300f, issues),
+                        lockThrottleMin: RequireFloatRange(transmissionCvt, "lock_throttle_min", 0f, 1f, issues),
+                        creepAccelKphPerSecond: RequireFloatRange(transmissionCvt, "creep_accel_kphps", 0f, 12f, issues),
+                        shiftHoldCoupling: RequireFloatRange(transmissionCvt, "shift_hold_coupling", 0f, 1f, issues),
+                        engageRate: RequireFloatRange(transmissionCvt, "engage_rate", 0.1f, 80f, issues),
+                        disengageRate: RequireFloatRange(transmissionCvt, "disengage_rate", 0.1f, 80f, issues));
+                    if (cvt.RatioMax < cvt.RatioMin)
+                    {
+                        AddTransmissionIssue(
+                            issues,
+                            transmissionCvt,
+                            "ratio_max",
+                            Localized("ratio_max must be greater than or equal to ratio_min in [transmission_cvt]."));
+                    }
+                    if (cvt.TargetRpmHigh < cvt.TargetRpmLow)
+                    {
+                        AddTransmissionIssue(
+                            issues,
+                            transmissionCvt,
+                            "target_rpm_high",
+                            Localized("target_rpm_high must be greater than or equal to target_rpm_low in [transmission_cvt]."));
+                    }
+                    if (cvt.LaunchCouplingMin > cvt.LaunchCouplingMax)
+                    {
+                        AddTransmissionIssue(
+                            issues,
+                            transmissionCvt,
+                            "launch_coupling_max",
+                            Localized("launch_coupling_max must be greater than or equal to launch_coupling_min in [transmission_cvt]."));
+                    }
+                }
+            }
+            else if (transmissionCvt != null)
+            {
+                AddTransmissionWarning(
+                    issues,
+                    transmissionCvt,
+                    Localized("Section [transmission_cvt] is unused because supported_types does not include 'cvt'."));
+            }
+
+            return new AutomaticDrivelineTuning(atc, dct, cvt);
+        }
+
+        private static void AddTransmissionIssue(
+            List<VehicleTsvIssue> issues,
+            Section transmission,
+            string? key,
+            string message)
+        {
+            var line = transmission.Line;
+            if (!string.IsNullOrWhiteSpace(key))
+            {
+                var lookupKey = key!;
+                if (transmission.Entries.TryGetValue(lookupKey, out var entry))
+                    line = entry.Line;
+            }
+            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Error, line, message));
+        }
+
+        private static void AddTransmissionWarning(
+            List<VehicleTsvIssue> issues,
+            Section transmission,
+            string message)
+        {
+            issues.Add(new VehicleTsvIssue(VehicleTsvIssueSeverity.Warning, transmission.Line, message));
+        }
+
+        private static bool Contains(IReadOnlyList<TransmissionType> values, TransmissionType expected)
+        {
+            for (var i = 0; i < values.Count; i++)
+            {
+                if (values[i] == expected)
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool TryBuildTorqueCurve(

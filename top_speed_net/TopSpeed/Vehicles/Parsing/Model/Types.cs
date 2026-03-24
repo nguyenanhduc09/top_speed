@@ -7,7 +7,8 @@ namespace TopSpeed.Vehicles.Parsing
 {
     internal enum VehicleTsvIssueSeverity
     {
-        Error = 0
+        Warning = 0,
+        Error = 1
     }
 
     internal readonly struct VehicleTsvIssue
@@ -75,6 +76,9 @@ namespace TopSpeed.Vehicles.Parsing
 
         public int Gears { get; set; }
         public float[] GearRatios { get; set; } = Array.Empty<float>();
+        public TransmissionType PrimaryTransmissionType { get; set; } = TransmissionType.Atc;
+        public TransmissionType[] SupportedTransmissionTypes { get; set; } = new[] { TransmissionType.Atc };
+        public AutomaticDrivelineTuning AutomaticTuning { get; set; } = AutomaticDrivelineTuning.Default;
 
         public float IdleRpm { get; set; }
         public float MaxRpm { get; set; }

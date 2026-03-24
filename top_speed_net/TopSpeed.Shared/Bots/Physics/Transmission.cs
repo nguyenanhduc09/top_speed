@@ -1,5 +1,6 @@
 using System;
 using TopSpeed.Physics.Powertrain;
+using TopSpeed.Vehicles;
 
 namespace TopSpeed.Bots
 {
@@ -12,7 +13,8 @@ namespace TopSpeed.Bots
             float speedMps,
             float throttle,
             float surfaceTractionMod,
-            float longitudinalGripFactor)
+            float longitudinalGripFactor,
+            float? driveRatioOverride = null)
         {
             if (config.Gears <= 1)
                 return;
@@ -23,13 +25,13 @@ namespace TopSpeed.Bots
                 return;
             }
 
-            var currentAccel = ComputeNetAccelForGear(config, state.Gear, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor);
-            var currentRpm = SpeedToRpm(config, speedMps, state.Gear);
+            var currentAccel = ComputeNetAccelForGear(config, state.Gear, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor, driveRatioOverride);
+            var currentRpm = SpeedToRpm(config, speedMps, state.Gear, driveRatioOverride);
             var upAccel = state.Gear < config.Gears
-                ? ComputeNetAccelForGear(config, state.Gear + 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor)
+                ? ComputeNetAccelForGear(config, state.Gear + 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor, null)
                 : float.NegativeInfinity;
             var downAccel = state.Gear > 1
-                ? ComputeNetAccelForGear(config, state.Gear - 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor)
+                ? ComputeNetAccelForGear(config, state.Gear - 1, speedMps, throttle, surfaceTractionMod, longitudinalGripFactor, null)
                 : float.NegativeInfinity;
 
             var decision = AutomaticTransmissionLogic.Decide(
@@ -59,9 +61,10 @@ namespace TopSpeed.Bots
             float speedMps,
             float throttle,
             float surfaceTractionMod,
-            float longitudinalGripFactor)
+            float longitudinalGripFactor,
+            float? driveRatioOverride)
         {
-            var rpm = SpeedToRpm(config, speedMps, gear);
+            var rpm = SpeedToRpm(config, speedMps, gear, driveRatioOverride);
             if (rpm <= 0f)
                 return float.NegativeInfinity;
             if (rpm > config.RevLimiter && gear < config.Gears)
@@ -73,12 +76,13 @@ namespace TopSpeed.Bots
                 speedMps,
                 throttle,
                 surfaceTractionMod,
-                longitudinalGripFactor);
+                longitudinalGripFactor,
+                driveRatioOverride);
         }
 
-        private static float SpeedToRpm(BotPhysicsConfig config, float speedMps, int gear)
+        private static float SpeedToRpm(BotPhysicsConfig config, float speedMps, int gear, float? driveRatioOverride = null)
         {
-            return Calculator.RpmAtSpeed(config.Powertrain, speedMps, gear);
+            return Calculator.RpmAtSpeed(config.Powertrain, speedMps, gear, driveRatioOverride);
         }
     }
 }

@@ -59,6 +59,9 @@ namespace TopSpeed.Vehicles
         private float _engineInertiaKgm2;
         private float _engineFrictionTorqueNm;
         private float _drivelineCouplingRate;
+        private float _automaticCouplingFactor = 1f;
+        private float _cvtRatio;
+        private float _effectiveDriveRatio;
         private float _lateralGripCoefficient;
         private float _highSpeedStability;
         private float _wheelbaseM;
@@ -124,6 +127,8 @@ namespace TopSpeed.Vehicles
         private int _lastRadioVolumePercent = -1;
 
         private EngineModel _engine;
+        private TransmissionType _activeTransmissionType = TransmissionType.Atc;
+        private AutomaticDrivelineTuning _automaticTuning = AutomaticDrivelineTuning.Default;
         private readonly BotPhysicsConfig _physicsConfig;
     }
 }

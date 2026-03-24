@@ -13,7 +13,12 @@ namespace TopSpeed.Bots
                 surfaceDecelMod);
         }
 
-        private static float CalculateEngineBrakingDecel(BotPhysicsConfig config, int gear, float speedMps, float surfaceDecelMod)
+        private static float CalculateEngineBrakingDecel(
+            BotPhysicsConfig config,
+            int gear,
+            float speedMps,
+            float surfaceDecelMod,
+            float? driveRatioOverride = null)
         {
             return Calculator.EngineBrakeDecelKph(
                 config.Powertrain,
@@ -21,7 +26,8 @@ namespace TopSpeed.Bots
                 inReverse: false,
                 speedMps,
                 surfaceDecelMod,
-                SpeedToRpm(config, speedMps, gear));
+                SpeedToRpm(config, speedMps, gear, driveRatioOverride),
+                driveRatioOverride);
         }
     }
 }

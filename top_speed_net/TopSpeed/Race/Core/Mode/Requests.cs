@@ -13,12 +13,15 @@ namespace TopSpeed.Race
         {
             if (_input.GetStartEngine() && _started && !_finished)
             {
-                var canStart = !_engineStarted || _car.State == CarState.Crashed;
+                var restartFromStall = !_car.EngineRunning && _car.State == CarState.Running;
+                var canStart = !_engineStarted || _car.State == CarState.Crashed || restartFromStall;
                 if (canStart)
                 {
                     _engineStarted = true;
                     if (_car.State == CarState.Crashed)
                         _car.RestartAfterCrash();
+                    else if (restartFromStall)
+                        _car.RestartFromStall();
                     else
                         _car.Start();
                 }

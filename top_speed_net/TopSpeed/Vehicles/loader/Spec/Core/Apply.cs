@@ -1,3 +1,5 @@
+using System;
+
 namespace TopSpeed.Vehicles.Loader
 {
     internal static partial class Spec
@@ -13,6 +15,11 @@ namespace TopSpeed.Vehicles.Loader
             def.PitchCurveExponent = spec.PitchCurveExponent;
             def.Gears = spec.Gears;
             def.Steering = spec.Steering;
+            def.PrimaryTransmissionType = spec.PrimaryTransmissionType;
+            def.SupportedTransmissionTypes = spec.SupportedTransmissionTypes == null
+                ? Array.Empty<TransmissionType>()
+                : (TransmissionType[])spec.SupportedTransmissionTypes.Clone();
+            def.AutomaticTuning = spec.AutomaticTuning;
             def.HasWipers = spec.HasWipers;
             def.IdleRpm = spec.IdleRpm;
             def.MaxRpm = spec.MaxRpm;

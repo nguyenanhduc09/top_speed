@@ -1,9 +1,9 @@
 namespace TopSpeed.Vehicles
 {
-    internal enum EngineCouplingMode
+    internal enum DrivelineState
     {
         Disengaged = 0,
-        Blended = 1,
+        Slipping = 1,
         Locked = 2
     }
 }

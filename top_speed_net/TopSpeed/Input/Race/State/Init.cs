@@ -12,6 +12,7 @@ namespace TopSpeed.Input
             _right = JoystickAxisOrButton.AxisNone;
             _throttle = JoystickAxisOrButton.AxisNone;
             _brake = JoystickAxisOrButton.AxisNone;
+            _clutch = JoystickAxisOrButton.AxisNone;
             _gearUp = JoystickAxisOrButton.AxisNone;
             _gearDown = JoystickAxisOrButton.AxisNone;
             _horn = JoystickAxisOrButton.AxisNone;
@@ -60,6 +61,7 @@ namespace TopSpeed.Input
             _right = _settings.JoystickRight;
             _throttle = _settings.JoystickThrottle;
             _brake = _settings.JoystickBrake;
+            _clutch = _settings.JoystickClutch;
             _gearUp = _settings.JoystickGearUp;
             _gearDown = _settings.JoystickGearDown;
             _horn = _settings.JoystickHorn;
@@ -80,6 +82,7 @@ namespace TopSpeed.Input
             _kbRight = _settings.KeyRight;
             _kbThrottle = _settings.KeyThrottle;
             _kbBrake = _settings.KeyBrake;
+            _kbClutch = _settings.KeyClutch;
             _kbGearUp = _settings.KeyGearUp;
             _kbGearDown = _settings.KeyGearDown;
             _kbHorn = _settings.KeyHorn;

@@ -20,6 +20,7 @@ namespace TopSpeed.Vehicles
             _currentSteering = controlIntent.Steering;
             _currentThrottle = controlIntent.Throttle;
             _currentBrake = controlIntent.Brake;
+            var clutchInput = controlIntent.Clutch;
 
             ApplySurfaceModifiers();
             _factor1 = 100;
@@ -36,14 +37,32 @@ namespace TopSpeed.Vehicles
                 ? _currentSurfaceTractionFactor / _surfaceTractionFactor
                 : 1.0f;
             var longitudinalGripFactor = 1.0f;
+            var drivelineCouplingFactor = UpdateDriveline(elapsed, speedMpsCurrent, throttle, inReverse, clutchInput);
 
-            if (_thrust > 10f)
-                ApplyThrottleDrive(elapsed, speedMpsCurrent, throttle, inReverse, reverseBlockedAtLapStart, surfaceTractionMod, ref longitudinalGripFactor);
+            if (_engineStalled)
+            {
+                ApplyStalledDecel(elapsed);
+            }
+            else if (_thrust > 10f)
+            {
+                ApplyThrottleDrive(
+                    elapsed,
+                    speedMpsCurrent,
+                    throttle,
+                    inReverse,
+                    reverseBlockedAtLapStart,
+                    surfaceTractionMod,
+                    drivelineCouplingFactor,
+                    ref longitudinalGripFactor);
+            }
             else
+            {
                 ApplyCoastDecel(elapsed);
+            }
 
             ClampSpeedAndTransmission(elapsed, throttle, inReverse, reverseBlockedAtLapStart, surfaceTractionMod, longitudinalGripFactor);
             SyncEngineFromSpeed(elapsed);
+            UpdateStallState(elapsed, _speed / 3.6f, throttle, clutchInput);
             UpdateBackfireStateAfterDrive();
             UpdateBrakeAndSteeringOutput();
             IntegrateVehiclePosition(elapsed, currentLapStart);

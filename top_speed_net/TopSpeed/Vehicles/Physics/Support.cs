@@ -75,7 +75,8 @@ namespace TopSpeed.Vehicles
                 _gear == ReverseGear,
                 _speed / 3.6f,
                 surfaceDecelMod,
-                _engine.Rpm);
+                _engine.Rpm,
+                _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
         }
 
         private float GetLapStartPosition(float position)

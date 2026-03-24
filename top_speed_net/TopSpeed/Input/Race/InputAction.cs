@@ -6,6 +6,7 @@ namespace TopSpeed.Input
         SteerRight,
         Throttle,
         Brake,
+        Clutch,
         GearUp,
         GearDown,
         Horn,

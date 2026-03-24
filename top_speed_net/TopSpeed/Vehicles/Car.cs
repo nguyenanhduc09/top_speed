@@ -19,7 +19,7 @@ namespace TopSpeed.Vehicles
         public bool ManualTransmission
         {
             get => _manualTransmission;
-            set => _manualTransmission = value;
+            set => ApplyTransmissionRequest(value);
         }
         public CarType CarType => _carType;
         public ICarListener? Listener
@@ -97,6 +97,21 @@ namespace TopSpeed.Vehicles
 
             UpdateRuntimeContext(elapsed);
             OnAfterRun(elapsed, BuildControlContext(elapsed), controlIntent);
+        }
+
+        private void ApplyTransmissionRequest(bool manualRequested)
+        {
+            if (!TransmissionSelect.TryResolveRequested(
+                    automaticRequested: !manualRequested,
+                    _primaryTransmissionType,
+                    _supportedTransmissionTypes,
+                    out var resolved))
+            {
+                resolved = _primaryTransmissionType;
+            }
+
+            _activeTransmissionType = resolved;
+            _manualTransmission = resolved == TransmissionType.Manual;
         }
     }
 }

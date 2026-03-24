@@ -53,6 +53,18 @@ namespace TopSpeed.Input
             _settings.KeyBrake = key;
         }
 
+        public void SetClutch(JoystickAxisOrButton a)
+        {
+            _clutch = a;
+            _settings.JoystickClutch = a;
+        }
+
+        public void SetClutch(Key key)
+        {
+            _kbClutch = key;
+            _settings.KeyClutch = key;
+        }
+
         public void SetGearUp(JoystickAxisOrButton a)
         {
             _gearUp = a;

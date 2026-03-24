@@ -40,6 +40,7 @@ namespace TopSpeed.Vehicles
         void SetPosition(float positionX, float positionY);
         void FinalizeCar();
         void Start();
+        void RestartFromStall();
         void RestartAfterCrash();
         void Crash();
         void MiniCrash(float newPosition);

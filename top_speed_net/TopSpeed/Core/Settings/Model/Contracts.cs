@@ -126,6 +126,7 @@ namespace TopSpeed.Core.Settings
         [DataMember(Name = "right")] public int? Right { get; set; }
         [DataMember(Name = "throttle")] public int? Throttle { get; set; }
         [DataMember(Name = "brake")] public int? Brake { get; set; }
+        [DataMember(Name = "clutch")] public int? Clutch { get; set; }
         [DataMember(Name = "gearUp")] public int? GearUp { get; set; }
         [DataMember(Name = "gearDown")] public int? GearDown { get; set; }
         [DataMember(Name = "horn")] public int? Horn { get; set; }
@@ -149,6 +150,7 @@ namespace TopSpeed.Core.Settings
         [DataMember(Name = "right")] public int? Right { get; set; }
         [DataMember(Name = "throttle")] public int? Throttle { get; set; }
         [DataMember(Name = "brake")] public int? Brake { get; set; }
+        [DataMember(Name = "clutch")] public int? Clutch { get; set; }
         [DataMember(Name = "gearUp")] public int? GearUp { get; set; }
         [DataMember(Name = "gearDown")] public int? GearDown { get; set; }
         [DataMember(Name = "horn")] public int? Horn { get; set; }

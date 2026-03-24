@@ -40,6 +40,7 @@ namespace TopSpeed.Core.Settings
             settings.KeyRight = ReadKey(keyboard.Right, settings.KeyRight, "input.keyboard.right", issues);
             settings.KeyThrottle = ReadKey(keyboard.Throttle, settings.KeyThrottle, "input.keyboard.throttle", issues);
             settings.KeyBrake = ReadKey(keyboard.Brake, settings.KeyBrake, "input.keyboard.brake", issues);
+            settings.KeyClutch = ReadKey(keyboard.Clutch, settings.KeyClutch, "input.keyboard.clutch", issues);
             settings.KeyGearUp = ReadKey(keyboard.GearUp, settings.KeyGearUp, "input.keyboard.gearUp", issues);
             settings.KeyGearDown = ReadKey(keyboard.GearDown, settings.KeyGearDown, "input.keyboard.gearDown", issues);
             settings.KeyHorn = ReadKey(keyboard.Horn, settings.KeyHorn, "input.keyboard.horn", issues);
@@ -62,6 +63,7 @@ namespace TopSpeed.Core.Settings
             settings.JoystickRight = ReadJoystick(joystick.Right, settings.JoystickRight, "input.joystick.right", issues);
             settings.JoystickThrottle = ReadJoystick(joystick.Throttle, settings.JoystickThrottle, "input.joystick.throttle", issues);
             settings.JoystickBrake = ReadJoystick(joystick.Brake, settings.JoystickBrake, "input.joystick.brake", issues);
+            settings.JoystickClutch = ReadJoystick(joystick.Clutch, settings.JoystickClutch, "input.joystick.clutch", issues);
             settings.JoystickGearUp = ReadJoystick(joystick.GearUp, settings.JoystickGearUp, "input.joystick.gearUp", issues);
             settings.JoystickGearDown = ReadJoystick(joystick.GearDown, settings.JoystickGearDown, "input.joystick.gearDown", issues);
             settings.JoystickHorn = ReadJoystick(joystick.Horn, settings.JoystickHorn, "input.joystick.horn", issues);

@@ -52,7 +52,10 @@ namespace TopSpeed.Vehicles
                     LateralVelocityMps = _lateralVelocityMps,
                     YawRateRad = _yawRateRad,
                     Gear = _gear,
-                    AutoShiftCooldownSeconds = _autoShiftCooldown
+                    AutoShiftCooldownSeconds = _autoShiftCooldown,
+                    AutomaticCouplingFactor = _automaticCouplingFactor,
+                    CvtRatio = _cvtRatio,
+                    EffectiveDriveRatio = _effectiveDriveRatio
                 };
                 var physicsInput = new BotPhysicsInput(elapsed, _surface, _currentThrottle, _currentBrake, _currentSteering);
                 BotPhysics.Step(_physicsConfig, ref physicsState, physicsInput);
@@ -64,9 +67,23 @@ namespace TopSpeed.Vehicles
                 _yawRateRad = physicsState.YawRateRad;
                 _gear = physicsState.Gear;
                 _autoShiftCooldown = physicsState.AutoShiftCooldownSeconds;
+                _automaticCouplingFactor = physicsState.AutomaticCouplingFactor;
+                _cvtRatio = physicsState.CvtRatio;
+                _effectiveDriveRatio = physicsState.EffectiveDriveRatio;
                 _speedDiff = _speed - beforeSpeed;
 
-                _engine.SyncFromSpeed(_speed, _gear, elapsed, _currentThrottle, inReverse: false, couplingMode: EngineCouplingMode.Blended);
+                var couplingMode = _automaticCouplingFactor <= 0.05f
+                    ? EngineCouplingMode.Disengaged
+                    : (_automaticCouplingFactor >= 0.98f ? EngineCouplingMode.Locked : EngineCouplingMode.Blended);
+                _engine.SyncFromSpeed(
+                    _speed,
+                    _gear,
+                    elapsed,
+                    _currentThrottle,
+                    inReverse: false,
+                    couplingMode: couplingMode,
+                    couplingFactor: _automaticCouplingFactor,
+                    driveRatioOverride: _effectiveDriveRatio > 0f ? _effectiveDriveRatio : (float?)null);
                 UpdateEngineFreq();
 
                 if (_frame % 4 == 0)

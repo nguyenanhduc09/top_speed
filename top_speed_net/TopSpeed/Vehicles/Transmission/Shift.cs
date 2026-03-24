@@ -10,20 +10,27 @@ namespace TopSpeed.Vehicles
         {
             if (_manualTransmission)
             {
-                HandleManualShift(intent.GearUp, intent.GearDown);
+                HandleManualShift(intent.GearUp, intent.GearDown, intent.Clutch);
                 return;
             }
 
             HandleAutomaticDirectionShift(intent.ReverseRequested, intent.ForwardRequested);
         }
 
-        private void HandleManualShift(bool gearUp, bool gearDown)
+        private void HandleManualShift(bool gearUp, bool gearDown, int clutch)
         {
             if (!gearUp && !gearDown)
                 _stickReleased = true;
 
             if (gearDown && _stickReleased)
             {
+                if (!CanShiftManual(clutch))
+                {
+                    _stickReleased = false;
+                    _soundBadSwitch.Play(loop: false);
+                    return;
+                }
+
                 if (_gear > FirstForwardGear)
                 {
                     _stickReleased = false;
@@ -52,6 +59,13 @@ namespace TopSpeed.Vehicles
             }
             else if (gearUp && _stickReleased)
             {
+                if (!CanShiftManual(clutch))
+                {
+                    _stickReleased = false;
+                    _soundBadSwitch.Play(loop: false);
+                    return;
+                }
+
                 if (_gear == ReverseGear)
                 {
                     _stickReleased = false;
@@ -78,6 +92,11 @@ namespace TopSpeed.Vehicles
                     PushEvent(EventType.InGear, 0.2f);
                 }
             }
+        }
+
+        private static bool CanShiftManual(int clutch)
+        {
+            return clutch >= 90;
         }
 
         private void HandleAutomaticDirectionShift(bool reverseRequested, bool forwardRequested)

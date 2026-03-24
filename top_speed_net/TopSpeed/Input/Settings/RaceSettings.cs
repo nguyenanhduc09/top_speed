@@ -17,6 +17,7 @@ namespace TopSpeed.Input
         public JoystickAxisOrButton JoystickRight { get; set; }
         public JoystickAxisOrButton JoystickThrottle { get; set; }
         public JoystickAxisOrButton JoystickBrake { get; set; }
+        public JoystickAxisOrButton JoystickClutch { get; set; }
         public JoystickAxisOrButton JoystickGearUp { get; set; }
         public JoystickAxisOrButton JoystickGearDown { get; set; }
         public JoystickAxisOrButton JoystickHorn { get; set; }
@@ -40,6 +41,7 @@ namespace TopSpeed.Input
         public Key KeyRight { get; set; }
         public Key KeyThrottle { get; set; }
         public Key KeyBrake { get; set; }
+        public Key KeyClutch { get; set; }
         public Key KeyGearUp { get; set; }
         public Key KeyGearDown { get; set; }
         public Key KeyHorn { get; set; }
@@ -101,6 +103,7 @@ namespace TopSpeed.Input
             JoystickRight = JoystickAxisOrButton.AxisXPos;
             JoystickThrottle = JoystickAxisOrButton.AxisRzPos;
             JoystickBrake = JoystickAxisOrButton.AxisZPos;
+            JoystickClutch = JoystickAxisOrButton.AxisSlider1Pos;
             JoystickGearUp = JoystickAxisOrButton.Button2;
             JoystickGearDown = JoystickAxisOrButton.Button1;
             JoystickHorn = JoystickAxisOrButton.Button3;
@@ -124,6 +127,7 @@ namespace TopSpeed.Input
             KeyRight = Key.Right;
             KeyThrottle = Key.Up;
             KeyBrake = Key.Down;
+            KeyClutch = Key.LeftShift;
             KeyGearUp = Key.A;
             KeyGearDown = Key.Z;
             KeyHorn = Key.Space;

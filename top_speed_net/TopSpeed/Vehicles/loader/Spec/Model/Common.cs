@@ -13,6 +13,9 @@ namespace TopSpeed.Vehicles.Loader
             public float PitchCurveExponent { get; set; } = 0.85f;
             public int Gears { get; set; }
             public float Steering { get; set; }
+            public TransmissionType PrimaryTransmissionType { get; set; } = TransmissionType.Atc;
+            public TransmissionType[] SupportedTransmissionTypes { get; set; } = new[] { TransmissionType.Atc };
+            public AutomaticDrivelineTuning AutomaticTuning { get; set; } = AutomaticDrivelineTuning.Default;
             public int HasWipers { get; set; }
             public float IdleRpm { get; set; }
             public float MaxRpm { get; set; }

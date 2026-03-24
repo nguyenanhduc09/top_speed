@@ -38,6 +38,7 @@ namespace TopSpeed.Input
             Add(InputAction.SteerRight, LocalizationService.Mark("Steer right"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbRight, key => SetRight(key), () => _right, axis => SetRight(axis));
             Add(InputAction.Throttle, LocalizationService.Mark("Throttle"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbThrottle, key => SetThrottle(key), () => _throttle, axis => SetThrottle(axis));
             Add(InputAction.Brake, LocalizationService.Mark("Brake"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbBrake, key => SetBrake(key), () => _brake, axis => SetBrake(axis));
+            Add(InputAction.Clutch, LocalizationService.Mark("Clutch"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbClutch, key => SetClutch(key), () => _clutch, axis => SetClutch(axis));
             Add(InputAction.GearUp, LocalizationService.Mark("Shift gear up"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbGearUp, key => SetGearUp(key), () => _gearUp, axis => SetGearUp(axis));
             Add(InputAction.GearDown, LocalizationService.Mark("Shift gear down"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbGearDown, key => SetGearDown(key), () => _gearDown, axis => SetGearDown(axis));
             Add(InputAction.Horn, LocalizationService.Mark("Use horn"), InputScope.Driving, TriggerMode.Hold, TriggerMode.Hold, () => _kbHorn, key => SetHorn(key), () => _horn, axis => SetHorn(axis));

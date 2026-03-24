@@ -70,6 +70,7 @@ namespace TopSpeed.Input
         private JoystickAxisOrButton _right;
         private JoystickAxisOrButton _throttle;
         private JoystickAxisOrButton _brake;
+        private JoystickAxisOrButton _clutch;
         private JoystickAxisOrButton _gearUp;
         private JoystickAxisOrButton _gearDown;
         private JoystickAxisOrButton _horn;
@@ -89,6 +90,7 @@ namespace TopSpeed.Input
         private Key _kbRight;
         private Key _kbThrottle;
         private Key _kbBrake;
+        private Key _kbClutch;
         private Key _kbGearUp;
         private Key _kbGearDown;
         private Key _kbHorn;

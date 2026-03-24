@@ -59,7 +59,9 @@ namespace TopSpeed.Bots
             int gears,
             CurveProfile torqueCurve,
             float[]? gearRatios = null,
-            TransmissionPolicy? transmissionPolicy = null)
+            TransmissionPolicy? transmissionPolicy = null,
+            TransmissionType activeTransmissionType = TransmissionType.Atc,
+            AutomaticDrivelineTuning? automaticTuning = null)
         {
             SurfaceTractionFactor = Math.Max(0.01f, surfaceTractionFactor);
             Deceleration = Math.Max(0.01f, deceleration);
@@ -114,6 +116,8 @@ namespace TopSpeed.Bots
             Gears = Math.Max(1, gears);
             GearRatios = BuildRatios(Gears, gearRatios);
             TransmissionPolicy = transmissionPolicy ?? TransmissionPolicy.Default;
+            ActiveTransmissionType = activeTransmissionType;
+            AutomaticTuning = automaticTuning ?? AutomaticDrivelineTuning.Default;
             TorqueCurve = torqueCurve ?? throw new ArgumentNullException(nameof(torqueCurve));
 
             Powertrain = new Config(
@@ -198,6 +202,8 @@ namespace TopSpeed.Bots
         public float[] GearRatios { get; }
         public CurveProfile TorqueCurve { get; }
         public TransmissionPolicy TransmissionPolicy { get; }
+        public TransmissionType ActiveTransmissionType { get; }
+        public AutomaticDrivelineTuning AutomaticTuning { get; }
         public Config Powertrain { get; }
 
         public float GetGearRatio(int gear)

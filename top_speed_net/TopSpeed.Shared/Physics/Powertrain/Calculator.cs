@@ -13,13 +13,18 @@ namespace TopSpeed.Physics.Powertrain
             int gear,
             float speedMps,
             float throttle,
-            bool inReverse)
+            bool inReverse,
+            float? driveRatioOverride = null)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
             var wheelCircumference = config.WheelRadiusM * TwoPi;
-            var ratio = inReverse ? config.ReverseGearRatio : config.GetGearRatio(gear);
+            var ratio = inReverse
+                ? config.ReverseGearRatio
+                : (driveRatioOverride.HasValue && driveRatioOverride.Value > 0f
+                    ? driveRatioOverride.Value
+                    : config.GetGearRatio(gear));
             var speedBasedRpm = wheelCircumference > 0f
                 ? (speedMps / wheelCircumference) * 60f * ratio * config.FinalDriveRatio
                 : 0f;
@@ -28,7 +33,7 @@ namespace TopSpeed.Physics.Powertrain
             return Clamp(rpm, config.IdleRpm, config.RevLimiter);
         }
 
-        public static float RpmAtSpeed(Config config, float speedMps, int gear)
+        public static float RpmAtSpeed(Config config, float speedMps, int gear, float? driveRatioOverride = null)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
@@ -36,7 +41,9 @@ namespace TopSpeed.Physics.Powertrain
             var wheelCircumference = config.WheelRadiusM * TwoPi;
             if (wheelCircumference <= 0f)
                 return 0f;
-            var gearRatio = config.GetGearRatio(gear);
+            var gearRatio = driveRatioOverride.HasValue && driveRatioOverride.Value > 0f
+                ? driveRatioOverride.Value
+                : config.GetGearRatio(gear);
             return (speedMps / wheelCircumference) * 60f * gearRatio * config.FinalDriveRatio;
         }
 
@@ -60,7 +67,8 @@ namespace TopSpeed.Physics.Powertrain
             float speedMps,
             float throttle,
             float surfaceTractionModifier,
-            float longitudinalGripFactor)
+            float longitudinalGripFactor,
+            float? driveRatioOverride = null)
         {
             return DriveAccelCore(
                 config,
@@ -69,7 +77,8 @@ namespace TopSpeed.Physics.Powertrain
                 speedMps,
                 throttle,
                 surfaceTractionModifier,
-                longitudinalGripFactor);
+                longitudinalGripFactor,
+                driveRatioOverride);
         }
 
         public static float ReverseAccel(
@@ -110,7 +119,8 @@ namespace TopSpeed.Physics.Powertrain
             bool inReverse,
             float speedMps,
             float surfaceDecelerationModifier,
-            float currentEngineRpm)
+            float currentEngineRpm,
+            float? driveRatioOverride = null)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
@@ -121,7 +131,11 @@ namespace TopSpeed.Physics.Powertrain
             if (rpmRange <= 0f)
                 return 0f;
 
-            var ratio = inReverse ? config.ReverseGearRatio : config.GetGearRatio(gear);
+            var ratio = inReverse
+                ? config.ReverseGearRatio
+                : (driveRatioOverride.HasValue && driveRatioOverride.Value > 0f
+                    ? driveRatioOverride.Value
+                    : config.GetGearRatio(gear));
             var speedBasedRpm = RpmForRatio(config, speedMps, ratio);
             var effectiveRpm = Math.Max(currentEngineRpm, speedBasedRpm);
             var rpmFactor = (effectiveRpm - config.IdleRpm) / rpmRange;
@@ -153,7 +167,8 @@ namespace TopSpeed.Physics.Powertrain
             float speedMps,
             float throttle,
             float surfaceTractionModifier,
-            float longitudinalGripFactor)
+            float longitudinalGripFactor,
+            float? driveRatioOverride = null)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
@@ -162,9 +177,13 @@ namespace TopSpeed.Physics.Powertrain
             if (clampedThrottle <= 0f)
                 return 0f;
 
-            var driveRpm = DriveRpm(config, gear, speedMps, clampedThrottle, inReverse);
+            var driveRpm = DriveRpm(config, gear, speedMps, clampedThrottle, inReverse, driveRatioOverride);
             var engineTorque = EngineTorque(config, driveRpm) * clampedThrottle * config.PowerFactor;
-            var ratio = inReverse ? config.ReverseGearRatio : config.GetGearRatio(gear);
+            var ratio = inReverse
+                ? config.ReverseGearRatio
+                : (driveRatioOverride.HasValue && driveRatioOverride.Value > 0f
+                    ? driveRatioOverride.Value
+                    : config.GetGearRatio(gear));
             var wheelTorque = engineTorque * ratio * config.FinalDriveRatio * config.DrivetrainEfficiency;
             var wheelForce = wheelTorque / config.WheelRadiusM;
             var tractionLimit = config.TireGripCoefficient * surfaceTractionModifier * config.MassKg * Gravity;
