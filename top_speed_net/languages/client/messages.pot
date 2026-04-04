@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 14:56+0200\n"
+"POT-Creation-Date: 2026-04-04 17:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,6 +90,10 @@ msgstr ""
 
 #: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\Multiplayer.cs:167
 msgid "Adventure tracks are loading"
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed.Shared\Protocol\RoomTexts.cs:7
+msgid "All players are ready. Starting game."
 msgstr ""
 
 #: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Volume.cs:50
@@ -1757,7 +1761,7 @@ msgid ""
 "manually."
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:195
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:198
 msgid "No shortcut group selected."
 msgstr ""
 
@@ -3758,7 +3762,7 @@ msgstr ""
 msgid "one-on-one"
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:80
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:82
 msgid "panel"
 msgstr ""
 
@@ -3954,7 +3958,7 @@ msgstr ""
 msgid "{0} has joined the game."
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:183
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:186
 #, csharp-format
 msgid "{0} has no shortcuts."
 msgstr ""
@@ -4001,7 +4005,7 @@ msgstr ""
 msgid "{0} must be between {1} and {2}."
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:82
+#: D:\top_speed\top_speed_net\TopSpeed\Race\Core\Mode\Panels.cs:86
 #, csharp-format
 msgid "{0} panel"
 msgstr ""
@@ -4075,4 +4079,10 @@ msgstr ""
 #: D:\top_speed\top_speed_net\TopSpeed\Game\Race\Results\ResultCatalog.cs:73
 #, csharp-format
 msgid "{0}: position {1}, time {2}."
+msgstr ""
+
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:152
+#: D:\top_speed\top_speed_net\TopSpeed\Menu\registry\options\Controls.cs:213
+#, csharp-format
+msgid "{0}: {1}"
 msgstr ""

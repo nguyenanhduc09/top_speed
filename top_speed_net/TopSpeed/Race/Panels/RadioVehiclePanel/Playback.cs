@@ -12,7 +12,7 @@ namespace TopSpeed.Race.Panels
             {
                 if (_playlist.Count == 0)
                 {
-                    _announce(LocalizationService.Mark("No radio media loaded."));
+                    _announce(LocalizationService.Translate(LocalizationService.Mark("No radio media loaded.")));
                     return;
                 }
 
@@ -22,15 +22,15 @@ namespace TopSpeed.Race.Panels
                 if (!LoadPlaylistEntry(_playlistIndex, preservePlaybackState: false, announceLoaded: true))
                     return;
                 _radio.SetPlayback(true);
-                _announce(LocalizationService.Mark("Radio playing."));
+                _announce(LocalizationService.Translate(LocalizationService.Mark("Radio playing.")));
                 _playbackChanged?.Invoke(_radio.HasMedia, _radio.DesiredPlaying, _radio.MediaId);
                 return;
             }
 
             _radio.TogglePlayback();
             _announce(_radio.DesiredPlaying
-                ? LocalizationService.Mark("Radio playing.")
-                : LocalizationService.Mark("Radio paused."));
+                ? LocalizationService.Translate(LocalizationService.Mark("Radio playing."))
+                : LocalizationService.Translate(LocalizationService.Mark("Radio paused.")));
             _playbackChanged?.Invoke(_radio.HasMedia, _radio.DesiredPlaying, _radio.MediaId);
         }
 
@@ -38,7 +38,7 @@ namespace TopSpeed.Race.Panels
         {
             if (_playlist.Count == 0)
             {
-                _announce(LocalizationService.Mark("No folder playlist loaded."));
+                _announce(LocalizationService.Translate(LocalizationService.Mark("No folder playlist loaded.")));
                 return;
             }
 
@@ -60,8 +60,8 @@ namespace TopSpeed.Race.Panels
                 BuildPlaylistFromFolder(lastFolder, preserveCurrentMedia: true, announceErrors: false);
 
             _announce(_shuffleMode
-                ? LocalizationService.Mark("Shuffle mode on.")
-                : LocalizationService.Mark("Shuffle mode off."));
+                ? LocalizationService.Translate(LocalizationService.Mark("Shuffle mode on."))
+                : LocalizationService.Translate(LocalizationService.Mark("Shuffle mode off.")));
         }
 
         private void ToggleLoop()
@@ -69,8 +69,8 @@ namespace TopSpeed.Race.Panels
             _loopMode = !_loopMode;
             ApplyLoopMode();
             _announce(_loopMode
-                ? LocalizationService.Mark("Loop mode on.")
-                : LocalizationService.Mark("Loop mode off."));
+                ? LocalizationService.Translate(LocalizationService.Mark("Loop mode on."))
+                : LocalizationService.Translate(LocalizationService.Mark("Loop mode off.")));
         }
 
         private bool LoadPlaylistEntry(int index, bool preservePlaybackState, bool announceLoaded, bool announceNameOnly = false)

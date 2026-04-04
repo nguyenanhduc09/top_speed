@@ -76,10 +76,14 @@ namespace TopSpeed.Race
         private static string FormatPanelAnnouncement(string panelName)
         {
             if (string.IsNullOrWhiteSpace(panelName))
-                return LocalizationService.Mark("Panel");
-            if (panelName.EndsWith(LocalizationService.Mark("panel"), StringComparison.OrdinalIgnoreCase))
-                return panelName;
-            return LocalizationService.Format(LocalizationService.Mark("{0} panel"), panelName);
+                return LocalizationService.Translate(LocalizationService.Mark("Panel"));
+
+            var localizedPanelName = LocalizationService.Translate(panelName);
+            var localizedPanelSuffix = LocalizationService.Translate(LocalizationService.Mark("panel"));
+            if (localizedPanelName.EndsWith(localizedPanelSuffix, StringComparison.OrdinalIgnoreCase))
+                return localizedPanelName;
+
+            return LocalizationService.Format(LocalizationService.Mark("{0} panel"), localizedPanelName);
         }
     }
 }

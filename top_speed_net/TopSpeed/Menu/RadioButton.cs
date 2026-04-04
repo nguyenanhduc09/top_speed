@@ -75,7 +75,7 @@ namespace TopSpeed.Menu
 
             _setIndex(targetIndex);
             _onChanged?.Invoke(targetIndex);
-            announcement = _values[targetIndex];
+            announcement = GetValueLabel(targetIndex);
             return true;
         }
 

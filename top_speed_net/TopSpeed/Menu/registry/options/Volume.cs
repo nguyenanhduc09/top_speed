@@ -87,7 +87,7 @@ namespace TopSpeed.Menu
                 onChanged: _ => _audio.ApplyAudioSettings(),
                 hint: LocalizationService.Format(
                     LocalizationService.Mark("{0} Use LEFT or RIGHT to change by 1, PAGE UP or PAGE DOWN to change by 10, HOME for maximum, END for minimum."),
-                    hint));
+                    LocalizationService.Translate(hint)));
         }
     }
 }

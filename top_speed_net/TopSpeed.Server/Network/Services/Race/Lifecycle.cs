@@ -95,7 +95,7 @@ namespace TopSpeed.Server.Network
                     return;
                 }
 
-                _owner.SendProtocolMessageToRoom(room, LocalizationService.Mark("All players are ready. Starting game."));
+                _owner.SendProtocolMessageToRoom(room, RoomTexts.AllPlayersReadyStartingGame);
                 _owner._logger.Info(LocalizationService.Format(
                     LocalizationService.Mark("All loadouts ready: room={0} \"{1}\", starting race."),
                     room.Id,

@@ -148,7 +148,10 @@ namespace TopSpeed.Menu
             {
                 var definition = action;
                 items.Add(new MenuItem(
-                    () => $"{definition.Label}: {_mapping.FormatMappingValue(definition.Action, mode)}",
+                    () => LocalizationService.Format(
+                        LocalizationService.Mark("{0}: {1}"),
+                        LocalizationService.Translate(definition.Label),
+                        _mapping.FormatMappingValue(definition.Action, mode)),
                     MenuAction.None,
                     onActivate: () => _mapping.BeginMapping(mode, definition.Action)));
             }
@@ -206,7 +209,10 @@ namespace TopSpeed.Menu
                 var displayName = binding.DisplayName;
                 var description = binding.Description;
                 items.Add(new MenuItem(
-                    () => $"{displayName}: {GetShortcutKeyText(actionId, binding.Key)}",
+                    () => LocalizationService.Format(
+                        LocalizationService.Mark("{0}: {1}"),
+                        LocalizationService.Translate(displayName),
+                        GetShortcutKeyText(actionId, binding.Key)),
                     MenuAction.None,
                     onActivate: () => _mapping.BeginShortcutMapping(_activeShortcutGroupId, actionId, displayName),
                     hint: description));

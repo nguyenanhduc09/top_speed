@@ -51,7 +51,7 @@ namespace TopSpeed.Race.Panels
             var fullPath = Path.GetFullPath(selectedPath);
             if (!File.Exists(fullPath))
             {
-                _announce(LocalizationService.Mark("The selected media file does not exist."));
+                _announce(LocalizationService.Translate(LocalizationService.Mark("The selected media file does not exist.")));
                 return;
             }
 
@@ -84,8 +84,8 @@ namespace TopSpeed.Race.Panels
                 return;
 
             _announce(_shuffleMode
-                ? LocalizationService.Mark("Shuffle mode on.")
-                : LocalizationService.Mark("Shuffle mode off."));
+                ? LocalizationService.Translate(LocalizationService.Mark("Shuffle mode on."))
+                : LocalizationService.Translate(LocalizationService.Mark("Shuffle mode off.")));
         }
 
         private void HandlePlaybackEndAdvance()

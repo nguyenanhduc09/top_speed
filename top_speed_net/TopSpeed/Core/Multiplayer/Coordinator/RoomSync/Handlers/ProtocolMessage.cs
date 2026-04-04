@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TopSpeed.Localization;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
 
@@ -16,41 +17,45 @@ namespace TopSpeed.Core.Multiplayer
             if (message == null)
                 return;
 
-            var effects = new List<PacketEffect>();
-            AddProtocolMessageEffects(message, effects);
+            var localizedMessage = string.IsNullOrWhiteSpace(message.Message)
+                ? string.Empty
+                : LocalizationService.Translate(message.Message);
 
-            if (!string.IsNullOrWhiteSpace(message.Message))
-                effects.Add(PacketEffect.Speak(message.Message));
+            var effects = new List<PacketEffect>();
+            AddProtocolMessageEffects(message, localizedMessage, effects);
+
+            if (!string.IsNullOrWhiteSpace(localizedMessage))
+                effects.Add(PacketEffect.Speak(localizedMessage));
 
             DispatchPacketEffects(effects);
         }
 
-        private static void AddProtocolMessageEffects(PacketProtocolMessage message, List<PacketEffect> effects)
+        private static void AddProtocolMessageEffects(PacketProtocolMessage message, string localizedMessage, List<PacketEffect> effects)
         {
             switch (message.Code)
             {
                 case ProtocolMessageCode.ServerPlayerConnected:
                     effects.Add(PacketEffect.PlaySound("online.ogg"));
-                    effects.Add(PacketEffect.AddConnectionHistory(message.Message));
+                    effects.Add(PacketEffect.AddConnectionHistory(localizedMessage));
                     break;
 
                 case ProtocolMessageCode.ServerPlayerDisconnected:
                     effects.Add(PacketEffect.PlaySound("offline.ogg"));
-                    effects.Add(PacketEffect.AddConnectionHistory(message.Message));
+                    effects.Add(PacketEffect.AddConnectionHistory(localizedMessage));
                     break;
 
                 case ProtocolMessageCode.Chat:
                     effects.Add(PacketEffect.PlaySound("chat.ogg"));
-                    effects.Add(PacketEffect.AddGlobalChatHistory(message.Message));
+                    effects.Add(PacketEffect.AddGlobalChatHistory(localizedMessage));
                     break;
 
                 case ProtocolMessageCode.RoomChat:
                     effects.Add(PacketEffect.PlaySound("room_chat.ogg"));
-                    effects.Add(PacketEffect.AddRoomChatHistory(message.Message));
+                    effects.Add(PacketEffect.AddRoomChatHistory(localizedMessage));
                     break;
 
                 default:
-                    effects.Add(PacketEffect.AddRoomEventHistory(message.Message));
+                    effects.Add(PacketEffect.AddRoomEventHistory(localizedMessage));
                     break;
             }
         }

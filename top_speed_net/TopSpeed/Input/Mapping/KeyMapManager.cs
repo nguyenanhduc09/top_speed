@@ -88,7 +88,7 @@ namespace TopSpeed.Input
 
         public string GetMappingInstruction(bool keyboard, InputAction action)
         {
-            var label = GetLabel(action).ToLowerInvariant();
+            var label = LocalizationService.Translate(GetLabel(action)).ToLowerInvariant();
             return keyboard
                 ? LocalizationService.Format(LocalizationService.Mark("Press the new key for {0}."), label)
                 : LocalizationService.Format(LocalizationService.Mark("Move or press the controller control for {0}."), label);
