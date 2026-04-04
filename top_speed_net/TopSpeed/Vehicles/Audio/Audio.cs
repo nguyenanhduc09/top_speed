@@ -55,6 +55,15 @@ namespace TopSpeed.Vehicles
                 _soundSnow);
         }
 
+        private void StopSurfaceLoops()
+        {
+            _soundAsphalt.Stop();
+            _soundGravel.Stop();
+            _soundWater.Stop();
+            _soundSand.Stop();
+            _soundSnow.Stop();
+        }
+
         private void SwitchSurfaceSound(TrackSurface surface)
         {
             switch (surface)

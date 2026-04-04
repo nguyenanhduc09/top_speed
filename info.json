@@ -1,16 +1,10 @@
 {
-  "version": "2026.4.3.3",
+  "version": "2026.4.4.1",
   "serverVersion": "2026.4.3.1",
   "changes": [
-    "Added the Spanish language to the game as an official language.",
-    "Improved drag resistance for vehicles, added new keys and sections to custom vehicles, and updated official ones.",
-    "Fixed a lot of bugs with vehicles, for example in manual, starting from a high gear and releasing throddle after gaining speed no longer gets stuck. Vehicles are now using real drag and resistance physics.",
-    "Turning off engine no longer cuts speed and engine immediately.",
-    "Fixed bugs with multiplayer server, especially when all players are finished racing. Players are no longer stuck.",
-    "Layed the ground work for future cross-platform compatibility on other operating systems for the game itself.",
-    "Major code refactor in many areas, such as keyboard, joystick, window, text input, and multiplayer packet handling.",
-    "Update vehicle creation guide and added a lot of details for new and existing sections and explanations.",
-    "Fixed some localization bugs."
+    "Update Mini Audio Ex to not require Visual C++ redistributable on the target machines to run.",
+    "Update engine shutdown and added a fadeout instead of a hard cut to the engine sound.",
+    "Fixed some issues with surface loop sounds.",
   ],
   "serverChanges": [
     "Updated server room model and explicit race finish events for players.",

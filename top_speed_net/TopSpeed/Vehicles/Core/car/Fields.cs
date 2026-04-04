@@ -19,6 +19,7 @@ namespace TopSpeed.Vehicles
         private const int MaxSurfaceFreq = 100000;
         private const float CrashVibrationSeconds = 1.5f;
         private const float BumpVibrationSeconds = 0.2f;
+        private const float EngineShutdownFadeSeconds = 0.12f;
         private const int ReverseGear = -1;
         private const int NeutralGear = 0;
         private const int FirstForwardGear = 1;

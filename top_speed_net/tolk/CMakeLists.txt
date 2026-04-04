@@ -1,23 +1,36 @@
 cmake_minimum_required(VERSION 3.10)
+
+if (POLICY CMP0091)
+  cmake_policy(SET CMP0091 NEW)
+endif()
+
 project(Tolk)
 
 option (TOLK_MULTITHREADED "Build Multi-Threaded (/MT) instead of Multi-Threaded DLL (/MD)" OFF)
 option (BUILD_EXAMPLES "Build example applications" OFF)
 
-if (TOLK_MULTITHREADED)
+if (MSVC)
+  if (TOLK_MULTITHREADED)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  else()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
+  endif()
+
   foreach (flag_var
       CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
       CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
       CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
       CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    if (${flag_var} MATCHES "/MD")
-      STRING(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+    if (DEFINED ${flag_var} AND ${flag_var} MATCHES "/MD")
+      string(REGEX REPLACE "/MDd?" "" ${flag_var} "${${flag_var}}")
+      string(STRIP "${${flag_var}}" ${flag_var})
     endif()
-  endforeach(flag_var)
+  endforeach()
 endif()
 
 set (TOLK_COMPILE_FLAGS -D_EXPORTING -DUNICODE -D_UNICODE)
 set (TOLK_LINK_FLAGS user32 ole32 oleaut32 sapi)
+set (TOLK_WINDOWS_LIB_DIR "${PROJECT_SOURCE_DIR}/../CrossSpeak/lib/windows")
 
 add_library(Tolk SHARED src/Tolk.cpp src/Tolk.h src/TolkVersion.h
   src/ScreenReaderDriver.h src/Tolk.rc
@@ -52,12 +65,16 @@ install (FILES Tolk.pdb DESTINATION lib OPTIONAL)
 # add header file
 install (FILES src/Tolk.h DESTINATION include)
 # add Client libraries
-if (${CMAKE_GENERATOR_PLATFORM} MATCHES "x64")
-  install (FILES libs/x64/nvdaControllerClient64.dll libs/x64/SAAPI64.dll DESTINATION lib)
-  install (FILES libs/x64/BoyCtrl-x64.dll DESTINATION lib)
-  install (FILES libs/x64/ZDSRAPI_x64.dll libs/x64/ZDSRAPI.ini DESTINATION lib)
-else()
-  install (FILES libs/x86/dolapi32.dll libs/x86/nvdaControllerClient32.dll libs/x86/SAAPI32.dll DESTINATION lib)
-  install (FILES libs/x86/BoyCtrl.dll DESTINATION lib)
-  install (FILES libs/x86/ZDSRAPI.dll libs/x64/ZDSRAPI.ini DESTINATION lib)
+if (WIN32)
+  if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    install (FILES
+      "${TOLK_WINDOWS_LIB_DIR}/nvdaControllerClient64.dll"
+      "${TOLK_WINDOWS_LIB_DIR}/SAAPI64.dll"
+      "${TOLK_WINDOWS_LIB_DIR}/BoyCtrl-x64.dll"
+      "${TOLK_WINDOWS_LIB_DIR}/ZDSRAPI_x64.dll"
+      "${TOLK_WINDOWS_LIB_DIR}/ZDSRAPI.ini"
+      DESTINATION lib)
+  else()
+    message(FATAL_ERROR "This repository only stages the x64 Windows Tolk companion DLLs in CrossSpeak/lib/windows.")
+  endif()
 endif()

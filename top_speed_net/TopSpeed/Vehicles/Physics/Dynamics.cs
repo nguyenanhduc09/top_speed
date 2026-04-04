@@ -82,19 +82,8 @@ namespace TopSpeed.Vehicles
             if (_engineLifecycleState == EngineLifecycleState.Stopping)
             {
                 _engine.StepShutdown(_speed, elapsed);
-            }
-            else if (_soundEngine.IsPlaying)
-            {
-                _engine.SyncFromSpeed(
-                    _speed,
-                    GetDriveGear(),
-                    elapsed,
-                    throttleInput: 0,
-                    inReverse: _gear == ReverseGear,
-                    reverseGearRatio: _reverseGearRatio,
-                    couplingMode: EngineCouplingMode.Locked,
-                    couplingFactor: 1f,
-                    driveRatioOverride: _effectiveDriveRatioOverride > 0f ? _effectiveDriveRatioOverride : (float?)null);
+                if (_engine.Rpm <= 1f)
+                    CompleteEngineShutdown();
             }
             else
             {
@@ -103,11 +92,10 @@ namespace TopSpeed.Vehicles
 
             UpdateEngineFreq();
 
-            if (_engineLifecycleState == EngineLifecycleState.Stopping
-                && _speed <= 0.05f
-                && _engine.Rpm <= 1f)
+            if (_engineLifecycleState == EngineLifecycleState.Stopped
+                && _speed <= 0.05f)
             {
-                FinalizeEngineShutdown();
+                CompleteStop();
                 return;
             }
 
@@ -116,6 +104,8 @@ namespace TopSpeed.Vehicles
 
             _frame = 0;
             UpdateSoundRoad();
+            if (_speed <= 0f)
+                StopSurfaceLoops();
         }
     }
 }

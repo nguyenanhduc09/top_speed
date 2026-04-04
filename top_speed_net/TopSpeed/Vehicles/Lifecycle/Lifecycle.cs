@@ -151,6 +151,8 @@ namespace TopSpeed.Vehicles
             _engineLifecycleState = EngineLifecycleState.Stopping;
             _soundStart.Stop();
             _soundStop?.Stop();
+            if (_soundEngine.IsPlaying)
+                _soundEngine.Stop(EngineShutdownFadeSeconds);
 
             if (_state == CarState.Running || _state == CarState.Starting || _state == CarState.Stopped)
                 SetState(CarState.Stopping);
@@ -282,6 +284,7 @@ namespace TopSpeed.Vehicles
         {
             _soundBrake.Stop();
             _soundWipers?.Stop();
+            StopSurfaceLoops();
             _vibration?.StopEffect(VibrationEffectType.CurbLeft);
             _vibration?.StopEffect(VibrationEffectType.CurbRight);
             if (_engineLifecycleState != EngineLifecycleState.Stopped)
@@ -342,16 +345,24 @@ namespace TopSpeed.Vehicles
                 _vibration.StopEffect(effect);
         }
 
-        private void FinalizeEngineShutdown()
+        private void CompleteEngineShutdown()
         {
+            if (_engineLifecycleState == EngineLifecycleState.Stopped)
+                return;
+
             _engine.StopEngine();
-            _soundEngine.Stop();
             _soundThrottle?.Stop();
             _soundStop?.Restart(loop: false);
             _vibration?.StopEffect(VibrationEffectType.Engine);
             _engineLifecycleState = EngineLifecycleState.Stopped;
+            _speedDiff = 0f;
+        }
+
+        private void CompleteStop()
+        {
             _speed = 0f;
             _speedDiff = 0f;
+            StopSurfaceLoops();
             SetState(CarState.Stopped);
         }
     }

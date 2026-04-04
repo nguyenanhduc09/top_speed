@@ -142,6 +142,12 @@ namespace TopSpeed.Vehicles
 
         private void EnsureSurfaceLoopPlaying()
         {
+            if (_speed <= 0f)
+            {
+                StopSurfaceLoops();
+                return;
+            }
+
             switch (_surface)
             {
                 case TrackSurface.Asphalt:
