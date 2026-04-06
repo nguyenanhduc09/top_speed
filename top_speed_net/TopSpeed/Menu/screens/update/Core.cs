@@ -49,6 +49,20 @@ namespace TopSpeed.Menu
 
             if (_index == NoSelection && _autoFocusPending)
             {
+                if (_waitForTitleSpeechBeforeAutoFocus)
+                {
+                    if (input.IsAnyInputHeld())
+                    {
+                        _speech.Purge();
+                        _waitForTitleSpeechBeforeAutoFocus = false;
+                    }
+                    else if (_speech.IsSpeaking())
+                    {
+                        return MenuUpdateResult.None;
+                    }
+                }
+
+                _waitForTitleSpeechBeforeAutoFocus = false;
                 FocusFirstItem();
                 ClearAutoFocusPending();
             }

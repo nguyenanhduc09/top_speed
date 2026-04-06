@@ -27,6 +27,7 @@ namespace TopSpeed.Speech
         private Action? _prepareForInterruptableSpeech;
         private bool _screenReaderReady;
         private float _speechRate = 0.5f;
+        private bool _speechSuppressedUntilNextSpeak;
 
         public SpeechService(Func<bool>? isInputHeld = null, Action? prepareForInterruptableSpeech = null)
         {
@@ -102,6 +103,8 @@ namespace TopSpeed.Speech
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
+            _speechSuppressedUntilNextSpeak = false;
+
             var shouldInterruptCurrent = flag == SpeakFlag.NoInterruptButStop || flag == SpeakFlag.InterruptableButStop;
             var interruptSpeech = shouldInterruptCurrent || (allowConfiguredInterrupt && ScreenReaderInterrupt);
             if (interruptSpeech)
@@ -124,7 +127,9 @@ namespace TopSpeed.Speech
                 return;
             }
 
-            if (flag == SpeakFlag.None)
+            if (flag == SpeakFlag.None
+                || flag == SpeakFlag.NoInterrupt
+                || flag == SpeakFlag.NoInterruptButStop)
                 return;
 
             var interruptable = flag == SpeakFlag.Interruptable || flag == SpeakFlag.InterruptableButStop;
@@ -136,7 +141,10 @@ namespace TopSpeed.Speech
                 if (interruptable)
                 {
                     if (IsInputHeld())
+                    {
+                        Purge();
                         break;
+                    }
                 }
 
                 Thread.Sleep(10);
@@ -145,6 +153,9 @@ namespace TopSpeed.Speech
 
         public bool IsSpeaking()
         {
+            if (_speechSuppressedUntilNextSpeak)
+                return false;
+
             if (_watch.IsRunning)
                 return _watch.ElapsedMilliseconds < _timeRequiredMs;
 
@@ -167,6 +178,7 @@ namespace TopSpeed.Speech
         {
             _watch.Reset();
             _timeRequiredMs = 0;
+            _speechSuppressedUntilNextSpeak = true;
 
             if (_screenReaderReady)
             {

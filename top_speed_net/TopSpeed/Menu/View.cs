@@ -16,7 +16,7 @@ namespace TopSpeed.Menu
             string? title = null,
             Func<string>? titleProvider = null,
             bool preserveSelection = false,
-            SpeechService.SpeakFlag titleSpeakFlag = SpeechService.SpeakFlag.Interruptable)
+            SpeechService.SpeakFlag titleSpeakFlag = SpeechService.SpeakFlag.NoInterrupt)
         {
             if (string.IsNullOrWhiteSpace(id))
                 throw new ArgumentException("Screen id is required.", nameof(id));

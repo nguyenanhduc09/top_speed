@@ -18,7 +18,7 @@ namespace TopSpeed.Menu
                 return false;
 
             CancelHint();
-            _speech.Speak(hint!, SpeechService.SpeakFlag.Interruptable);
+            _speech.Speak(hint!, SpeechService.SpeakFlag.NoInterrupt);
             return true;
         }
 
@@ -28,14 +28,14 @@ namespace TopSpeed.Menu
             _justEntered = false;
         }
 
-        private void AnnounceCurrent(bool purge)
+        private void AnnounceCurrent(bool purge, SpeechService.SpeakFlag speakFlag = SpeechService.SpeakFlag.NoInterruptButStop)
         {
             if (_index == NoSelection)
                 return;
 
             var item = _items[_index];
             var displayText = item.GetDisplayText();
-            _speech.Speak(displayText);
+            _speech.Speak(displayText, speakFlag);
             ScheduleHint(item, _index, displayText);
         }
 
@@ -47,6 +47,7 @@ namespace TopSpeed.Menu
             CancelHint();
             var opening = _openingAnnouncementOverride ?? Title;
             _openingAnnouncementOverride = null;
+            _waitForTitleSpeechBeforeAutoFocus = !string.IsNullOrWhiteSpace(opening);
             if (!string.IsNullOrWhiteSpace(opening))
                 _speech.Speak(opening, ResolveTitleSpeakFlag());
 
@@ -81,7 +82,7 @@ namespace TopSpeed.Menu
                 var delayedHint = item.GetHintText();
                 if (!_usageHintsEnabled() || string.IsNullOrWhiteSpace(delayedHint))
                     return;
-                _speech.Speak(delayedHint!, SpeechService.SpeakFlag.Interruptable);
+                _speech.Speak(delayedHint!, SpeechService.SpeakFlag.NoInterrupt);
             });
         }
 

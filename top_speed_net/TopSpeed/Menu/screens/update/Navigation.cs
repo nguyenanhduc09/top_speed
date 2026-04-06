@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TopSpeed.Speech;
 
 namespace TopSpeed.Menu
 {
@@ -226,7 +227,7 @@ namespace TopSpeed.Menu
             SaveSelectionForActiveView();
             _activeActionIndex = NoSelection;
             PlayNavigateSound();
-            AnnounceCurrent(purge: false);
+            AnnounceCurrent(purge: false, SpeechService.SpeakFlag.NoInterrupt);
             _justEntered = false;
         }
 

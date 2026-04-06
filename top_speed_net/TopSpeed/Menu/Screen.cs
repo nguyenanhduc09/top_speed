@@ -47,6 +47,7 @@ namespace TopSpeed.Menu
         private bool _justEntered = true;
         private bool _ignoreHeldInput;
         private bool _autoFocusPending;
+        private bool _waitForTitleSpeechBeforeAutoFocus;
         private int _hintToken;
         private bool _disposed;
         private string? _menuSoundPresetRoot;
@@ -208,6 +209,7 @@ namespace TopSpeed.Menu
         private void ClearAutoFocusPending()
         {
             _autoFocusPending = false;
+            _waitForTitleSpeechBeforeAutoFocus = false;
         }
 
         private int ResolveScreenIndex(string? screenId)
