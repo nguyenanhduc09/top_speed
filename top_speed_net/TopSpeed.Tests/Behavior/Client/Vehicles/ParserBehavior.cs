@@ -87,7 +87,8 @@ namespace TopSpeed.Tests
                 primaryType: "manual",
                 supportedTypes: "manual",
                 shiftOnDemand: false,
-                includeAtcSection: false).Replace("[torque_curve]\n700rpm=120\n3000rpm=280\n6500rpm=180\n\n", string.Empty));
+                includeAtcSection: false,
+                includeTorqueCurveSection: false));
 
             var ok = VehicleTsvParser.TryLoadFromFile(tempFile.Path, out var _, out var issues);
 
@@ -102,6 +103,7 @@ namespace TopSpeed.Tests
             string supportedTypes,
             bool shiftOnDemand,
             bool includeAtcSection,
+            bool includeTorqueCurveSection = true,
             string? stopSound = null)
         {
             var atcSection = includeAtcSection
@@ -115,6 +117,14 @@ lock_throttle_min=0.2
 shift_release_coupling=0.5
 engage_rate=12
 disengage_rate=18
+"
+                : string.Empty;
+            var torqueCurveSection = includeTorqueCurveSection
+                ? @"
+[torque_curve]
+700rpm=120
+3000rpm=280
+6500rpm=180
 "
                 : string.Empty;
             var stopLine = string.IsNullOrWhiteSpace(stopSound) ? string.Empty : $"stop={stopSound}\n";
@@ -183,10 +193,7 @@ rolling_speed_factor=0.014
 driveline_drag_nm=22
 driveline_viscous_drag_nm_per_krpm=7.5
 
-[torque_curve]
-700rpm=120
-3000rpm=280
-6500rpm=180
+{torqueCurveSection}
 
 [transmission]
 primary_type={primaryType}
