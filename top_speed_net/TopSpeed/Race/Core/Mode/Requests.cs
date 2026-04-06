@@ -27,7 +27,7 @@ namespace TopSpeed.Race
                 _engineStarted = true;
                 if (_car.State == CarState.Crashed)
                     _car.RestartAfterCrash();
-                else if (_car.State == CarState.Stopped && _lap <= _nrOfLaps)
+                else if (_car.State == CarState.Stopped)
                     _car.Start();
                 else
                     _car.RestartFromStall();

@@ -161,6 +161,25 @@ namespace TopSpeed.Vehicles
             _vibration?.StopEffect(VibrationEffectType.Engine);
         }
 
+        public virtual void StopMotionImmediately()
+        {
+            _speed = 0f;
+            _speedDiff = 0f;
+            _lateralVelocityMps = 0f;
+            _yawRateRad = 0f;
+            _currentThrottle = 0;
+            _currentBrake = 0;
+            _thrust = 0;
+            _brakeFrequency = 0;
+            _prevBrakeFrequency = 0;
+            _surfaceFrequency = 0;
+            _prevSurfaceFrequency = 0;
+            _soundBrake.Stop();
+            StopSurfaceLoops();
+            _vibration?.StopEffect(VibrationEffectType.CurbLeft);
+            _vibration?.StopEffect(VibrationEffectType.CurbRight);
+        }
+
         public virtual void Crash()
         {
             _speed = 0;

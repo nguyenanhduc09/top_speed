@@ -1,7 +1,8 @@
 {
-  "version": "2026.4.6.1",
+  "version": "2026.4.6.2",
   "serverVersion": "2026.4.6.1",
   "changes": [
+    "Fixed some bugs when the vehicle crosses the finish line.",
     "Improved and retuned all official vehicles significantly and fixed the problem of unusable top gears.",
     "Rewrote the drag model to be more physical-based instead of using synthetic numbers. Now it also handles wind, and track weather is affected by that. This is still a partial work and tracks need to be updated.",
     "Fixed a few errors with speech backend switching.",

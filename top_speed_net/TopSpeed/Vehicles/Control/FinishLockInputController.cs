@@ -16,8 +16,8 @@ namespace TopSpeed.Vehicles.Control
             return new CarControlIntent(
                 _input.GetSteering(),
                 throttle: 0,
-                brake: 0,
-                clutch: 0,
+                brake: _input.GetBrake(),
+                clutch: _input.GetClutch(),
                 horn: _input.GetHorn(),
                 gearUp: false,
                 gearDown: false);

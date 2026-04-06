@@ -46,6 +46,7 @@ namespace TopSpeed.Vehicles
         void RestartFromStall();
         void RestartAfterCrash();
         void ShutdownEngine();
+        void StopMotionImmediately();
         void Crash();
         void MiniCrash(float newPosition);
         void Bump(float bumpX, float bumpY, float speedDeltaKph);
