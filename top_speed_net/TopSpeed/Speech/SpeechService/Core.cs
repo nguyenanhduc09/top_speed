@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-#if NETFRAMEWORK
-using System.Speech.Synthesis;
-#endif
 using System.Threading;
 using TopSpeed.Input;
 using TopSpeed.Localization;
@@ -24,9 +21,6 @@ namespace TopSpeed.Speech
 
         private readonly Stopwatch _watch = new Stopwatch();
         private readonly IScreenReader _screenReader;
-#if NETFRAMEWORK
-        private SpeechSynthesizer? _sapi;
-#endif
         private long _timeRequiredMs;
         private string _lastSpoken = string.Empty;
         private Func<bool>? _isInputHeld;
@@ -42,7 +36,7 @@ namespace TopSpeed.Speech
             _screenReaderReady = InitializeScreenReader();
         }
 
-        public bool IsAvailable => _screenReaderReady || IsSapiInitialized();
+        public bool IsAvailable => _screenReaderReady;
 
         public float ScreenReaderRateMs { get; set; }
         public SpeechOutputMode OutputMode { get; set; } = SpeechOutputMode.Speech;
@@ -127,14 +121,7 @@ namespace TopSpeed.Speech
 
             if (!spoke)
             {
-#if NETFRAMEWORK
-                EnsureSapi();
-                _sapi!.SpeakAsync(text);
-                while (!IsSpeaking())
-                {
-                    Thread.Sleep(0);
-                }
-#endif
+                return;
             }
 
             if (flag == SpeakFlag.None)
@@ -173,34 +160,13 @@ namespace TopSpeed.Speech
                 }
             }
 
-#if NETFRAMEWORK
-            return _sapi != null && _sapi.State == SynthesizerState.Speaking;
-#else
             return false;
-#endif
         }
 
         public void Purge()
         {
             _watch.Reset();
             _timeRequiredMs = 0;
-#if NETFRAMEWORK
-            if (_sapi != null)
-            {
-                try
-                {
-                    _sapi.SpeakAsyncCancelAll();
-                }
-                catch (OperationCanceledException)
-                {
-                }
-
-                while (IsSpeaking())
-                {
-                    Thread.Sleep(0);
-                }
-            }
-#endif
 
             if (_screenReaderReady)
             {
@@ -217,9 +183,6 @@ namespace TopSpeed.Speech
         public void Dispose()
         {
             Purge();
-#if NETFRAMEWORK
-            _sapi?.Dispose();
-#endif
 
             try
             {
@@ -242,7 +205,7 @@ namespace TopSpeed.Speech
                 {
                 }
 
-                _screenReader.TrySAPI(false);
+                _screenReader.TrySAPI(true);
                 _screenReader.PreferSAPI(false);
                 var initialized = _screenReader.Initialize();
                 if (initialized)
@@ -294,23 +257,6 @@ namespace TopSpeed.Speech
                 return false;
             }
         }
-
-        private bool IsSapiInitialized()
-        {
-#if NETFRAMEWORK
-            return _sapi != null;
-#else
-            return false;
-#endif
-        }
-
-#if NETFRAMEWORK
-        private void EnsureSapi()
-        {
-            if (_sapi == null)
-                _sapi = new SpeechSynthesizer();
-        }
-#endif
 
         private void StartSpeakTimer(string text)
         {

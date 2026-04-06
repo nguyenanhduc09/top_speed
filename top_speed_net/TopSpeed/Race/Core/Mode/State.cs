@@ -69,7 +69,7 @@ namespace TopSpeed.Race
             _car.SetOverrideController(_finishLockController);
             _car.SetNeutralGear();
             _car.Quiet();
-            _car.Stop();
+            _car.ShutdownEngine();
             _raceTime = (int)(_stopwatch.ElapsedMilliseconds - _stopwatchDiffMs);
             _requirePostFinishStopBeforeExit = true;
         }
