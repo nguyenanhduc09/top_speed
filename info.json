@@ -1,6 +1,6 @@
 {
   "version": "2026.4.6.1",
-  "serverVersion": "2026.4.3.1",
+  "serverVersion": "2026.4.6.1",
   "changes": [
     "Improved and retuned all official vehicles significantly and fixed the problem of unusable top gears.",
     "Rewrote the drag model to be more physical-based instead of using synthetic numbers. Now it also handles wind, and track weather is affected by that. This is still a partial work and tracks need to be updated.",
@@ -8,6 +8,7 @@
     "Menu movement speech is now interruptable. This fixes the problem of SAPI speaking old text while moving in menus."
   ],
   "serverChanges": [
+    "Some server protocol changes, mostly for tracks.",
     "Updated server room model and explicit race finish events for players.",
     "Fixed bugs with race finish events."
   ]

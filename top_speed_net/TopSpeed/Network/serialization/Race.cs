@@ -59,51 +59,69 @@ namespace TopSpeed.Network
                 return false;
             if (data[0] != ProtocolConstants.Version || data[1] != (byte)Command.LoadCustomTrack)
                 return false;
-            var reader = new PacketReader(data);
-            reader.ReadByte();
-            reader.ReadByte();
-            packet.NrOfLaps = reader.ReadByte();
-            packet.TrackName = reader.ReadFixedString(12);
-            packet.TrackAmbience = (TrackAmbience)reader.ReadByte();
-            packet.TrackLength = reader.ReadUInt16();
-            packet.DefaultWeatherProfileId = reader.ReadString16();
-            var profileCount = reader.ReadByte();
-            var weatherProfiles = new Dictionary<string, TrackWeatherProfile>(StringComparer.OrdinalIgnoreCase);
-            for (var i = 0; i < profileCount; i++)
+            try
             {
-                var profile = ReadWeatherProfile(ref reader);
-                weatherProfiles[profile.Id] = profile;
-            }
+                var reader = new PacketReader(data);
+                reader.ReadByte();
+                reader.ReadByte();
+                packet.NrOfLaps = reader.ReadByte();
+                packet.TrackName = reader.ReadFixedString(12);
+                packet.TrackAmbience = (TrackAmbience)reader.ReadByte();
+                packet.TrackLength = reader.ReadUInt16();
+                packet.DefaultWeatherProfileId = reader.ReadString16();
+                var profileCount = reader.ReadByte();
+                var weatherProfiles = new Dictionary<string, TrackWeatherProfile>(StringComparer.OrdinalIgnoreCase);
+                for (var i = 0; i < profileCount; i++)
+                {
+                    var profile = ReadWeatherProfile(ref reader);
+                    weatherProfiles[profile.Id] = profile;
+                }
 
-            var definitionCount = packet.TrackLength;
-            var definitions = new TrackDefinition[definitionCount];
-            for (var i = 0; i < definitionCount; i++)
+                var definitionCount = packet.TrackLength;
+                var definitions = new TrackDefinition[definitionCount];
+                for (var i = 0; i < definitionCount; i++)
+                {
+                    var type = (TrackType)reader.ReadByte();
+                    var surface = (TrackSurface)reader.ReadByte();
+                    var noise = (TrackNoise)reader.ReadByte();
+                    var segmentLength = reader.ReadSingle();
+                    var weatherProfileId = reader.ReadString16();
+                    var transitionSeconds = reader.ReadSingle();
+                    definitions[i] = new TrackDefinition(
+                        type,
+                        surface,
+                        noise,
+                        segmentLength,
+                        segmentId: null,
+                        width: 0f,
+                        height: 0f,
+                        weatherProfileId: string.IsNullOrWhiteSpace(weatherProfileId) ? null : weatherProfileId,
+                        weatherTransitionSeconds: transitionSeconds,
+                        roomId: null,
+                        roomOverrides: null,
+                        soundSourceIds: null,
+                        metadata: null);
+                }
+
+                packet.WeatherProfiles = weatherProfiles;
+                packet.Definitions = definitions;
+                return true;
+            }
+            catch (ArgumentOutOfRangeException)
             {
-                var type = (TrackType)reader.ReadByte();
-                var surface = (TrackSurface)reader.ReadByte();
-                var noise = (TrackNoise)reader.ReadByte();
-                var segmentLength = reader.ReadSingle();
-                var weatherProfileId = reader.ReadString16();
-                var transitionSeconds = reader.ReadSingle();
-                definitions[i] = new TrackDefinition(
-                    type,
-                    surface,
-                    noise,
-                    segmentLength,
-                    segmentId: null,
-                    width: 0f,
-                    height: 0f,
-                    weatherProfileId: string.IsNullOrWhiteSpace(weatherProfileId) ? null : weatherProfileId,
-                    weatherTransitionSeconds: transitionSeconds,
-                    roomId: null,
-                    roomOverrides: null,
-                    soundSourceIds: null,
-                    metadata: null);
+                packet = new PacketLoadCustomTrack();
+                return false;
             }
-
-            packet.WeatherProfiles = weatherProfiles;
-            packet.Definitions = definitions;
-            return true;
+            catch (ArgumentException)
+            {
+                packet = new PacketLoadCustomTrack();
+                return false;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                packet = new PacketLoadCustomTrack();
+                return false;
+            }
         }
 
         private static TrackWeatherProfile ReadWeatherProfile(ref PacketReader reader)

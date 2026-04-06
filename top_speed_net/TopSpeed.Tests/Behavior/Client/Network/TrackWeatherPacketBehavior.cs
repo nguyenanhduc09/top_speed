@@ -28,6 +28,17 @@ public sealed class TrackWeatherPacketBehaviorTests
         packet.Definitions[1].WeatherTransitionSeconds.Should().Be(1.75f);
     }
 
+    [Fact]
+    public void LoadCustomTrack_ShouldReturnFalse_For_LegacyPayloadShape()
+    {
+        var payload = CreateLegacyLoadCustomTrackPayload();
+
+        var act = () => ClientPacketSerializer.TryReadLoadCustomTrack(payload, out _);
+
+        act.Should().NotThrow();
+        ClientPacketSerializer.TryReadLoadCustomTrack(payload, out _).Should().BeFalse();
+    }
+
     private static byte[] CreateLoadCustomTrackPayload()
     {
         var weatherProfiles = new[]
@@ -122,6 +133,37 @@ public sealed class TrackWeatherPacketBehaviorTests
             writer.WriteSingle(definition.Length);
             writer.WriteString16(definition.WeatherProfileId ?? string.Empty);
             writer.WriteSingle(definition.WeatherTransitionSeconds);
+        }
+
+        return buffer;
+    }
+
+    private static byte[] CreateLegacyLoadCustomTrackPayload()
+    {
+        var definitions = new[]
+        {
+            new TrackDefinition(TrackType.Straight, TrackSurface.Asphalt, TrackNoise.NoNoise, 100f)
+        };
+
+        var payloadSize = 1 + 12 + 1 + 2 + 1;
+        foreach (var definition in definitions)
+            payloadSize += 1 + 1 + 1 + 4;
+
+        var buffer = new byte[2 + payloadSize];
+        var writer = new PacketWriter(buffer);
+        writer.WriteByte(ProtocolConstants.Version);
+        writer.WriteByte((byte)Command.LoadCustomTrack);
+        writer.WriteByte(3);
+        writer.WriteFixedString("legacy", 12);
+        writer.WriteByte((byte)TrackAmbience.Airport);
+        writer.WriteUInt16((ushort)definitions.Length);
+        writer.WriteByte((byte)TrackWeather.Sunny);
+        foreach (var definition in definitions)
+        {
+            writer.WriteByte((byte)definition.Type);
+            writer.WriteByte((byte)definition.Surface);
+            writer.WriteByte((byte)definition.Noise);
+            writer.WriteSingle(definition.Length);
         }
 
         return buffer;
