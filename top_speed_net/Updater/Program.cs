@@ -99,6 +99,7 @@ namespace TopSpeed.Updater
 
             using (var archive = ZipFile.OpenRead(zipPath))
             {
+                var bundlePayloadPrefix = ResolveBundlePayloadPrefix(options, archive, targetDir);
                 for (var i = 0; i < archive.Entries.Count; i++)
                 {
                     var entry = archive.Entries[i];
@@ -107,12 +108,16 @@ namespace TopSpeed.Updater
                     if (string.IsNullOrEmpty(entry.Name))
                         continue;
 
+                    var relativePath = ResolveRelativeEntryPath(entry.FullName, bundlePayloadPrefix);
+                    if (string.IsNullOrWhiteSpace(relativePath))
+                        continue;
+
                     if (ShouldSkipEntry(options.SkipFileName, entry.Name))
                     {
                         continue;
                     }
 
-                    var destination = Path.GetFullPath(Path.Combine(targetDir, entry.FullName));
+                    var destination = Path.GetFullPath(Path.Combine(targetDir, relativePath));
                     if (!destination.StartsWith(targetDir, StringComparison.OrdinalIgnoreCase))
                         throw new InvalidOperationException($"Unsafe entry path: {entry.FullName}");
 
@@ -125,6 +130,54 @@ namespace TopSpeed.Updater
             }
 
             File.Delete(zipPath);
+        }
+
+        private static string ResolveBundlePayloadPrefix(UpdaterOptions options, ZipArchive archive, string targetDir)
+        {
+            if (archive == null || string.IsNullOrWhiteSpace(targetDir))
+                return string.Empty;
+
+            var normalizedTargetDir = NormalizeZipStylePath(targetDir).TrimEnd('/');
+            if (!normalizedTargetDir.EndsWith("/Contents/MacOS", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            var bundlePrefix = $"{options.GameExeName}.app/Contents/MacOS/";
+            for (var i = 0; i < archive.Entries.Count; i++)
+            {
+                var entry = archive.Entries[i];
+                if (entry == null || string.IsNullOrWhiteSpace(entry.FullName))
+                    continue;
+
+                var normalizedEntryPath = NormalizeZipStylePath(entry.FullName);
+                if (normalizedEntryPath.StartsWith(bundlePrefix, StringComparison.OrdinalIgnoreCase))
+                    return bundlePrefix;
+            }
+
+            return string.Empty;
+        }
+
+        private static string ResolveRelativeEntryPath(string entryFullName, string bundlePayloadPrefix)
+        {
+            var normalizedEntryPath = NormalizeZipStylePath(entryFullName);
+            if (string.IsNullOrWhiteSpace(normalizedEntryPath))
+                return string.Empty;
+
+            if (!string.IsNullOrEmpty(bundlePayloadPrefix))
+            {
+                if (!normalizedEntryPath.StartsWith(bundlePayloadPrefix, StringComparison.OrdinalIgnoreCase))
+                    return string.Empty;
+
+                normalizedEntryPath = normalizedEntryPath.Substring(bundlePayloadPrefix.Length);
+                if (string.IsNullOrWhiteSpace(normalizedEntryPath))
+                    return string.Empty;
+            }
+
+            return normalizedEntryPath.Replace('/', Path.DirectorySeparatorChar);
+        }
+
+        private static string NormalizeZipStylePath(string path)
+        {
+            return (path ?? string.Empty).Replace('\\', '/');
         }
 
         private static void StartGame(UpdaterOptions options)
