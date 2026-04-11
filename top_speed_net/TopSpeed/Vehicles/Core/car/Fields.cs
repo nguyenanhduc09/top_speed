@@ -29,7 +29,7 @@ namespace TopSpeed.Vehicles
 
         private readonly AudioManager _audio;
         private readonly Track _track;
-        private readonly RaceSettings _settings;
+        private readonly DriveSettings _settings;
         private readonly Func<float> _currentTime;
         private readonly Func<bool> _started;
         private readonly string _legacyRoot;
@@ -152,25 +152,25 @@ namespace TopSpeed.Vehicles
         private float _lateralVelocityMps;
         private float _yawRateRad;
 
-        private AudioSourceHandle _soundEngine = default!;
-        private AudioSourceHandle? _soundThrottle;
-        private AudioSourceHandle _soundHorn = default!;
-        private AudioSourceHandle _soundStart = default!;
-        private AudioSourceHandle? _soundStop;
-        private AudioSourceHandle _soundBrake = default!;
-        private AudioSourceHandle _soundCrash = default!;
-        private AudioSourceHandle[] _soundCrashVariants = Array.Empty<AudioSourceHandle>();
-        private AudioSourceHandle _soundMiniCrash = default!;
-        private AudioSourceHandle _soundAsphalt = default!;
-        private AudioSourceHandle _soundGravel = default!;
-        private AudioSourceHandle _soundWater = default!;
-        private AudioSourceHandle _soundSand = default!;
-        private AudioSourceHandle _soundSnow = default!;
-        private AudioSourceHandle? _soundWipers;
-        private AudioSourceHandle _soundBump = default!;
-        private AudioSourceHandle _soundBadSwitch = default!;
-        private AudioSourceHandle? _soundBackfire;
-        private AudioSourceHandle[] _soundBackfireVariants = Array.Empty<AudioSourceHandle>();
+        private Source _soundEngine = default!;
+        private Source? _soundThrottle;
+        private Source _soundHorn = default!;
+        private Source _soundStart = default!;
+        private Source? _soundStop;
+        private Source _soundBrake = default!;
+        private Source _soundCrash = default!;
+        private Source[] _soundCrashVariants = Array.Empty<Source>();
+        private Source _soundMiniCrash = default!;
+        private Source _soundAsphalt = default!;
+        private Source _soundGravel = default!;
+        private Source _soundWater = default!;
+        private Source _soundSand = default!;
+        private Source _soundSnow = default!;
+        private Source? _soundWipers;
+        private Source _soundBump = default!;
+        private Source _soundBadSwitch = default!;
+        private Source? _soundBackfire;
+        private Source[] _soundBackfireVariants = Array.Empty<Source>();
         private int _lastPlayerEngineVolumePercent = -1;
         private int _lastPlayerEventsVolumePercent = -1;
         private int _lastSurfaceLoopVolumePercent = -1;
@@ -189,5 +189,6 @@ namespace TopSpeed.Vehicles
         private EngineRotationState _engineRotationState = EngineRotationState.Stopped;
     }
 }
+
 
 

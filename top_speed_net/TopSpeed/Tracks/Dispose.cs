@@ -30,7 +30,7 @@ namespace TopSpeed.Tracks
             DisposePendingHandleStops();
         }
 
-        private static void DisposeSound(AudioSourceHandle? sound)
+        private static void DisposeSound(Source? sound)
         {
             if (sound == null)
                 return;

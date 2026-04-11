@@ -59,6 +59,7 @@ namespace MiniAudioEx.Core.AdvancedAPI
 
 		private ma_effect_node_ptr handle;
 		private ma_effect_node_process_proc onProcess;
+        private bool _disposed;
 
 		public ma_node_base_ptr Handle
 		{
@@ -77,6 +78,8 @@ namespace MiniAudioEx.Core.AdvancedAPI
 
 		public void Dispose()
 		{
+            _disposed = true;
+            Process = null;
 			if (handle.pointer != IntPtr.Zero)
 			{
 				MiniAudioNative.ma_effect_node_uninit(handle);
@@ -113,16 +116,23 @@ namespace MiniAudioEx.Core.AdvancedAPI
 
 		private unsafe void OnProcess(ma_node_ptr pNode, IntPtr ppFramesIn, IntPtr pFrameCountIn, IntPtr ppFramesOut, IntPtr pFrameCountOut)
 		{
-            if (pNode.pointer == IntPtr.Zero)
+            if (_disposed || pNode.pointer == IntPtr.Zero)
+                return;
+
+            if (ppFramesIn == IntPtr.Zero || ppFramesOut == IntPtr.Zero || pFrameCountIn == IntPtr.Zero || pFrameCountOut == IntPtr.Zero)
                 return;
 
             ma_effect_node* pEffectNode = (ma_effect_node*)pNode.pointer;
+            if (pEffectNode == null)
+                return;
 			UInt32 channels = pEffectNode->config.channels;
 			UInt32 frameCountIn = *(UInt32*)pFrameCountIn;
 			UInt32 frameCountOut = *(UInt32*)pFrameCountOut;
 
 			float** framesIn = (float**)ppFramesIn;
 			float** framesOut = (float**)ppFramesOut;
+            if (framesIn == null || framesOut == null || framesIn[0] == null || framesOut[0] == null)
+                return;
 
 			// There could be more input/output streams but we only deal with 1
 			NativeArray<float> bufferIn = new NativeArray<float>(framesIn[0], (int)(frameCountIn * channels));

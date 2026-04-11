@@ -149,7 +149,7 @@ namespace TopSpeed.Menu
         private List<MenuItem> BuildMappingItems(InputMappingMode mode)
         {
             var items = new List<MenuItem>();
-            foreach (var action in _raceInput.KeyMap.Actions)
+            foreach (var action in _driveInput.KeyMap.Actions)
             {
                 var definition = action;
                 items.Add(new MenuItem(
@@ -258,4 +258,5 @@ namespace TopSpeed.Menu
         }
     }
 }
+
 

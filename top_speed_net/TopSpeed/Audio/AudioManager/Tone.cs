@@ -12,14 +12,14 @@ namespace TopSpeed.Audio
             if (frequencyHz <= 0d || durationMs <= 0)
                 return;
 
-            var sampleRate = _output.SampleRate > 0 ? _output.SampleRate : 44100;
+            var sampleRate = _engine.PrimaryOutput.SampleRate > 0 ? _engine.PrimaryOutput.SampleRate : 44100;
             var totalFrames = (int)((sampleRate * durationMs) / 1000.0);
             if (totalFrames <= 0)
                 return;
 
             var frameCursor = 0;
-            AudioSourceHandle? source = null;
-            source = _output.CreateProceduralSource(
+            Source? source = null;
+            source = CreateProceduralSource(
                 (float[] buffer, int frames, int channels, ref ulong frameIndex) =>
                 {
                     for (var i = 0; i < frames; i++)
@@ -40,6 +40,8 @@ namespace TopSpeed.Audio
                 },
                 channels: 1,
                 sampleRate: (uint)sampleRate,
+                busName: AudioEngineOptions.UiBusName,
+                spatialize: false,
                 useHrtf: false);
 
             source.SetVolume(volume);

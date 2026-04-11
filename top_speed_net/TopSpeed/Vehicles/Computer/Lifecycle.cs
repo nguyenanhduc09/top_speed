@@ -55,7 +55,7 @@ namespace TopSpeed.Vehicles
 
         public void Start()
         {
-            var delay = Math.Max(0f, _soundStart.GetLengthSeconds() - 0.1f);
+            var delay = Math.Max(0f, _soundStart.LengthSeconds - 0.1f);
             PushEvent(BotEventType.CarStart, delay);
             _soundStart.Play(loop: false);
             _speed = 0;
@@ -89,7 +89,7 @@ namespace TopSpeed.Vehicles
             _positionX = newPosition;
             _state = ComputerState.Crashing;
             if (scheduleRestart)
-                PushEvent(BotEventType.CarRestart, _soundCrash.GetLengthSeconds() + 1.25f);
+                PushEvent(BotEventType.CarRestart, _soundCrash.LengthSeconds + 1.25f);
         }
 
         public void MiniCrash(float newPosition)

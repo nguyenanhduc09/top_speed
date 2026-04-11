@@ -50,7 +50,7 @@ namespace TopSpeed.Vehicles
                 return;
             }
 
-            var delay = Math.Max(0f, _soundStart.GetLengthSeconds() - 0.1f);
+            var delay = Math.Max(0f, _soundStart.LengthSeconds - 0.1f);
             PushEvent(EventType.CarStart, delay);
             _soundStop?.Stop();
             _soundStart.Restart(loop: false);
@@ -73,6 +73,7 @@ namespace TopSpeed.Vehicles
             _soundWater.SetFrequency(_surfaceFrequency);
             _soundSand.SetFrequency(_surfaceFrequency);
             _soundSnow.SetFrequency(_surfaceFrequency);
+            RefreshCategoryVolumes(force: true);
             _stickReleased = true;
             _combustionState = EngineCombustionState.Starting;
             SetState(CarState.Starting);
@@ -91,13 +92,14 @@ namespace TopSpeed.Vehicles
                 return;
             }
 
-            var delay = Math.Max(0f, _soundStart.GetLengthSeconds() - 0.1f);
+            var delay = Math.Max(0f, _soundStart.LengthSeconds - 0.1f);
             PushEvent(EventType.CarStart, delay);
             _soundStop?.Stop();
             _soundStart.Restart(loop: false);
             _switchingGear = 0;
             _autoShiftCooldown = 0f;
             _throttleVolume = 0.0f;
+            RefreshCategoryVolumes(force: true);
             _combustionState = EngineCombustionState.Starting;
             SetState(CarState.Starting);
             _vibration?.PlayEffect(VibrationEffectType.Start);
@@ -112,7 +114,7 @@ namespace TopSpeed.Vehicles
             if (_combustionState == EngineCombustionState.Starting)
                 return;
 
-            var delay = Math.Max(0f, _soundStart.GetLengthSeconds() - 0.1f);
+            var delay = Math.Max(0f, _soundStart.LengthSeconds - 0.1f);
             PushEvent(EventType.CarStart, delay);
             _soundStop?.Stop();
             _soundStart.Restart(loop: false);
@@ -134,6 +136,7 @@ namespace TopSpeed.Vehicles
             _soundWater.SetFrequency(_surfaceFrequency);
             _soundSand.SetFrequency(_surfaceFrequency);
             _soundSnow.SetFrequency(_surfaceFrequency);
+            RefreshCategoryVolumes(force: true);
             _stickReleased = true;
             _combustionState = EngineCombustionState.Starting;
             SetState(CarState.Starting);
@@ -245,7 +248,7 @@ namespace TopSpeed.Vehicles
             SetEngineRotationState(EngineRotationState.Stopped);
             ClearStallState();
             SetState(CarState.Crashing);
-            PushEvent(EventType.CrashComplete, _soundCrash.GetLengthSeconds() + 1.25f);
+            PushEvent(EventType.CrashComplete, _soundCrash.LengthSeconds + 1.25f);
             _listener?.OnCrash();
             _vibration?.StopEffect(VibrationEffectType.Engine);
             _vibration?.PlayEffect(VibrationEffectType.Crash);

@@ -9,16 +9,18 @@ using TopSpeed.Core.Multiplayer;
 using TopSpeed.Core.Settings;
 using TopSpeed.Core.Updates;
 using TopSpeed.Data;
+using TopSpeed.Drive.Single;
+using TopSpeed.Drive.TimeTrial;
 using TopSpeed.Input;
 using TopSpeed.Localization;
 using TopSpeed.Menu;
 using TopSpeed.Network;
 using TopSpeed.Protocol;
-using TopSpeed.Race;
+using TopSpeed.Drive;
 using TopSpeed.Runtime;
 using TopSpeed.Shortcuts;
 using TopSpeed.Speech;
-using CoreRaceMode = TopSpeed.Core.RaceMode;
+using CoreRaceMode = TopSpeed.Core.DriveMode;
 using TS.Audio;
 
 namespace TopSpeed.Game
@@ -46,16 +48,16 @@ namespace TopSpeed.Game
         private readonly DialogManager _dialogs;
         private readonly ChoiceDialogManager _choices;
         private readonly ResultShow _resultShow;
-        private readonly RaceSettings _settings;
+        private readonly DriveSettings _settings;
         private readonly IReadOnlyList<SettingsIssue> _settingsIssues;
         private readonly bool _settingsFileMissing;
         private readonly IReadOnlyList<ClientLanguage> _clientLanguages;
-        private readonly RaceInput _raceInput;
-        private readonly RaceSetup _setup;
-        private readonly IRaceModeFactory _raceModeFactory;
+        private readonly DriveInput _driveInput;
+        private readonly DriveSetup _setup;
+        private readonly IDriveSessionFactory _driveSessionFactory;
         private readonly StateMachine _stateMachine;
         private readonly SettingsManager _settingsManager;
-        private readonly RaceSelection _selection;
+        private readonly DriveSelection _selection;
         private readonly MenuRegistry _menuRegistry;
         private readonly IMultiplayerRuntime _multiplayerCoordinator;
         private readonly UpdateConfig _updateConfig;
@@ -73,11 +75,11 @@ namespace TopSpeed.Game
         private string? _calibrationReturnMenuId;
         private bool _calibrationOverlay;
         private Stopwatch? _calibrationStopwatch;
-        private bool _pendingRaceStart;
+        private bool _pendingDriveStart;
         private CoreRaceMode _pendingMode;
         private bool _pauseKeyReleased = true;
-        private TimeTrialMode? _timeTrial;
-        private SingleRaceMode? _singleRace;
+        private TimeTrialSession? _timeTrial;
+        private SingleSession? _singleRace;
         private readonly MultiplayerRaceRuntime _multiplayerRaceRuntime;
         private bool _updateCheckQueued;
         private bool _updatePromptShown;
@@ -97,7 +99,7 @@ namespace TopSpeed.Game
         private bool _audioLoopActive;
         private bool _textInputPromptActive;
         private Action<TextInputResult>? _textInputPromptCallback;
-        private AudioSourceHandle? _raceWinSound;
+        private SoundAsset? _raceWinSound;
         public bool IsModalInputActive { get; private set; }
         internal int LoopIntervalMs => IsMenuState(_state) ? 15 : 8;
 
@@ -111,4 +113,8 @@ namespace TopSpeed.Game
         public event Action? ExitRequested;
     }
 }
+
+
+
+
 

@@ -1,5 +1,5 @@
 using TopSpeed.Game;
-using TopSpeed.Race;
+using TopSpeed.Drive;
 using Xunit;
 
 namespace TopSpeed.Tests;
@@ -20,7 +20,7 @@ public sealed class RaceResultsBehaviorTests
     public void Line_Uses_First_Template_With_Deterministic_Pick()
     {
         var fmt = new ResultFmt(new Pick(_ => 0));
-        var entry = new RaceResultEntry
+        var entry = new DriveResultEntry
         {
             Name = "Alice",
             Position = 1,
@@ -34,13 +34,13 @@ public sealed class RaceResultsBehaviorTests
     public void Build_Race_Winner_Dialog_Plays_Win()
     {
         var dialogs = new ResultDialogs(new Pick(_ => 0), new ResultFmt(new Pick(_ => 0)));
-        var summary = new RaceResultSummary
+        var summary = new DriveResultSummary
         {
-            Mode = RaceResultMode.Race,
+            Mode = DriveResultMode.Race,
             LocalPosition = 1,
             Entries = new[]
             {
-                new RaceResultEntry
+                new DriveResultEntry
                 {
                     Name = "Alice",
                     Position = 1,
@@ -61,14 +61,14 @@ public sealed class RaceResultsBehaviorTests
     public void Build_Race_Appends_Local_Crash_Summary()
     {
         var dialogs = new ResultDialogs(new Pick(_ => 0), new ResultFmt(new Pick(_ => 0)));
-        var summary = new RaceResultSummary
+        var summary = new DriveResultSummary
         {
-            Mode = RaceResultMode.Race,
+            Mode = DriveResultMode.Race,
             LocalPosition = 2,
             LocalCrashCount = 15,
             Entries = new[]
             {
-                new RaceResultEntry
+                new DriveResultEntry
                 {
                     Name = "Alice",
                     Position = 1,
@@ -87,9 +87,9 @@ public sealed class RaceResultsBehaviorTests
     public void Build_TimeTrial_NoRecord_Includes_PreviousBest()
     {
         var dialogs = new ResultDialogs(new Pick(_ => 0), new ResultFmt(new Pick(_ => 0)));
-        var summary = new RaceResultSummary
+        var summary = new DriveResultSummary
         {
-            Mode = RaceResultMode.TimeTrial,
+            Mode = DriveResultMode.TimeTrial,
             TimeTrialBeatRecord = false,
             TimeTrialLapCount = 3,
             TimeTrialCurrentRunMs = 61000,
@@ -119,9 +119,9 @@ public sealed class RaceResultsBehaviorTests
     public void Build_TimeTrial_Omits_Unavailable_Lines()
     {
         var dialogs = new ResultDialogs(new Pick(_ => 0), new ResultFmt(new Pick(_ => 0)));
-        var summary = new RaceResultSummary
+        var summary = new DriveResultSummary
         {
-            Mode = RaceResultMode.TimeTrial,
+            Mode = DriveResultMode.TimeTrial,
             TimeTrialBeatRecord = true,
             TimeTrialCurrentRunMs = 61000
         };
@@ -140,13 +140,13 @@ public sealed class RaceResultsBehaviorTests
         var soundCount = 0;
         var show = new ResultShow(_ => shownCount++, () => soundCount++, dialogs);
 
-        show.Show(new RaceResultSummary
+        show.Show(new DriveResultSummary
         {
-            Mode = RaceResultMode.Race,
+            Mode = DriveResultMode.Race,
             LocalPosition = 2,
             Entries = new[]
             {
-                new RaceResultEntry
+                new DriveResultEntry
                 {
                     Name = "Alice",
                     Position = 2,
@@ -154,9 +154,9 @@ public sealed class RaceResultsBehaviorTests
                 }
             }
         });
-        show.Show(new RaceResultSummary
+        show.Show(new DriveResultSummary
         {
-            Mode = RaceResultMode.TimeTrial,
+            Mode = DriveResultMode.TimeTrial,
             TimeTrialBeatRecord = true,
             TimeTrialCurrentRunMs = 61000
         });
@@ -166,3 +166,5 @@ public sealed class RaceResultsBehaviorTests
         soundCount.Should().Be(1);
     }
 }
+
+

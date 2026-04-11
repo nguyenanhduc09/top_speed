@@ -68,22 +68,22 @@ namespace TopSpeed.Tracks
         private float _weatherTransitionElapsedSeconds;
         private DateTime _lastWeatherUpdateUtc;
 
-        private AudioSourceHandle? _soundCrowd;
-        private AudioSourceHandle? _soundOcean;
-        private AudioSourceHandle? _soundRain;
-        private AudioSourceHandle? _soundWind;
-        private AudioSourceHandle? _soundStorm;
-        private AudioSourceHandle? _soundDesert;
-        private AudioSourceHandle? _soundAirport;
-        private AudioSourceHandle? _soundAirplane;
-        private AudioSourceHandle? _soundClock;
-        private AudioSourceHandle? _soundJet;
-        private AudioSourceHandle? _soundThunder;
-        private AudioSourceHandle? _soundPile;
-        private AudioSourceHandle? _soundConstruction;
-        private AudioSourceHandle? _soundRiver;
-        private AudioSourceHandle? _soundHelicopter;
-        private AudioSourceHandle? _soundOwl;
+        private Source? _soundCrowd;
+        private Source? _soundOcean;
+        private Source? _soundRain;
+        private Source? _soundWind;
+        private Source? _soundStorm;
+        private Source? _soundDesert;
+        private Source? _soundAirport;
+        private Source? _soundAirplane;
+        private Source? _soundClock;
+        private Source? _soundJet;
+        private Source? _soundThunder;
+        private Source? _soundPile;
+        private Source? _soundConstruction;
+        private Source? _soundRiver;
+        private Source? _soundHelicopter;
+        private Source? _soundOwl;
 
         private Track(string trackName, TrackData data, AudioManager audio, bool userDefined)
         {

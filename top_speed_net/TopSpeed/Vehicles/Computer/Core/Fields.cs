@@ -16,7 +16,7 @@ namespace TopSpeed.Vehicles
     {
         private readonly AudioManager _audio;
         private readonly Track _track;
-        private readonly RaceSettings _settings;
+        private readonly DriveSettings _settings;
         private readonly Func<float> _currentTime;
         private readonly Func<bool> _started;
         private readonly Action<string>? _debugSpeak;
@@ -119,14 +119,14 @@ namespace TopSpeed.Vehicles
         private bool _radioPlaying;
         private uint _radioMediaId;
 
-        private AudioSourceHandle _soundEngine = default!;
-        private AudioSourceHandle _soundHorn = default!;
-        private AudioSourceHandle _soundStart = default!;
-        private AudioSourceHandle _soundCrash = default!;
-        private AudioSourceHandle _soundBrake = default!;
-        private AudioSourceHandle _soundMiniCrash = default!;
-        private AudioSourceHandle _soundBump = default!;
-        private AudioSourceHandle? _soundBackfire;
+        private Source _soundEngine = default!;
+        private Source _soundHorn = default!;
+        private Source _soundStart = default!;
+        private Source _soundCrash = default!;
+        private Source _soundBrake = default!;
+        private Source _soundMiniCrash = default!;
+        private Source _soundBump = default!;
+        private Source? _soundBackfire;
         private int _lastOtherEngineVolumePercent = -1;
         private int _lastOtherEventsVolumePercent = -1;
         private int _lastRadioVolumePercent = -1;
@@ -137,4 +137,5 @@ namespace TopSpeed.Vehicles
         private readonly BotPhysicsConfig _physicsConfig;
     }
 }
+
 

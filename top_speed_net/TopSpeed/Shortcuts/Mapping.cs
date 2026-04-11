@@ -11,7 +11,7 @@ namespace TopSpeed.Shortcuts
     {
         private readonly IInputService _input;
         private readonly MenuManager _menu;
-        private readonly RaceSettings _settings;
+        private readonly DriveSettings _settings;
         private readonly SpeechService _speech;
         private readonly Action _saveSettings;
 
@@ -24,7 +24,7 @@ namespace TopSpeed.Shortcuts
         public ShortcutMappingHandler(
             IInputService input,
             MenuManager menu,
-            RaceSettings settings,
+            DriveSettings settings,
             SpeechService speech,
             Action saveSettings)
         {
@@ -117,6 +117,7 @@ namespace TopSpeed.Shortcuts
         }
     }
 }
+
 
 
 

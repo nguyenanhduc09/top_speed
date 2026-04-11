@@ -25,6 +25,7 @@ namespace TopSpeed.Speech.Prism
         }
 
         public Features Features => _handle == IntPtr.Zero ? Features.None : Native.BackendFeatures(_handle);
+        public bool IsSupportedAtRuntime => Supports(Features.SupportedAtRuntime);
 
         public float? Volume
         {
@@ -103,13 +104,23 @@ namespace TopSpeed.Speech.Prism
 
         public void Initialize()
         {
-            ThrowIfError(Native.InitializeBackend(_handle));
+            var error = Native.InitializeBackend(_handle);
+            if (error == Error.AlreadyInitialized)
+                return;
+
+            ThrowIfError(error);
         }
 
         public void Speak(string text, bool interrupt)
         {
             ThrowIfClosed();
             ThrowIfError(Native.Speak(_handle, text, interrupt));
+        }
+
+        public void SpeakToMemory(string text, MemoryAudioCallback callback)
+        {
+            ThrowIfClosed();
+            ThrowIfError(Native.SpeakToMemory(_handle, text, callback));
         }
 
         public void Braille(string text)

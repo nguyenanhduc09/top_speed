@@ -21,14 +21,14 @@ namespace TopSpeed.Vehicles
         public Car(
             AudioManager audio,
             Track track,
-            RaceInput input,
-            RaceSettings settings,
+            DriveInput input,
+            DriveSettings settings,
             int vehicleIndex,
             string? vehicleFile,
             Func<float> currentTime,
             Func<bool> started,
             IVibrationDevice? vibrationDevice = null)
-            : base(new RaceInputCarController(input))
+            : base(new DriveInputCarController(input))
         {
             _audio = audio;
             _track = track;
@@ -316,5 +316,6 @@ namespace TopSpeed.Vehicles
         }
     }
 }
+
 
 

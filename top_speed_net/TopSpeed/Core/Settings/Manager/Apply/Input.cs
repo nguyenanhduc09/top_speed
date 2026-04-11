@@ -7,7 +7,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static void ApplyInput(RaceSettings settings, SettingsInputDocument input, List<SettingsIssue> issues)
+        private static void ApplyInput(DriveSettings settings, SettingsInputDocument input, List<SettingsIssue> issues)
         {
             if (input.ForceFeedback.HasValue)
                 settings.ForceFeedback = input.ForceFeedback.Value;
@@ -34,7 +34,7 @@ namespace TopSpeed.Core.Settings
                 ApplyController(settings, input.Controller, issues);
         }
 
-        private static void ApplyKeyboard(RaceSettings settings, SettingsKeyboardDocument keyboard, List<SettingsIssue> issues)
+        private static void ApplyKeyboard(DriveSettings settings, SettingsKeyboardDocument keyboard, List<SettingsIssue> issues)
         {
             settings.KeyLeft = ReadKey(keyboard.Left, settings.KeyLeft, "input.keyboard.left", issues);
             settings.KeyRight = ReadKey(keyboard.Right, settings.KeyRight, "input.keyboard.right", issues);
@@ -57,7 +57,7 @@ namespace TopSpeed.Core.Settings
             settings.KeyPause = ReadKey(keyboard.Pause, settings.KeyPause, "input.keyboard.pause", issues);
         }
 
-        private static void ApplyController(RaceSettings settings, SettingsControllerDocument controller, List<SettingsIssue> issues)
+        private static void ApplyController(DriveSettings settings, SettingsControllerDocument controller, List<SettingsIssue> issues)
         {
             settings.ControllerLeft = ReadController(controller.Left, settings.ControllerLeft, "input.controller.left", issues);
             settings.ControllerRight = ReadController(controller.Right, settings.ControllerRight, "input.controller.right", issues);
@@ -98,7 +98,7 @@ namespace TopSpeed.Core.Settings
             settings.ControllerCenter = center;
         }
 
-        private static void ApplyMenuShortcuts(RaceSettings settings, SettingsMenuShortcutsDocument? menuShortcuts, List<SettingsIssue> issues)
+        private static void ApplyMenuShortcuts(DriveSettings settings, SettingsMenuShortcutsDocument? menuShortcuts, List<SettingsIssue> issues)
         {
             settings.ShortcutKeyBindings = new Dictionary<string, Key>(System.StringComparer.Ordinal);
             if (menuShortcuts?.Bindings == null)
@@ -138,5 +138,6 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 
 

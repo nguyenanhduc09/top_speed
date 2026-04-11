@@ -263,8 +263,8 @@ internal static class InputHarness
 
     public static WheelPedalTrace SimulateFullRangeCalibration()
     {
-        var settings = new RaceSettings { DeviceMode = InputDeviceMode.Controller };
-        var input = new RaceInput(settings);
+        var settings = new DriveSettings { DeviceMode = InputDeviceMode.Controller };
+        var input = new DriveInput(settings);
         var steps = new[]
         {
             new State { Z = 100, Rz = 100, Slider1 = 100 },
@@ -277,8 +277,8 @@ internal static class InputHarness
 
     public static WheelPedalTrace SimulatePartialRangeCalibration()
     {
-        var settings = new RaceSettings { DeviceMode = InputDeviceMode.Controller };
-        var input = new RaceInput(settings);
+        var settings = new DriveSettings { DeviceMode = InputDeviceMode.Controller };
+        var input = new DriveInput(settings);
         var steps = new[]
         {
             new State { Rz = 31 },
@@ -289,7 +289,7 @@ internal static class InputHarness
         return RunWheelSequence("PartialRange", input, steps);
     }
 
-    private static WheelPedalTrace RunWheelSequence(string scenario, RaceInput input, IReadOnlyList<State> steps)
+    private static WheelPedalTrace RunWheelSequence(string scenario, DriveInput input, IReadOnlyList<State> steps)
     {
         var samples = new List<WheelPedalSample>(steps.Count);
 
@@ -310,3 +310,4 @@ internal static class InputHarness
         return new WheelPedalTrace(scenario, samples);
     }
 }
+

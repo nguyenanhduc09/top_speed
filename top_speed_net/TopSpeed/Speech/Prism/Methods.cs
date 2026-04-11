@@ -2,6 +2,8 @@ using System;
 
 namespace TopSpeed.Speech.Prism
 {
+    internal delegate void MemoryAudioCallback(float[] samples, int channels, int sampleRate);
+
     internal interface IMethods
     {
         Config ConfigInit();
@@ -22,6 +24,7 @@ namespace TopSpeed.Speech.Prism
         Features BackendFeatures(IntPtr backend);
         Error InitializeBackend(IntPtr backend);
         Error Speak(IntPtr backend, string text, bool interrupt);
+        Error SpeakToMemory(IntPtr backend, string text, MemoryAudioCallback callback);
         Error Braille(IntPtr backend, string text);
         Error Output(IntPtr backend, string text, bool interrupt);
         Error Stop(IntPtr backend);

@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using TopSpeed.Audio;
+using TopSpeed.Drive.Session.Audio;
+using TopSpeed.Input;
+using TopSpeed.Input.Devices.Vibration;
+using TopSpeed.Network;
+using TopSpeed.Network.Live;
+using TopSpeed.Protocol;
+using TopSpeed.Runtime;
+using TopSpeed.Speech;
+using TopSpeed.Tracks;
+using TopSpeed.Vehicles;
+using TopSpeed.Vehicles.Control;
+using AudioSource = TS.Audio.Source;
+using CommentarySubsystem = TopSpeed.Drive.Multiplayer.Session.Systems.Commentary;
+using CoreRequestsSubsystem = TopSpeed.Drive.Session.Systems.CoreRequests;
+using GeneralRequestsSubsystem = TopSpeed.Drive.Session.Systems.GeneralRequests;
+using NetworkSession = TopSpeed.Network.MultiplayerSession;
+using ProgressSubsystem = TopSpeed.Drive.Multiplayer.Session.Systems.Progress;
+using SessionRuntime = TopSpeed.Drive.Session.Session;
+using SyncSubsystem = TopSpeed.Drive.Multiplayer.Session.Systems.Sync;
+using VehicleSubsystem = TopSpeed.Drive.Multiplayer.Session.Systems.Vehicle;
+using ExitSubsystem = TopSpeed.Drive.Session.Systems.Exit;
+using PanelsSubsystem = TopSpeed.Drive.Session.Systems.Panels;
+using PlayerInfoSubsystem = TopSpeed.Drive.Session.Systems.PlayerInfo;
+using TrackAudioService = TopSpeed.Drive.Session.Systems.TrackAudio;
+
+namespace TopSpeed.Drive.Multiplayer
+{
+    internal sealed partial class MultiplayerSession
+    {
+        private const int MaxPlayers = ProtocolConstants.MaxPlayers;
+        private const int MaxLaps = 16;
+        private const int MaxUnkeys = 12;
+        private const int RandomSoundGroups = 16;
+        private const int RandomSoundMax = 32;
+        private const float SendIntervalSeconds = 1f / 60f;
+        private const float StartLineY = 140.0f;
+        private const float ServerTickRate = 125.0f;
+        private const float SnapshotDelayTicks = 4.0f;
+        private const int SnapshotBufferMax = 8;
+        private const float DefaultStartCueDelaySeconds = 1.0f;
+        private const float DefaultProgressStartDelaySeconds = 4.0f;
+        private const float PostFinishStopSpeedKph = 0.5f;
+        private const float RemoteSettledSpeedKph = 0.5f;
+
+        private readonly AudioManager _audio;
+        private readonly SpeechService _speech;
+        private readonly DriveSettings _settings;
+        private readonly DriveInput _input;
+        private readonly IVibrationDevice? _vibrationDevice;
+        private readonly IFileDialogs _fileDialogs;
+        private readonly Track _track;
+        private readonly ICar _car;
+        private readonly SessionRuntime _session;
+        private readonly Queue _soundQueue;
+        private readonly ICarController _finishLockController;
+        private readonly VehicleRadioController _localRadio;
+        private readonly TopSpeed.Drive.Panels.RadioVehiclePanel _radioPanel;
+        private readonly TopSpeed.Drive.Panels.VehiclePanelManager _panelManager;
+        private readonly NetworkSession _network;
+        private readonly uint _raceInstanceId;
+        private readonly Func<byte, string> _resolvePlayerName;
+        private readonly int _lapLimit;
+        private readonly ParticipantState _participants;
+        private readonly SnapshotState _snapshots;
+        private readonly RuntimeState _runtime;
+        private readonly AudioSource[] _soundNumbers;
+        private readonly AudioSource?[][] _randomSounds;
+        private readonly int[] _totalRandomSounds;
+        private readonly AudioSource[] _soundUnkey;
+        private readonly AudioSource?[] _soundPosition;
+        private readonly AudioSource?[] _soundPlayerNr;
+        private readonly AudioSource?[] _soundFinished;
+        private readonly Tx _liveTx;
+        private readonly TrackAudioService _trackAudio;
+        private readonly PanelsSubsystem _panels;
+        private readonly CoreRequestsSubsystem _coreRequests;
+        private readonly GeneralRequestsSubsystem _generalRequests;
+        private readonly VehicleSubsystem _vehicle;
+        private readonly ProgressSubsystem _progress;
+        private readonly SyncSubsystem _sync;
+        private readonly CommentarySubsystem _commentary;
+        private readonly PlayerInfoSubsystem _playerInfo;
+        private readonly ExitSubsystem _exit;
+        private readonly bool _manualTransmission;
+
+        private AudioSource _soundStart;
+        private AudioSource? _soundPause;
+        private AudioSource? _soundResume;
+        private AudioSource? _soundTurnEndDing;
+        private AudioSource? _soundYouAre;
+        private AudioSource? _soundPlayer;
+
+        private byte LocalPlayerNumber => _network.PlayerNumber;
+        private bool LocalMediaLoaded => _localRadio.HasMedia;
+        private bool LocalMediaPlaying => _localRadio.HasMedia && _localRadio.DesiredPlaying;
+        private uint LocalMediaId => _localRadio.HasMedia ? _localRadio.MediaId : 0u;
+        public bool WantsExit => _session.Context.WantsExit;
+        public bool WantsPause => _session.Context.WantsPause;
+    }
+}

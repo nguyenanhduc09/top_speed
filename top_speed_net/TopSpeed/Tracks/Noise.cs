@@ -18,7 +18,7 @@ namespace TopSpeed.Tracks
             _noisePlaying = true;
         }
 
-        private void UpdateLoopingNoise(AudioSourceHandle? sound, float position, int? pan = null)
+        private void UpdateLoopingNoise(Source? sound, float position, int? pan = null)
         {
             if (sound == null)
                 return;
@@ -45,7 +45,7 @@ namespace TopSpeed.Tracks
             }
         }
 
-        private static void PlayIfNotPlaying(AudioSourceHandle? sound)
+        private static void PlayIfNotPlaying(Source? sound)
         {
             if (sound == null)
                 return;
@@ -53,7 +53,7 @@ namespace TopSpeed.Tracks
                 sound.Play(loop: false);
         }
 
-        private void SetVolumePercent(AudioSourceHandle sound, int volume)
+        private void SetVolumePercent(Source sound, int volume)
         {
             var clamped = Math.Max(0, Math.Min(100, volume));
             sound.SetVolume((clamped / 100f) * _ambientVolumeScale);

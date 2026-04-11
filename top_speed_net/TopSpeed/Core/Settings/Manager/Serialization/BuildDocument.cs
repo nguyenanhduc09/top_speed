@@ -6,7 +6,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static SettingsFileDocument BuildDocument(RaceSettings settings)
+        private static SettingsFileDocument BuildDocument(DriveSettings settings)
         {
             var audio = settings.AudioVolumes ?? new AudioVolumeSettings();
             audio.ClampAll();
@@ -203,4 +203,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

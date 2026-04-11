@@ -6,13 +6,13 @@ namespace TopSpeed.Audio
 {
     internal static class AudioHelpers
     {
-        public static void SetVolumePercent(this AudioSourceHandle handle, int percent)
+        public static void SetVolumePercent(this Source handle, int percent)
         {
             var clamped = Math.Max(0, Math.Min(100, percent));
             handle.SetVolume(clamped / 100f);
         }
 
-        public static void SetVolumePercent(this AudioSourceHandle? handle, RaceSettings settings, AudioVolumeCategory category, int percent)
+        public static void SetVolumePercent(this Source? handle, DriveSettings settings, AudioVolumeCategory category, int percent)
         {
             if (handle == null)
                 return;
@@ -22,7 +22,7 @@ namespace TopSpeed.Audio
             handle.SetVolume((clamped / 100f) * scale);
         }
 
-        public static void SetVolumeUnit(this AudioSourceHandle? handle, RaceSettings settings, AudioVolumeCategory category, float normalizedVolume)
+        public static void SetVolumeUnit(this Source? handle, DriveSettings settings, AudioVolumeCategory category, float normalizedVolume)
         {
             if (handle == null)
                 return;
@@ -32,13 +32,13 @@ namespace TopSpeed.Audio
             handle.SetVolume(clamped * scale);
         }
 
-        public static void SetPanPercent(this AudioSourceHandle handle, int pan)
+        public static void SetPanPercent(this Source handle, int pan)
         {
             var clamped = Math.Max(-100, Math.Min(100, pan));
             handle.SetPan(clamped / 100f);
         }
 
-        public static void SetFrequency(this AudioSourceHandle handle, int frequency)
+        public static void SetFrequency(this Source handle, int frequency)
         {
             if (frequency <= 0)
             {
@@ -53,7 +53,7 @@ namespace TopSpeed.Audio
             handle.SetPitch(pitch);
         }
 
-        public static void Restart(this AudioSourceHandle handle, bool loop)
+        public static void Restart(this Source handle, bool loop)
         {
             handle.Stop();
             handle.SeekToStart();
@@ -61,4 +61,5 @@ namespace TopSpeed.Audio
         }
     }
 }
+
 

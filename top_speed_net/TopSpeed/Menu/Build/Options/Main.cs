@@ -32,10 +32,10 @@ namespace TopSpeed.Menu
                     MenuAction.None,
                     nextMenuId: "options_controls",
                     hint: LocalizationService.Mark("Configure input devices, force feedback, progressive keyboard behavior, key mappings, and menu shortcut mappings.")),
-                new MenuItem(LocalizationService.Mark("Race settings"),
+                new MenuItem(LocalizationService.Mark("Drive settings"),
                     MenuAction.None,
-                    nextMenuId: "options_race",
-                    hint: LocalizationService.Mark("Set race behavior defaults such as copilot callouts, curve announcements, automatic info, laps, computer opponents, and difficulty.")),
+                    nextMenuId: "options_drive",
+                    hint: LocalizationService.Mark("Set drive-session defaults such as copilot callouts, curve announcements, automatic information, laps, computer opponents, and difficulty.")),
                 new MenuItem(LocalizationService.Mark("Server settings"),
                     MenuAction.None,
                     nextMenuId: "options_server",
@@ -49,6 +49,7 @@ namespace TopSpeed.Menu
         }
     }
 }
+
 
 
 

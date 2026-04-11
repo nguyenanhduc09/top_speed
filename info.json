@@ -1,17 +1,14 @@
 {
-  "version": "2026.4.9.3",
-  "serverVersion": "2026.4.9.2",
+  "version": "2026.4.11.1",
+  "serverVersion": "2026.4.11.1",
   "changes": [
-    "Added a feature to see how many times you crashed in a single or multiplayer race. This is appended in the results summary after the race finishes.",
-    "The results summary for time trial now displays other info such as the best and average lap time during this run.",
-    "The legacy cfg score loading has been removed and replaced with a better model.",
-    "Fixed some updater issues.",
-    "Added the ability for the host to stop or pause the current game if it is in progress.",
-    "When a host trys to quit the race preparation, the game will no longer be stuck. The game will be canceled for all participents and the room will return to it's normal state.",
-    "The horn can now be used even if the vehicle is stopped."
+    "The SAPI speech backend is now much faster and does not lag or freeze during navigation.",
+    "Fixed a few audio issues that were reported, such as skipping or audio clicking during transitions. This required me to modify the native C library of MiniAudioEx and updating it too.",
+    "The game's audio engine was rewritten from scratch with better code readability and better structure.",
+    "Fixed a lot of problems in multiplayer game when the game is paused by the host.",
+    "Major code refactoring across game systems such as audio and race. Expect bugs in this version."
   ],
   "serverChanges": [
-    "Fixed an issue with parsing the JSON response for the update.",
-    "Updated the server to accept new events when a player cancels or stops a game that is in progress."
+    "Fixed some issues when the game is paused by the host."
   ]
 }

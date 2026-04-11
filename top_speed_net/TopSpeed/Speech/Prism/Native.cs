@@ -39,6 +39,7 @@ namespace TopSpeed.Speech.Prism
         public static Features BackendFeatures(IntPtr backend) => Methods.BackendFeatures(backend);
         public static Error InitializeBackend(IntPtr backend) => Methods.InitializeBackend(backend);
         public static Error Speak(IntPtr backend, string text, bool interrupt) => Methods.Speak(backend, text, interrupt);
+        public static Error SpeakToMemory(IntPtr backend, string text, MemoryAudioCallback callback) => Methods.SpeakToMemory(backend, text, callback);
         public static Error Braille(IntPtr backend, string text) => Methods.Braille(backend, text);
         public static Error Output(IntPtr backend, string text, bool interrupt) => Methods.Output(backend, text, interrupt);
         public static Error Stop(IntPtr backend) => Methods.Stop(backend);

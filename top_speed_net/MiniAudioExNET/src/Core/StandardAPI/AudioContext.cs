@@ -151,10 +151,9 @@ namespace MiniAudioEx.Core.StandardAPI
             AudioContext.sampleRate = sampleRate;
             AudioContext.channels = channels;
 
-            ma_ex_context_config contextConfig = MiniAudioExNative.ma_ex_context_config_init(sampleRate, (byte)channels, periodSizeInFrames, ref pDeviceInfo);
-
             deviceDataProc = OnDeviceDataProc;
-            contextConfig.deviceDataProc = deviceDataProc;
+            ma_ex_context_config contextConfig = MiniAudioExNative.ma_ex_context_config_init(sampleRate, (byte)channels, periodSizeInFrames, ref pDeviceInfo);
+            contextConfig = MiniAudioExNative.ma_ex_context_config_set_device_data_proc(contextConfig, deviceDataProc);
 
             audioContext = MiniAudioExNative.ma_ex_context_init(ref contextConfig);
 

@@ -179,7 +179,7 @@ namespace TopSpeed.Vehicles
             }
         }
 
-        private static void EnsureSurfaceLoop(TS.Audio.AudioSourceHandle sound, int frequency)
+        private static void EnsureSurfaceLoop(TS.Audio.Source sound, int frequency)
         {
             if (sound.IsPlaying)
                 return;

@@ -115,7 +115,7 @@ namespace TopSpeed.Tracks
             ApplyWeatherVolume(_soundStorm, _activeWeatherProfile.StormGain);
         }
 
-        private void ApplyWeatherVolume(TS.Audio.AudioSourceHandle? handle, float gain)
+        private void ApplyWeatherVolume(TS.Audio.Source? handle, float gain)
         {
             handle?.SetVolume(Clamp01(gain) * _ambientVolumeScale);
         }

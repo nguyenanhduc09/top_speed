@@ -1,4 +1,4 @@
-using TopSpeed.Race;
+using TopSpeed.Drive;
 
 namespace TopSpeed.Game
 {
@@ -14,12 +14,14 @@ namespace TopSpeed.Game
             _multiplayerRaceRuntime.Start();
         }
 
-        private void EndMultiplayerRace(RaceResultSummary? resultSummary = null)
+        private void EndMultiplayerRace(DriveResultSummary? resultSummary = null)
         {
             _multiplayerRaceRuntime.End(resultSummary);
         }
     }
 }
+
+
 
 
 

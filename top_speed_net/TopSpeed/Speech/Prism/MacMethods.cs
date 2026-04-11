@@ -6,6 +6,20 @@ namespace TopSpeed.Speech.Prism
     internal sealed class MacMethods : IMethods
     {
         private const string Library = "prism";
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void PrismAudioCallback(IntPtr userData, IntPtr samples, UIntPtr sampleCount, UIntPtr channels, UIntPtr sampleRate);
+
+        private sealed class MemoryState
+        {
+            public MemoryState(MemoryAudioCallback callback)
+            {
+                Callback = callback;
+            }
+
+            public MemoryAudioCallback Callback { get; }
+        }
+
+        private static readonly PrismAudioCallback SpeakToMemoryProc = OnSpeakToMemory;
 
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         private static extern Config prism_config_init();
@@ -61,6 +75,9 @@ namespace TopSpeed.Speech.Prism
 
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         private static extern Error prism_backend_speak(IntPtr backend, IntPtr text, [MarshalAs(UnmanagedType.I1)] bool interrupt);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        private static extern Error prism_backend_speak_to_memory(IntPtr backend, IntPtr text, PrismAudioCallback callback, IntPtr userData);
 
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         private static extern Error prism_backend_braille(IntPtr backend, IntPtr text);
@@ -146,6 +163,21 @@ namespace TopSpeed.Speech.Prism
         public Features BackendFeatures(IntPtr backend) => (Features)prism_backend_get_features(backend);
         public Error InitializeBackend(IntPtr backend) => prism_backend_initialize(backend);
         public Error Speak(IntPtr backend, string text, bool interrupt) => Strings.WithUtf8(text, ptr => prism_backend_speak(backend, ptr, interrupt));
+        public Error SpeakToMemory(IntPtr backend, string text, MemoryAudioCallback callback)
+        {
+            var state = new MemoryState(callback);
+            var handle = GCHandle.Alloc(state);
+            try
+            {
+                return Strings.WithUtf8(text, ptr => prism_backend_speak_to_memory(backend, ptr, SpeakToMemoryProc, GCHandle.ToIntPtr(handle)));
+            }
+            finally
+            {
+                if (handle.IsAllocated)
+                    handle.Free();
+            }
+        }
+
         public Error Braille(IntPtr backend, string text) => Strings.WithUtf8(text, ptr => prism_backend_braille(backend, ptr));
         public Error Output(IntPtr backend, string text, bool interrupt) => Strings.WithUtf8(text, ptr => prism_backend_output(backend, ptr, interrupt));
         public Error Stop(IntPtr backend) => prism_backend_stop(backend);
@@ -212,5 +244,20 @@ namespace TopSpeed.Speech.Prism
         }
 
         public string? ErrorString(Error error) => Strings.FromUtf8(prism_error_string(error));
+
+        private static void OnSpeakToMemory(IntPtr userData, IntPtr samples, UIntPtr sampleCount, UIntPtr channels, UIntPtr sampleRate)
+        {
+            if (sampleCount == UIntPtr.Zero)
+                return;
+
+            var handle = GCHandle.FromIntPtr(userData);
+            if (!(handle.Target is MemoryState state))
+                return;
+
+            var count = checked((int)sampleCount);
+            var managed = new float[count];
+            Marshal.Copy(samples, managed, 0, count);
+            state.Callback(managed, checked((int)channels), checked((int)sampleRate));
+        }
     }
 }

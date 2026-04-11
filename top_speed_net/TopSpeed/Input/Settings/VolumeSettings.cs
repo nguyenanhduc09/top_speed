@@ -92,14 +92,14 @@ namespace TopSpeed.Input
 
     internal static class AudioVolumeSettingsExtensions
     {
-        public static float GetCategoryScalar(this RaceSettings settings, AudioVolumeCategory category)
+        public static float GetCategoryScalar(this DriveSettings settings, AudioVolumeCategory category)
         {
             if (settings == null)
                 return 1f;
             return AudioVolumeSettings.PercentToScalar(settings.AudioVolumes.GetPercent(category));
         }
 
-        public static float GetEffectiveScalar(this RaceSettings settings, AudioVolumeCategory category)
+        public static float GetEffectiveScalar(this DriveSettings settings, AudioVolumeCategory category)
         {
             if (settings == null)
                 return 1f;
@@ -107,4 +107,5 @@ namespace TopSpeed.Input
         }
     }
 }
+
 

@@ -30,12 +30,13 @@ namespace TopSpeed.Tracks
             _soundOwl = CreateLegacySound(root, "owl.wav");
         }
 
-        private AudioSourceHandle? CreateLegacySound(string root, string file)
+        private Source? CreateLegacySound(string root, string file)
         {
             var path = Path.Combine(root, file);
             if (!File.Exists(path))
                 return null;
-            return _audio.CreateLoopingSource(path);
+            var asset = _audio.LoadAsset(path, streamFromDisk: false);
+            return _audio.CreateLoopingSource(asset, AudioEngineOptions.TrackBusName);
         }
 
         private void InitializeTrackSoundSources()
@@ -61,7 +62,7 @@ namespace TopSpeed.Tracks
             }
         }
 
-        private void EnqueuePendingHandleStop(AudioSourceHandle handle, float fadeOutSeconds)
+        private void EnqueuePendingHandleStop(Source handle, float fadeOutSeconds)
         {
             if (fadeOutSeconds <= 0f)
             {

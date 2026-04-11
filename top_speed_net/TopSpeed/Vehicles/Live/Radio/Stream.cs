@@ -37,7 +37,13 @@ namespace TopSpeed.Vehicles.Live
                 _frameMs = frameMs;
                 var samplesPerChannel = (_sampleRate * _frameMs) / 1000;
                 _decodeBuffer = new short[Math.Max(1, samplesPerChannel * _channels)];
-                _source = _audio.CreateProceduralSource(OnRender, _channels, _sampleRate, useHrtf: true);
+                _source = _audio.CreateProceduralSource(
+                    OnRender,
+                    _channels,
+                    _sampleRate,
+                    busName: BusName,
+                    spatialize: true,
+                    useHrtf: true);
                 _source.SetDopplerFactor(0f);
                 _source.SetPosition(_position);
                 _source.SetVelocity(_velocity);

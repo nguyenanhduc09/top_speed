@@ -1,0 +1,149 @@
+using System;
+using TopSpeed.Data;
+using TopSpeed.Localization;
+using TopSpeed.Protocol;
+using AudioSource = TS.Audio.Source;
+
+namespace TopSpeed.Drive.Multiplayer
+{
+    internal sealed partial class MultiplayerSession
+    {
+        private void ApplyBumpCore(PacketPlayerBumped bump)
+        {
+            if (bump.PlayerNumber == LocalPlayerNumber)
+                _car.Bump(bump.BumpX, bump.BumpY, bump.SpeedDeltaKph);
+        }
+
+        private void ApplyRemoteCrashCore(PacketPlayer crashed)
+        {
+            if (crashed.PlayerNumber == LocalPlayerNumber)
+                return;
+            if (crashed.PlayerNumber < _disconnectedPlayerSlots.Length && _disconnectedPlayerSlots[crashed.PlayerNumber])
+                return;
+            if (_remotePlayers.TryGetValue(crashed.PlayerNumber, out var remote))
+                remote.Player.Crash(remote.Player.PositionX, scheduleRestart: false);
+        }
+
+        private void ApplyRemoteFinishCore(byte playerNumber, byte finishOrder)
+        {
+            if (playerNumber == LocalPlayerNumber)
+                return;
+            if (playerNumber < _disconnectedPlayerSlots.Length && _disconnectedPlayerSlots[playerNumber])
+                return;
+            if (!_remotePlayers.TryGetValue(playerNumber, out var remote))
+                return;
+            if (remote.Finished)
+                return;
+
+            remote.Finished = true;
+            remote.State = PlayerState.Finished;
+            if (finishOrder > 0)
+            {
+                var expectedIndex = Math.Max(0, finishOrder - 1);
+                if (expectedIndex > _positionFinish)
+                    _positionFinish = expectedIndex;
+            }
+
+            _progress.AnnounceRemoteFinish(playerNumber);
+        }
+
+        private void RemoveRemotePlayerCore(byte playerNumber, bool markDisconnected)
+        {
+            if (markDisconnected && playerNumber < _disconnectedPlayerSlots.Length)
+                _disconnectedPlayerSlots[playerNumber] = true;
+
+            _remoteMediaTransfers.Remove(playerNumber);
+            _remoteLiveStates.Remove(playerNumber);
+            if (_remotePlayers.TryGetValue(playerNumber, out var remote))
+            {
+                remote.Player.StopLiveStream();
+                remote.Player.FinalizePlayer();
+                remote.Player.Dispose();
+                _remotePlayers.Remove(playerNumber);
+            }
+
+            RemovePlayerFromSnapshotFrames(playerNumber);
+        }
+
+        private void SyncParticipantsCore(PacketRoomState roomState)
+        {
+            if (roomState == null)
+                return;
+
+            _missingSnapshotPlayers.Clear();
+            foreach (var number in _remotePlayers.Keys)
+                _missingSnapshotPlayers.Add(number);
+
+            var participants = roomState.Players ?? Array.Empty<PacketRoomPlayer>();
+            for (var i = 0; i < participants.Length; i++)
+            {
+                var number = participants[i].PlayerNumber;
+                if (number == LocalPlayerNumber)
+                    continue;
+                _missingSnapshotPlayers.Remove(number);
+            }
+
+            for (var i = 0; i < _missingSnapshotPlayers.Count; i++)
+                RemoveRemotePlayerCore(_missingSnapshotPlayers[i], markDisconnected: false);
+        }
+
+        private bool HasPlayerInRace(int playerIndex)
+        {
+            if (playerIndex == LocalPlayerNumber)
+                return true;
+            if (playerIndex < 0 || playerIndex >= MaxPlayers)
+                return false;
+            return _remotePlayers.ContainsKey((byte)playerIndex);
+        }
+
+        private string GetVehicleNameForPlayer(int playerIndex)
+        {
+            if (playerIndex == LocalPlayerNumber)
+            {
+                if (_car.UserDefined && !string.IsNullOrWhiteSpace(_car.CustomFile))
+                    return TopSpeed.Drive.Session.SessionText.FormatVehicleName(_car.CustomFile);
+                return _car.VehicleName;
+            }
+
+            var targetNumber = (byte)playerIndex;
+            if (_remotePlayers.TryGetValue(targetNumber, out var remote))
+                return VehicleCatalog.Vehicles[remote.Player.VehicleIndex].Name;
+
+            return LocalizationService.Mark("Vehicle");
+        }
+
+        private int CalculatePlayerPerc(int player)
+        {
+            if (player == LocalPlayerNumber)
+                return ClampPercent(_car.PositionY);
+
+            var targetNumber = (byte)player;
+            if (_remotePlayers.TryGetValue(targetNumber, out var remote))
+                return ClampPercent(remote.Player.PositionY);
+
+            return 0;
+        }
+
+        private int ClampPercent(float positionY)
+        {
+            var laps = Math.Max(1, _lapLimit);
+            var perc = (int)((positionY / (_track.Length * laps)) * 100f);
+            if (perc > 100)
+                perc = 100;
+            if (perc < 0)
+                perc = 0;
+            return perc;
+        }
+
+        private void AnnounceFinishOrder(AudioSource?[] playerSounds, AudioSource?[] finishSounds, int playerNumber, ref int positionFinish)
+        {
+            if (playerNumber < 0 || playerNumber >= playerSounds.Length || finishSounds.Length == 0)
+                return;
+
+            SpeakIfLoaded(playerSounds[playerNumber], true);
+            var finishIndex = Math.Min(positionFinish, finishSounds.Length - 1);
+            SpeakIfLoaded(finishSounds[finishIndex], true);
+            positionFinish++;
+        }
+    }
+}

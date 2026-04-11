@@ -31,15 +31,6 @@ namespace TopSpeed.Server.Network
                     _owner._authorityDropsPlayerState++;
                     player.State = PlayerState.AwaitingStart;
                 }
-                if (room.RacePaused && player.State != PlayerState.Finished)
-                {
-                    player.State = PlayerState.AwaitingStart;
-                    player.Speed = 0;
-                    player.EngineRunning = false;
-                    player.Braking = false;
-                    player.Horning = false;
-                    player.Backfiring = false;
-                }
                 if (player.State == PlayerState.Finished && raceDistance > 0f && player.PositionY < raceDistance)
                     player.PositionY = raceDistance;
                 if (previousState == PlayerState.Finished && player.State != PlayerState.Finished)
@@ -117,15 +108,6 @@ namespace TopSpeed.Server.Network
                 {
                     _owner._authorityDropsPlayerData++;
                     nextState = player.State;
-                }
-                if (room.RacePaused && nextState != PlayerState.Finished)
-                {
-                    nextState = PlayerState.AwaitingStart;
-                    player.Speed = 0;
-                    player.EngineRunning = false;
-                    player.Braking = false;
-                    player.Horning = false;
-                    player.Backfiring = false;
                 }
                 if (previousState == PlayerState.Finished && nextState != PlayerState.Finished)
                 {

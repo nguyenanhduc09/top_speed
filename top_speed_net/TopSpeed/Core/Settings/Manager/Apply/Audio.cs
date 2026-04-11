@@ -6,7 +6,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static void ApplyAudio(RaceSettings settings, SettingsAudioDocument audio, List<SettingsIssue> issues)
+        private static void ApplyAudio(DriveSettings settings, SettingsAudioDocument audio, List<SettingsIssue> issues)
         {
             settings.AudioVolumes ??= new AudioVolumeSettings();
             var hasCategoryVolumes = false;
@@ -104,4 +104,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

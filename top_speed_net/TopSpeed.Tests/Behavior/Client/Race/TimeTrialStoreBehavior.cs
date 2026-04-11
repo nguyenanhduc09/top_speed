@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using TopSpeed.Race.TimeTrial;
+using TopSpeed.Drive.TimeTrial.Stats;
 using Xunit;
 
 namespace TopSpeed.Tests;

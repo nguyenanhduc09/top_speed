@@ -3,6 +3,7 @@ using System.IO;
 using TopSpeed.Audio;
 using TopSpeed.Localization;
 using TopSpeed.Protocol;
+using TS.Audio;
 
 namespace TopSpeed.Vehicles
 {
@@ -28,7 +29,8 @@ namespace TopSpeed.Vehicles
             {
                 var wasPlaying = preservePlaybackState ? _desiredPlaying : false;
                 DisposeSource();
-                _source = _audio.CreateSpatialSource(fullPath, streamFromDisk: true, allowHrtf: true);
+                var asset = _audio.LoadStream(fullPath);
+                _source = _audio.CreateSpatialSource(asset, AudioEngineOptions.RadioBusName, allowHrtf: true);
                 _source.SetDopplerFactor(0f);
                 _source.SetVolumePercent(_volumePercent);
                 _mediaPath = fullPath;

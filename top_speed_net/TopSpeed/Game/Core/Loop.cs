@@ -6,27 +6,30 @@ namespace TopSpeed.Game
         {
             _input.Update();
             if (_input.TryGetControllerState(out var controller))
-                _raceInput.Run(_input.Current, controller, deltaSeconds, _input.ActiveControllerIsRacingWheel);
+                _driveInput.Run(_input.Current, controller, deltaSeconds, _input.ActiveControllerIsRacingWheel);
             else
-                _raceInput.Run(_input.Current, deltaSeconds);
+                _driveInput.Run(_input.Current, deltaSeconds);
 
             TryShowDeviceChoiceDialog();
 
-            _raceInput.SetOverlayInputBlocked(
+            _driveInput.SetOverlayInputBlocked(
                 _state == AppState.MultiplayerRace &&
-                (_multiplayerCoordinator.Questions.HasActiveOverlayQuestion || _dialogs.HasActiveOverlayDialog));
+                (_multiplayerCoordinator.Questions.HasActiveOverlayQuestion
+                 || _dialogs.HasActiveOverlayDialog
+                 || _choices.HasActiveChoiceDialog));
 
             UpdateTextInputPrompt();
             _stateMachine.Update(deltaSeconds);
 
-            if (_pendingRaceStart)
+            if (_pendingDriveStart)
             {
-                _pendingRaceStart = false;
-                StartRace(_pendingMode);
+                _pendingDriveStart = false;
+                StartDrive(_pendingMode);
             }
 
             SyncAudioLoopState();
         }
     }
 }
+
 

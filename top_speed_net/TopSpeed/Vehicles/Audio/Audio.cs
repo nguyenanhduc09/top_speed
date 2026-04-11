@@ -207,17 +207,17 @@ namespace TopSpeed.Vehicles
             SetPlayerEventVolumePercent(_soundStop, 100);
         }
 
-        private void SetPlayerEngineVolumePercent(AudioSourceHandle? sound, int percent)
+        private void SetPlayerEngineVolumePercent(Source? sound, int percent)
         {
             sound.SetVolumePercent(_settings, AudioVolumeCategory.PlayerVehicleEngine, percent);
         }
 
-        private void SetPlayerEventVolumePercent(AudioSourceHandle? sound, int percent)
+        private void SetPlayerEventVolumePercent(Source? sound, int percent)
         {
             sound.SetVolumePercent(_settings, AudioVolumeCategory.PlayerVehicleEvents, percent);
         }
 
-        private void SetSurfaceLoopVolumePercent(AudioSourceHandle? sound, int percent)
+        private void SetSurfaceLoopVolumePercent(Source? sound, int percent)
         {
             sound.SetVolumePercent(_settings, AudioVolumeCategory.SurfaceLoops, percent);
         }

@@ -14,7 +14,7 @@ namespace TopSpeed.Game
         void IMenuAudioActions.SaveMusicVolume(float volume) => SaveMusicVolume(volume);
         void IMenuAudioActions.ApplyAudioSettings() => ApplyAudioSettings();
 
-        void IMenuRaceActions.QueueRaceStart(RaceMode mode) => QueueRaceStart(mode);
+        void IMenuDriveActions.QueueDriveStart(DriveMode mode) => QueueDriveStart(mode);
 
         void IMenuServerActions.StartServerDiscovery() => _multiplayerCoordinator.StartServerDiscovery();
         void IMenuServerActions.OpenSavedServersManager() => _multiplayerCoordinator.OpenSavedServersManager();
@@ -52,4 +52,6 @@ namespace TopSpeed.Game
         void IMenuMappingActions.ResetMappings(InputMappingMode mode) => ResetMappings(mode);
     }
 }
+
+
 

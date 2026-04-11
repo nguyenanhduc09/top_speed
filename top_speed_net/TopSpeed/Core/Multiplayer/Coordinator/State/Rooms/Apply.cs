@@ -94,8 +94,7 @@ namespace TopSpeed.Core.Multiplayer
             localHostChanged = previousIsHost != CurrentRoom.IsHost;
             becameHost = localHostChanged &&
                 CurrentRoom.IsHost &&
-                (roomEvent.Kind == RoomEventKind.ParticipantLeft || roomEvent.Kind == RoomEventKind.HostChanged) &&
-                (roomEvent.PlayerCount <= 1 || (CurrentRoom.Players?.Length ?? int.MaxValue) <= 1);
+                (roomEvent.Kind == RoomEventKind.ParticipantLeft || roomEvent.Kind == RoomEventKind.HostChanged);
             WasHost = CurrentRoom.IsHost;
             return true;
         }

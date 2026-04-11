@@ -1,6 +1,6 @@
 using System.Linq;
 using TopSpeed.Game;
-using TopSpeed.Race;
+using TopSpeed.Drive;
 
 namespace TopSpeed.Tests;
 
@@ -12,20 +12,20 @@ internal static class ResultHarness
 
         return new[]
         {
-            Project(dialogs.Build(new RaceResultSummary
+            Project(dialogs.Build(new DriveResultSummary
             {
-                Mode = RaceResultMode.Race,
+                Mode = DriveResultMode.Race,
                 LocalPosition = 1,
                 LocalCrashCount = 5,
                 Entries = new[]
                 {
-                    new RaceResultEntry
+                    new DriveResultEntry
                     {
                         Name = "Alice",
                         Position = 1,
                         TimeMs = 61000
                     },
-                    new RaceResultEntry
+                    new DriveResultEntry
                     {
                         Name = "Bob",
                         Position = 2,
@@ -33,9 +33,9 @@ internal static class ResultHarness
                     }
                 }
             })),
-            Project(dialogs.Build(new RaceResultSummary
+            Project(dialogs.Build(new DriveResultSummary
             {
-                Mode = RaceResultMode.TimeTrial,
+                Mode = DriveResultMode.TimeTrial,
                 TimeTrialBeatRecord = false,
                 TimeTrialLapCount = 3,
                 TimeTrialCurrentRunMs = 61000,
@@ -62,3 +62,5 @@ internal static class ResultHarness
         }
     };
 }
+
+

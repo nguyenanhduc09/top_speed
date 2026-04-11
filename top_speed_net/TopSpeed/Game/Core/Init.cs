@@ -5,6 +5,7 @@ using TopSpeed.Core.Multiplayer;
 using TopSpeed.Core.Settings;
 using TopSpeed.Core.Updates;
 using TopSpeed.Data;
+using TopSpeed.Drive.TimeTrial;
 using TopSpeed.Input;
 using TopSpeed.Localization;
 using TopSpeed.Menu;
@@ -46,7 +47,7 @@ namespace TopSpeed.Game
                     new TopSpeed.Input.Backends.Sdl.Factory()
                 });
             var input = new InputService(_window.NativeHandle, backendRegistry, _window as IKeyboardEventSource);
-            var speech = new SpeechService(input.IsAnyInputHeld, input.PrepareForInterruptableSpeech);
+            var speech = new SpeechService(audio, input.IsAnyInputHeld, input.PrepareForInterruptableSpeech);
             _audio = audio;
             _input = input;
             _speech = speech;
@@ -56,9 +57,9 @@ namespace TopSpeed.Game
             speech.ScreenReaderInterrupt = _settings.ScreenReaderInterrupt;
             speech.PreferredBackendId = _settings.SpeechBackendId;
             speech.PreferredVoiceIndex = _settings.SpeechVoiceIndex;
-            _raceInput = new RaceInput(_settings);
-            _setup = new RaceSetup();
-            _raceModeFactory = new RaceModeFactory(audio, speech, _settings, _raceInput, _fileDialogs);
+            _driveInput = new DriveInput(_settings);
+            _setup = new DriveSetup();
+            _driveSessionFactory = new DriveSessionFactory(audio, speech, _settings, _driveInput, _fileDialogs);
             _stateMachine = new StateMachine(this);
             _menu = new MenuManager(audio, speech, () => _settings.UsageHints);
             _dialogs = new DialogManager(_menu, message => speech.Speak(message));
@@ -71,9 +72,9 @@ namespace TopSpeed.Game
             _menu.SetMenuSoundPreset(_settings.MenuSoundPreset);
             _menu.SetMenuNavigatePanning(_settings.MenuNavigatePanning);
             _menu.SetMenuAutoFocus(_settings.MenuAutoFocus);
-            _selection = new RaceSelection(_setup, _settings);
-            _menuRegistry = new MenuRegistry(_menu, _settings, _setup, _raceInput, _selection, this, this, this, this, this, this);
-            _inputMapping = new InputMappingHandler(input, _raceInput, _settings, speech, SaveSettings);
+            _selection = new DriveSelection(_setup, _settings);
+            _menuRegistry = new MenuRegistry(_menu, _settings, _setup, _driveInput, _selection, this, this, this, this, this, this);
+            _inputMapping = new InputMappingHandler(input, _driveInput, _settings, speech, SaveSettings);
             _shortcutMapping = new ShortcutMappingHandler(input, _menu, _settings, speech, SaveSettings);
             _updateConfig = UpdateConfig.Default;
             _updateService = new UpdateService(_updateConfig);
@@ -117,5 +118,7 @@ namespace TopSpeed.Game
         }
     }
 }
+
+
 
 

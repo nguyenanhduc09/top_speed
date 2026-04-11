@@ -43,7 +43,7 @@ namespace TopSpeed.Core.Multiplayer
         private readonly DialogManager _dialogs;
         private readonly AudioManager _audio;
         private readonly SpeechService _speech;
-        private readonly RaceSettings _settings;
+        private readonly DriveSettings _settings;
         private readonly MultiplayerConnector _connector;
         private readonly Action<string, string?, SpeechService.SpeakFlag, bool, Action<TextInputResult>> _promptTextInput;
         private readonly Action _saveSettings;
@@ -66,7 +66,7 @@ namespace TopSpeed.Core.Multiplayer
             DialogManager dialogs,
             AudioManager audio,
             SpeechService speech,
-            RaceSettings settings,
+            DriveSettings settings,
             MultiplayerConnector connector,
             Action<string, string?, SpeechService.SpeakFlag, bool, Action<TextInputResult>> promptTextInput,
             Action saveSettings,
@@ -101,6 +101,7 @@ namespace TopSpeed.Core.Multiplayer
         }
     }
 }
+
 
 
 

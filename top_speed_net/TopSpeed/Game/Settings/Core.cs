@@ -15,7 +15,7 @@ namespace TopSpeed.Game
         {
             _settings.RestoreDefaults();
             ApplyLanguage(_settings.Language, saveSettings: false, announceChange: false);
-            _raceInput.SetDevice(_settings.DeviceMode);
+            _driveInput.SetDevice(_settings.DeviceMode);
             _input.SetDeviceMode(_settings.DeviceMode);
             _speech.ScreenReaderRateMs = _settings.ScreenReaderRateMs;
             _speech.OutputMode = _settings.SpeechMode;
@@ -38,7 +38,7 @@ namespace TopSpeed.Game
         private void SetDevice(InputDeviceMode mode)
         {
             _settings.DeviceMode = mode;
-            _raceInput.SetDevice(mode);
+            _driveInput.SetDevice(mode);
             _input.SetDeviceMode(mode);
             SaveSettings();
         }
@@ -86,4 +86,5 @@ namespace TopSpeed.Game
         }
     }
 }
+
 

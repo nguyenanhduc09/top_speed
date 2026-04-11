@@ -9,8 +9,8 @@ namespace TopSpeed.Input
     internal sealed partial class InputMappingHandler
     {
         private readonly IInputService _input;
-        private readonly RaceInput _raceInput;
-        private readonly RaceSettings _settings;
+        private readonly DriveInput _driveInput;
+        private readonly DriveSettings _settings;
         private readonly SpeechService _speech;
         private readonly Action _saveSettings;
 
@@ -23,13 +23,13 @@ namespace TopSpeed.Input
 
         public InputMappingHandler(
             IInputService input,
-            RaceInput raceInput,
-            RaceSettings settings,
+            DriveInput driveInput,
+            DriveSettings settings,
             SpeechService speech,
             Action saveSettings)
         {
             _input = input ?? throw new ArgumentNullException(nameof(input));
-            _raceInput = raceInput ?? throw new ArgumentNullException(nameof(raceInput));
+            _driveInput = driveInput ?? throw new ArgumentNullException(nameof(driveInput));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _speech = speech ?? throw new ArgumentNullException(nameof(speech));
             _saveSettings = saveSettings ?? throw new ArgumentNullException(nameof(saveSettings));
@@ -63,7 +63,7 @@ namespace TopSpeed.Input
             if (_mappingNeedsInstruction)
             {
                 _mappingNeedsInstruction = false;
-                var instruction = _raceInput.KeyMap.GetMappingInstruction(_mappingMode == InputMappingMode.Keyboard, _mappingAction);
+                var instruction = _driveInput.KeyMap.GetMappingInstruction(_mappingMode == InputMappingMode.Keyboard, _mappingAction);
                 _speech.Speak(instruction);
             }
 
@@ -83,15 +83,17 @@ namespace TopSpeed.Input
         public string FormatMappingValue(InputAction action, InputMappingMode mode)
         {
             if (mode == InputMappingMode.Keyboard)
-                return KeyMapManager.FormatKey(_raceInput.KeyMap.GetKey(action));
+                return KeyMapManager.FormatKey(_driveInput.KeyMap.GetKey(action));
 
-            var axis = _raceInput.KeyMap.GetAxis(action);
+            var axis = _driveInput.KeyMap.GetAxis(action);
             return _input.TryGetControllerDisplayProfile(out var profile)
                 ? KeyMapManager.FormatAxis(axis, profile)
                 : KeyMapManager.FormatAxis(axis, ControllerDisplayProfile.SemanticGamepad);
         }
     }
 }
+
+
 
 
 

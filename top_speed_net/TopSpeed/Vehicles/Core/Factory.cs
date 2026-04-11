@@ -12,8 +12,8 @@ namespace TopSpeed.Vehicles.Core
         public static ICar CreateDefault(
             AudioManager audio,
             Track track,
-            RaceInput input,
-            RaceSettings settings,
+            DriveInput input,
+            DriveSettings settings,
             int vehicleIndex,
             string? vehicleFile,
             Func<float> currentTime,
@@ -24,4 +24,5 @@ namespace TopSpeed.Vehicles.Core
         }
     }
 }
+
 

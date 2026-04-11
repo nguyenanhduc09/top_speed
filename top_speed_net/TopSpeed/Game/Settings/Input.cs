@@ -95,18 +95,18 @@ namespace TopSpeed.Game
 
         private void ApplyResetMappings(InputMappingMode mode)
         {
-            var defaults = new RaceSettings();
-            var defaultInput = new RaceInput(defaults);
+            var defaults = new DriveSettings();
+            var defaultInput = new DriveInput(defaults);
 
-            foreach (var action in _raceInput.KeyMap.Actions)
+            foreach (var action in _driveInput.KeyMap.Actions)
             {
                 if (mode == InputMappingMode.Keyboard)
                 {
-                    _raceInput.KeyMap.ApplyKeyMapping(action.Action, defaultInput.KeyMap.GetKey(action.Action));
+                    _driveInput.KeyMap.ApplyKeyMapping(action.Action, defaultInput.KeyMap.GetKey(action.Action));
                 }
                 else
                 {
-                    _raceInput.KeyMap.ApplyAxisMapping(action.Action, defaultInput.KeyMap.GetAxis(action.Action));
+                    _driveInput.KeyMap.ApplyAxisMapping(action.Action, defaultInput.KeyMap.GetAxis(action.Action));
                 }
             }
 
@@ -118,3 +118,5 @@ namespace TopSpeed.Game
         }
     }
 }
+
+

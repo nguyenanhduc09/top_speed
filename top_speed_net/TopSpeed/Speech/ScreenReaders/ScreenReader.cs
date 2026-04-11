@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TopSpeed.Speech.Playback;
 
 namespace TopSpeed.Speech.ScreenReaders
 {
@@ -28,5 +29,6 @@ namespace TopSpeed.Speech.ScreenReaders
         bool HasBraille();
         bool Braille(string text);
         bool Silence();
+        void BindPlayer(IPlayer? player);
     }
 }

@@ -13,12 +13,12 @@ namespace TopSpeed.Menu
         private const string NextChatCategoryShortcutActionId = "chat_next_category";
 
         private readonly MenuManager _menu;
-        private readonly RaceSettings _settings;
-        private readonly RaceSetup _setup;
-        private readonly RaceInput _raceInput;
-        private readonly RaceSelection _selection;
+        private readonly DriveSettings _settings;
+        private readonly DriveSetup _setup;
+        private readonly DriveInput _driveInput;
+        private readonly DriveSelection _selection;
         private readonly IMenuUiActions _ui;
-        private readonly IMenuRaceActions _race;
+        private readonly IMenuDriveActions _driveActions;
         private readonly IMenuServerActions _server;
         private readonly IMenuSettingsActions _settingsActions;
         private readonly IMenuAudioActions _audio;
@@ -28,12 +28,12 @@ namespace TopSpeed.Menu
 
         public MenuRegistry(
             MenuManager menu,
-            RaceSettings settings,
-            RaceSetup setup,
-            RaceInput raceInput,
-            RaceSelection selection,
+            DriveSettings settings,
+            DriveSetup setup,
+            DriveInput driveInput,
+            DriveSelection selection,
             IMenuUiActions ui,
-            IMenuRaceActions race,
+            IMenuDriveActions driveActions,
             IMenuServerActions server,
             IMenuSettingsActions settingsActions,
             IMenuAudioActions audio,
@@ -42,10 +42,10 @@ namespace TopSpeed.Menu
             _menu = menu ?? throw new ArgumentNullException(nameof(menu));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            _raceInput = raceInput ?? throw new ArgumentNullException(nameof(raceInput));
+            _driveInput = driveInput ?? throw new ArgumentNullException(nameof(driveInput));
             _selection = selection ?? throw new ArgumentNullException(nameof(selection));
             _ui = ui ?? throw new ArgumentNullException(nameof(ui));
-            _race = race ?? throw new ArgumentNullException(nameof(race));
+            _driveActions = driveActions ?? throw new ArgumentNullException(nameof(driveActions));
             _server = server ?? throw new ArgumentNullException(nameof(server));
             _settingsActions = settingsActions ?? throw new ArgumentNullException(nameof(settingsActions));
             _audio = audio ?? throw new ArgumentNullException(nameof(audio));
@@ -81,23 +81,23 @@ namespace TopSpeed.Menu
             _menu.Register(BuildMultiplayerLoadoutVehicleMenu());
             _menu.Register(BuildMultiplayerLoadoutTransmissionMenu());
 
-            _menu.Register(BuildTrackTypeMenu("time_trial_type", RaceMode.TimeTrial));
-            _menu.Register(BuildTrackTypeMenu("single_race_type", RaceMode.SingleRace));
+            _menu.Register(BuildTrackTypeMenu("time_trial_type", DriveMode.TimeTrial));
+            _menu.Register(BuildTrackTypeMenu("single_race_type", DriveMode.SingleRace));
 
-            _menu.Register(BuildTrackMenu("time_trial_tracks_race", RaceMode.TimeTrial, TrackCategory.RaceTrack));
-            _menu.Register(BuildTrackMenu("time_trial_tracks_adventure", RaceMode.TimeTrial, TrackCategory.StreetAdventure));
-            _menu.Register(BuildCustomTrackMenu("time_trial_tracks_custom", RaceMode.TimeTrial));
-            _menu.Register(BuildTrackMenu("single_race_tracks_race", RaceMode.SingleRace, TrackCategory.RaceTrack));
-            _menu.Register(BuildTrackMenu("single_race_tracks_adventure", RaceMode.SingleRace, TrackCategory.StreetAdventure));
-            _menu.Register(BuildCustomTrackMenu("single_race_tracks_custom", RaceMode.SingleRace));
+            _menu.Register(BuildTrackMenu("time_trial_tracks_race", DriveMode.TimeTrial, TrackCategory.RaceTrack));
+            _menu.Register(BuildTrackMenu("time_trial_tracks_adventure", DriveMode.TimeTrial, TrackCategory.StreetAdventure));
+            _menu.Register(BuildCustomTrackMenu("time_trial_tracks_custom", DriveMode.TimeTrial));
+            _menu.Register(BuildTrackMenu("single_race_tracks_race", DriveMode.SingleRace, TrackCategory.RaceTrack));
+            _menu.Register(BuildTrackMenu("single_race_tracks_adventure", DriveMode.SingleRace, TrackCategory.StreetAdventure));
+            _menu.Register(BuildCustomTrackMenu("single_race_tracks_custom", DriveMode.SingleRace));
 
-            _menu.Register(BuildVehicleMenu("time_trial_vehicles", RaceMode.TimeTrial));
-            _menu.Register(BuildCustomVehicleMenu("time_trial_vehicles_custom", RaceMode.TimeTrial));
-            _menu.Register(BuildVehicleMenu("single_race_vehicles", RaceMode.SingleRace));
-            _menu.Register(BuildCustomVehicleMenu("single_race_vehicles_custom", RaceMode.SingleRace));
+            _menu.Register(BuildVehicleMenu("time_trial_vehicles", DriveMode.TimeTrial));
+            _menu.Register(BuildCustomVehicleMenu("time_trial_vehicles_custom", DriveMode.TimeTrial));
+            _menu.Register(BuildVehicleMenu("single_race_vehicles", DriveMode.SingleRace));
+            _menu.Register(BuildCustomVehicleMenu("single_race_vehicles_custom", DriveMode.SingleRace));
 
-            _menu.Register(BuildTransmissionMenu("time_trial_transmission", RaceMode.TimeTrial));
-            _menu.Register(BuildTransmissionMenu("single_race_transmission", RaceMode.SingleRace));
+            _menu.Register(BuildTransmissionMenu("time_trial_transmission", DriveMode.TimeTrial));
+            _menu.Register(BuildTransmissionMenu("single_race_transmission", DriveMode.SingleRace));
 
             _menu.Register(BuildOptionsMenu());
             _menu.Register(BuildOptionsGameSettingsMenu());
@@ -110,7 +110,7 @@ namespace TopSpeed.Menu
             _menu.Register(BuildOptionsControlsControllerMenu());
             _menu.Register(BuildOptionsControlsShortcutGroupsMenu());
             _menu.Register(BuildOptionsControlsShortcutBindingsMenu());
-            _menu.Register(BuildOptionsRaceSettingsMenu());
+            _menu.Register(BuildOptionsDriveSettingsMenu());
             _menu.Register(BuildOptionsServerSettingsMenu());
         }
 
@@ -139,8 +139,8 @@ namespace TopSpeed.Menu
             var mainMenu = _menu.CreateMenu("main", new[]
             {
                 new MenuItem(LocalizationService.Mark("Quick start"), MenuAction.QuickStart),
-                new MenuItem(LocalizationService.Mark("Time trial"), MenuAction.None, nextMenuId: "time_trial_type", onActivate: () => PrepareMode(RaceMode.TimeTrial)),
-                new MenuItem(LocalizationService.Mark("Single race"), MenuAction.None, nextMenuId: "single_race_type", onActivate: () => PrepareMode(RaceMode.SingleRace)),
+                new MenuItem(LocalizationService.Mark("Time trial"), MenuAction.None, nextMenuId: "time_trial_type", onActivate: () => PrepareMode(DriveMode.TimeTrial)),
+                new MenuItem(LocalizationService.Mark("Single race"), MenuAction.None, nextMenuId: "single_race_type", onActivate: () => PrepareMode(DriveMode.SingleRace)),
                 new MenuItem(LocalizationService.Mark("MultiPlayer game"), MenuAction.None, nextMenuId: "multiplayer"),
                 new MenuItem(LocalizationService.Mark("Options"), MenuAction.None, nextMenuId: "options_main"),
                 new MenuItem(LocalizationService.Mark("Check for updates"), MenuAction.None, onActivate: _settingsActions.CheckForUpdates),
@@ -154,6 +154,9 @@ namespace TopSpeed.Menu
         }
     }
 }
+
+
+
 
 
 

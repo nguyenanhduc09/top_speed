@@ -77,7 +77,7 @@ namespace MiniAudioEx.Native
         public UInt32 sampleRate;
         public byte channels;
         public UInt32 periodSizeInFrames;
-        public ma_device_data_proc deviceDataProc;
+        public IntPtr deviceDataProc;
     }
 
     public static class MiniAudioExNative
@@ -95,6 +95,12 @@ namespace MiniAudioEx.Native
 
         [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
         public static extern ma_ex_context_config ma_ex_context_config_init(UInt32 sampleRate, byte channels, UInt32 periodSizeInFrames, ref ma_ex_device_info pDeviceInfo);
+
+        public static ma_ex_context_config ma_ex_context_config_set_device_data_proc(ma_ex_context_config config, ma_device_data_proc callback)
+        {
+            config.deviceDataProc = MarshalHelper.GetFunctionPointerForDelegate(callback);
+            return config;
+        }
 
         [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ma_ex_context_init(ref ma_ex_context_config config);
@@ -121,18 +127,35 @@ namespace MiniAudioEx.Native
         public static extern void ma_ex_audio_source_uninit(IntPtr source);
 
         [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ma_result ma_ex_audio_source_play_from_callback(IntPtr source, IntPtr callback, IntPtr pUserData);
+        private static extern ma_result ma_ex_audio_source_prepare_from_callback(IntPtr source, IntPtr callback, IntPtr pUserData, UInt32 channels, UInt32 sampleRate);
 
-        public static ma_result ma_ex_audio_source_play_from_callback(IntPtr source, ma_procedural_data_source_proc callback, IntPtr pUserData)
+        public static ma_result ma_ex_audio_source_prepare_from_callback(IntPtr source, ma_procedural_data_source_proc callback, IntPtr pUserData, UInt32 channels, UInt32 sampleRate)
         {
-            return ma_ex_audio_source_play_from_callback(source, MarshalHelper.GetFunctionPointerForDelegate(callback), pUserData);
+            return ma_ex_audio_source_prepare_from_callback(source, MarshalHelper.GetFunctionPointerForDelegate(callback), pUserData, channels, sampleRate);
         }
+
+        [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ma_result ma_ex_audio_source_play_from_callback(IntPtr source, IntPtr callback, IntPtr pUserData, UInt32 channels, UInt32 sampleRate);
+
+        public static ma_result ma_ex_audio_source_play_from_callback(IntPtr source, ma_procedural_data_source_proc callback, IntPtr pUserData, UInt32 channels, UInt32 sampleRate)
+        {
+            return ma_ex_audio_source_play_from_callback(source, MarshalHelper.GetFunctionPointerForDelegate(callback), pUserData, channels, sampleRate);
+        }
+
+        [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ma_result ma_ex_audio_source_prepare_from_file(IntPtr source, string filePath, UInt32 streamFromDisk);
 
         [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
         public static extern ma_result ma_ex_audio_source_play_from_file(IntPtr source, string filePath, UInt32 streamFromDisk);
 
         [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ma_result ma_ex_audio_source_prepare_from_memory(IntPtr source, IntPtr data, UInt64 dataSize);
+
+        [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
         public static extern ma_result ma_ex_audio_source_play_from_memory(IntPtr source, IntPtr data, UInt64 dataSize);
+
+        [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ma_result ma_ex_audio_source_start(IntPtr source);
 
         [DllImport(LIB_MINIAUDIO_EX, CallingConvention = CallingConvention.Cdecl)]
         public static extern void ma_ex_audio_source_stop(IntPtr source);

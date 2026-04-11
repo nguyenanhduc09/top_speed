@@ -16,8 +16,8 @@ namespace TopSpeed.Tracks
             private readonly string _sourceRootFullPath;
             private readonly Random _random;
             private readonly IReadOnlyDictionary<string, TrackSoundSourceDefinition> _soundDefinitions;
-            private readonly Action<AudioSourceHandle, float> _enqueueFadeOut;
-            private AudioSourceHandle? _handle;
+            private readonly Action<Source, float> _enqueueFadeOut;
+            private Source? _handle;
             private string? _selectedPath;
 
             public RuntimeTrackSound(
@@ -25,7 +25,7 @@ namespace TopSpeed.Tracks
                 string sourceDirectory,
                 Random random,
                 IReadOnlyDictionary<string, TrackSoundSourceDefinition> soundDefinitions,
-                Action<AudioSourceHandle, float> enqueueFadeOut,
+                Action<Source, float> enqueueFadeOut,
                 string id,
                 TrackSoundSourceDefinition definition)
             {
@@ -43,7 +43,7 @@ namespace TopSpeed.Tracks
             public string Id { get; }
             public TrackSoundSourceDefinition Definition { get; private set; }
             public TrackSoundSourceDefinition ActiveDefinition { get; private set; }
-            public AudioSourceHandle? Handle => _handle;
+            public Source? Handle => _handle;
             public int LastAreaIndex { get; set; }
             public bool TriggerActive { get; set; }
             public bool TriggerInitialized { get; set; }
@@ -72,9 +72,10 @@ namespace TopSpeed.Tracks
                 _selectedPath = path;
                 ActiveDefinition = activeDefinition;
 
+                var asset = _audio.LoadAsset(path, streamFromDisk: true);
                 _handle = activeDefinition.Spatial
-                    ? _audio.CreateSpatialSource(path, streamFromDisk: true, allowHrtf: activeDefinition.AllowHrtf)
-                    : _audio.CreateSource(path, streamFromDisk: true, useHrtf: false);
+                    ? _audio.CreateSpatialSource(asset, AudioEngineOptions.TrackBusName, activeDefinition.AllowHrtf)
+                    : _audio.CreateSource(asset, AudioEngineOptions.TrackBusName, useHrtf: false);
                 ApplySourceSettings(_handle, activeDefinition, categoryScale);
 
                 if (previousHandle != null)
@@ -181,7 +182,7 @@ namespace TopSpeed.Tracks
                 return resolved;
             }
 
-            private static void ApplySourceSettings(AudioSourceHandle handle, TrackSoundSourceDefinition definition, float categoryScale)
+            private static void ApplySourceSettings(Source handle, TrackSoundSourceDefinition definition, float categoryScale)
             {
                 var scale = Clamp01(categoryScale);
                 handle.SetVolume(Clamp01(definition.Volume * scale));
@@ -264,7 +265,7 @@ namespace TopSpeed.Tracks
                 _handle = null;
             }
 
-            private void DisposePreviousHandle(AudioSourceHandle previousHandle, bool refreshRandomVariant)
+            private void DisposePreviousHandle(Source previousHandle, bool refreshRandomVariant)
             {
                 var fadeOutSeconds = 0f;
                 if (refreshRandomVariant && Definition.Type == TrackSoundSourceType.Random)
@@ -288,13 +289,13 @@ namespace TopSpeed.Tracks
 
         private sealed class PendingHandleStop
         {
-            public PendingHandleStop(AudioSourceHandle handle, DateTime disposeAtUtc)
+            public PendingHandleStop(Source handle, DateTime disposeAtUtc)
             {
                 Handle = handle;
                 DisposeAtUtc = disposeAtUtc;
             }
 
-            public AudioSourceHandle Handle { get; }
+            public Source Handle { get; }
             public DateTime DisposeAtUtc { get; }
         }
     }

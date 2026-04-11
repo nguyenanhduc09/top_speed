@@ -34,13 +34,14 @@ namespace TopSpeed.Menu
         private bool _initialized;
         private int _index;
         private int _viewIndex;
-        private AudioSourceHandle? _music;
+        private Source? _music;
+        private SoundAsset? _musicAsset;
         private float _musicVolume;
         private float _musicCurrentVolume;
-        private AudioSourceHandle? _navigateSound;
-        private AudioSourceHandle? _wrapSound;
-        private AudioSourceHandle? _activateSound;
-        private AudioSourceHandle? _edgeSound;
+        private SoundAsset? _navigateSound;
+        private SoundAsset? _wrapSound;
+        private SoundAsset? _activateSound;
+        private SoundAsset? _edgeSound;
         private State _prevController;
         private State _controllerCenter;
         private bool _hasPrevController;
@@ -186,8 +187,7 @@ namespace TopSpeed.Menu
                 var themePath = ResolveMusicPath();
                 if (!string.IsNullOrWhiteSpace(themePath))
                 {
-                    _music = _audio.AcquireCachedSource(themePath!, streamFromDisk: false);
-                    ApplyMusicVolume(0f);
+                    _musicAsset = _audio.LoadAsset(themePath!, streamFromDisk: false);
                 }
             }
 

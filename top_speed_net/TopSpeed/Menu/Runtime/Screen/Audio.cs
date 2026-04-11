@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using TopSpeed.Audio;
 using TopSpeed.Core;
 using TS.Audio;
 
@@ -34,12 +35,18 @@ namespace TopSpeed.Menu
             if (!HasMusic)
                 return;
 
-            if (_music == null)
+            if (_musicAsset == null)
             {
                 var themePath = ResolveMusicPath();
                 if (string.IsNullOrWhiteSpace(themePath))
                     return;
-                _music = _audio.AcquireCachedSource(themePath!, streamFromDisk: false);
+                _musicAsset = _audio.LoadAsset(themePath!, streamFromDisk: false);
+            }
+
+            if (_music == null)
+            {
+                _music = _audio.CreateLoopingSource(_musicAsset, AudioEngineOptions.MusicBusName, useHrtf: false);
+                ApplyMusicVolume(0f);
             }
 
             if (_music.IsPlaying)
@@ -98,6 +105,8 @@ namespace TopSpeed.Menu
                 if (stopOnEnd)
                 {
                     _music?.Stop();
+                    _music?.Dispose();
+                    _music = null;
                     ApplyMusicVolume(0f);
                 }
             });
@@ -109,33 +118,32 @@ namespace TopSpeed.Menu
             _music?.SetVolume(volume);
         }
 
-        private AudioSourceHandle? LoadDefaultSound(string? fileName)
+        private SoundAsset? LoadDefaultSound(string? fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 return null;
             var resolvedPath = ResolveMenuSoundPath(fileName);
             if (string.IsNullOrWhiteSpace(resolvedPath))
                 return null;
-            return _audio.AcquireCachedSource(resolvedPath!, streamFromDisk: true);
+            return _audio.LoadAsset(resolvedPath!, streamFromDisk: true);
         }
 
-        private static void PlaySfx(AudioSourceHandle? sound)
+        private void PlaySfx(SoundAsset? sound)
         {
             if (sound == null)
                 return;
-            sound.Stop();
-            sound.SeekToStart();
-            sound.Play(loop: false);
+            _audio.PlayOneShot(sound, AudioEngineOptions.UiBusName, useHrtf: false);
         }
 
         private void PlayNavigateSound()
         {
             if (_navigateSound == null)
                 return;
-            _navigateSound.Stop();
-            _navigateSound.SeekToStart();
-            _navigateSound.SetPan(MenuNavigatePanning ? CalculateNavigatePan() : 0f);
-            _navigateSound.Play(loop: false);
+            _audio.PlayOneShot(
+                _navigateSound,
+                AudioEngineOptions.UiBusName,
+                configure: handle => handle.SetPan(MenuNavigatePanning ? CalculateNavigatePan() : 0f),
+                useHrtf: false);
         }
 
         private float CalculateNavigatePan()
@@ -227,11 +235,8 @@ namespace TopSpeed.Menu
             return Path.Combine(AssetPaths.SoundsRoot, "menu", trimmed);
         }
 
-        private void ReleaseMenuSound(ref AudioSourceHandle? sound)
+        private static void ReleaseMenuSound(ref SoundAsset? sound)
         {
-            if (sound == null)
-                return;
-            _audio.ReleaseCachedSource(sound);
             sound = null;
         }
 
@@ -243,7 +248,9 @@ namespace TopSpeed.Menu
             ReleaseMenuSound(ref _wrapSound);
             ReleaseMenuSound(ref _activateSound);
             ReleaseMenuSound(ref _edgeSound);
-            ReleaseMenuSound(ref _music);
+            _musicAsset = null;
+            _music?.Stop();
+            _music?.Dispose();
             _music = null;
             _menuSoundPathCache.Clear();
             Interlocked.Increment(ref _musicFadeToken);

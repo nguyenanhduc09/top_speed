@@ -11,13 +11,14 @@ namespace TopSpeed.Vehicles.Live
     internal sealed partial class LiveRadio : IDisposable
     {
         private const int MaxBufferedFrames = 12;
+        private const string BusName = AudioEngineOptions.RadioBusName;
 
         private readonly AudioManager _audio;
-        private readonly RaceSettings _settings;
+        private readonly DriveSettings _settings;
         private readonly object _lock = new object();
         private readonly Queue<float[]> _frames;
 
-        private AudioSourceHandle? _source;
+        private Source? _source;
         private OpusDecoder? _decoder;
         private short[] _decodeBuffer;
         private float[]? _activeFrame;
@@ -38,7 +39,7 @@ namespace TopSpeed.Vehicles.Live
         private long _underruns;
         private long _lastFrameUtcTicks;
 
-        public LiveRadio(AudioManager audio, RaceSettings settings)
+        public LiveRadio(AudioManager audio, DriveSettings settings)
         {
             _audio = audio ?? throw new ArgumentNullException(nameof(audio));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -120,4 +121,5 @@ namespace TopSpeed.Vehicles.Live
         }
     }
 }
+
 

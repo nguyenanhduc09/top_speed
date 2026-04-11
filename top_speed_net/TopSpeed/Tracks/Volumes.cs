@@ -43,7 +43,7 @@ namespace TopSpeed.Tracks
                 _allTrackSounds[i].ApplyCategoryVolume(_ambientVolumeScale);
         }
 
-        private void ApplyAmbientVolume(AudioSourceHandle? handle)
+        private void ApplyAmbientVolume(Source? handle)
         {
             handle?.SetVolume(_ambientVolumeScale);
         }

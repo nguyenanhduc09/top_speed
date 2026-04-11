@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Threading;
 using TopSpeed.Input;
 using TopSpeed.Localization;
+using TopSpeed.Audio;
+using TopSpeed.Speech.Playback;
 using TopSpeed.Speech.ScreenReaders;
 
 namespace TopSpeed.Speech
@@ -21,6 +23,7 @@ namespace TopSpeed.Speech
 
         private readonly Stopwatch _watch = new Stopwatch();
         private readonly IScreenReader _screenReader;
+        private readonly Player _player;
         private long _timeRequiredMs;
         private string _lastSpoken = string.Empty;
         private Func<bool>? _isInputHeld;
@@ -29,11 +32,13 @@ namespace TopSpeed.Speech
         private float _speechRate = 0.5f;
         private bool _speechSuppressedUntilNextSpeak;
 
-        public SpeechService(Func<bool>? isInputHeld = null, Action? prepareForInterruptableSpeech = null)
+        public SpeechService(AudioManager audio, Func<bool>? isInputHeld = null, Action? prepareForInterruptableSpeech = null)
         {
+            _player = new Player(audio ?? throw new ArgumentNullException(nameof(audio)));
             _isInputHeld = isInputHeld;
             _prepareForInterruptableSpeech = prepareForInterruptableSpeech;
             _screenReader = Factory.Create();
+            _screenReader.BindPlayer(_player);
             _screenReaderReady = InitializeScreenReader();
         }
 
@@ -203,6 +208,8 @@ namespace TopSpeed.Speech
             catch
             {
             }
+
+            _player.Dispose();
         }
 
         private bool InitializeScreenReader()

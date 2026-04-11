@@ -6,7 +6,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static void ApplyRace(RaceSettings settings, SettingsRaceDocument race, List<SettingsIssue> issues)
+        private static void ApplyRace(DriveSettings settings, SettingsRaceDocument race, List<SettingsIssue> issues)
         {
             settings.AutomaticInfo = ReadEnum(race.AutomaticInfo, settings.AutomaticInfo, "race.automaticInfo", issues);
             settings.Copilot = ReadEnum(race.Copilot, settings.Copilot, "race.copilot", issues);
@@ -24,7 +24,7 @@ namespace TopSpeed.Core.Settings
                 settings.SingleRaceCustomVehicles = race.SingleRaceCustomVehicles.Value;
         }
 
-        private static void ApplyUi(RaceSettings settings, SettingsUiDocument ui, List<SettingsIssue> issues)
+        private static void ApplyUi(DriveSettings settings, SettingsUiDocument ui, List<SettingsIssue> issues)
         {
             if (ui.UsageHints.HasValue)
                 settings.UsageHints = ui.UsageHints.Value;
@@ -56,4 +56,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

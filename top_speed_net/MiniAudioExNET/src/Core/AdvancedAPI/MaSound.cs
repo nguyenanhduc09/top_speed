@@ -201,9 +201,34 @@ namespace MiniAudioEx.Core.AdvancedAPI
 			return MiniAudioNative.ma_sound_start(handle);
 		}
 
+		public void SetFadeInMilliseconds(float volumeBeg, float volumeEnd, UInt64 fadeLengthInMilliseconds)
+		{
+			MiniAudioNative.ma_sound_set_fade_in_milliseconds(handle, volumeBeg, volumeEnd, fadeLengthInMilliseconds);
+		}
+
 		public ma_result Stop()
 		{
 			return MiniAudioNative.ma_sound_stop(handle);
+		}
+
+		public void ResetStartTime()
+		{
+			MiniAudioNative.ma_sound_reset_start_time(handle);
+		}
+
+		public void ResetStopTime()
+		{
+			MiniAudioNative.ma_sound_reset_stop_time(handle);
+		}
+
+		public void ResetFade()
+		{
+			MiniAudioNative.ma_sound_reset_fade(handle);
+		}
+
+		public void ResetStopTimeAndFade()
+		{
+			MiniAudioNative.ma_sound_reset_stop_time_and_fade(handle);
 		}
 
 		public bool IsPlaying()

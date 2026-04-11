@@ -6,7 +6,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static void ApplyNetwork(RaceSettings settings, SettingsNetworkDocument network, List<SettingsIssue> issues)
+        private static void ApplyNetwork(DriveSettings settings, SettingsNetworkDocument network, List<SettingsIssue> issues)
         {
             if (network.LastServerAddress != null)
                 settings.LastServerAddress = network.LastServerAddress;
@@ -49,4 +49,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

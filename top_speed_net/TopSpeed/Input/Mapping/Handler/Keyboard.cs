@@ -17,16 +17,16 @@ namespace TopSpeed.Input
                     _speech.Speak(LocalizationService.Mark("That key is reserved."));
                     return;
                 }
-                if (_raceInput.KeyMap.IsKeyInUse(key, _mappingAction))
+                if (_driveInput.KeyMap.IsKeyInUse(key, _mappingAction))
                 {
                     _speech.Speak(LocalizationService.Mark("That key is already in use."));
                     return;
                 }
 
-                _raceInput.KeyMap.ApplyKeyMapping(_mappingAction, key);
+                _driveInput.KeyMap.ApplyKeyMapping(_mappingAction, key);
                 _saveSettings();
                 _mappingActive = false;
-                var label = _raceInput.KeyMap.GetLabel(_mappingAction);
+                var label = _driveInput.KeyMap.GetLabel(_mappingAction);
                 _speech.Speak(LocalizationService.Format(
                     LocalizationService.Mark("{0} set to {1}."),
                     label,
@@ -36,5 +36,6 @@ namespace TopSpeed.Input
         }
     }
 }
+
 
 

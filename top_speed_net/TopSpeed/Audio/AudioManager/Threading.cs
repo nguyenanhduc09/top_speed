@@ -31,7 +31,7 @@ namespace TopSpeed.Audio
         {
             while (_updateRunning)
             {
-                _system.Update();
+                _engine.Update();
                 Thread.Sleep(intervalMs);
             }
         }

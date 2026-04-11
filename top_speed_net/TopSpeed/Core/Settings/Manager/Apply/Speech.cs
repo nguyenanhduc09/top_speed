@@ -7,7 +7,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static void ApplySpeech(RaceSettings settings, SettingsSpeechDocument speech, List<SettingsIssue> issues)
+        private static void ApplySpeech(DriveSettings settings, SettingsSpeechDocument speech, List<SettingsIssue> issues)
         {
             settings.SpeechMode = ReadEnum(speech.Mode, settings.SpeechMode, "speech.mode", issues);
 
@@ -47,7 +47,7 @@ namespace TopSpeed.Core.Settings
             }
         }
 
-        private static void ApplyRadio(RaceSettings settings, SettingsRadioDocument radio, List<SettingsIssue> issues)
+        private static void ApplyRadio(DriveSettings settings, SettingsRadioDocument radio, List<SettingsIssue> issues)
         {
             if (radio.LastFolder != null)
                 settings.RadioLastFolder = radio.LastFolder.Trim();
@@ -57,3 +57,4 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+

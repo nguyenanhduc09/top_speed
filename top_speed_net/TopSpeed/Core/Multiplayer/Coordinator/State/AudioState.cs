@@ -6,18 +6,18 @@ namespace TopSpeed.Core.Multiplayer
     internal sealed class CoordinatorAudioState
     {
         public CancellationTokenSource? ConnectingPulseCts;
-        public AudioSourceHandle? ConnectingSound;
-        public AudioSourceHandle? ConnectedSound;
-        public AudioSourceHandle? OnlineSound;
-        public AudioSourceHandle? OfflineSound;
-        public AudioSourceHandle? PingStartSound;
-        public AudioSourceHandle? PingSound;
-        public AudioSourceHandle? RoomCreatedSound;
-        public AudioSourceHandle? RoomJoinSound;
-        public AudioSourceHandle? RoomLeaveSound;
-        public AudioSourceHandle? ChatSound;
-        public AudioSourceHandle? RoomChatSound;
-        public AudioSourceHandle? BufferSwitchSound;
+        public SoundAsset? ConnectingSound;
+        public SoundAsset? ConnectedSound;
+        public SoundAsset? OnlineSound;
+        public SoundAsset? OfflineSound;
+        public SoundAsset? PingStartSound;
+        public SoundAsset? PingSound;
+        public SoundAsset? RoomCreatedSound;
+        public SoundAsset? RoomJoinSound;
+        public SoundAsset? RoomLeaveSound;
+        public SoundAsset? ChatSound;
+        public SoundAsset? RoomChatSound;
+        public SoundAsset? BufferSwitchSound;
     }
 }
 

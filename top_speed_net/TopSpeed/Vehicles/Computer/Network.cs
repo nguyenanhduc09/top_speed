@@ -85,7 +85,7 @@ namespace TopSpeed.Vehicles
                         _soundStart.SeekToStart();
                         _soundStart.Play(loop: false);
                         _remoteEngineStartPending = true;
-                        _remoteEngineStartRemaining = Math.Max(0f, _soundStart.GetLengthSeconds() - 0.1f);
+                        _remoteEngineStartRemaining = Math.Max(0f, _soundStart.LengthSeconds - 0.1f);
                     }
                 }
                 if (_soundEngine.IsPlaying && _prevFrequency != targetFrequency)

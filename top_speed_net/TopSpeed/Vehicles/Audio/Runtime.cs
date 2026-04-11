@@ -106,8 +106,23 @@ namespace TopSpeed.Vehicles
 
         public virtual void Unpause()
         {
+            var resumeEngine = _engineRotationState != EngineRotationState.Stopped
+                && _combustionState != EngineCombustionState.Starting;
+            var resumeThrottle = resumeEngine
+                && _combustionState == EngineCombustionState.On
+                && _soundThrottle != null
+                && _currentThrottle > 0;
+            var resumeWipers = _soundWipers != null
+                && _hasWipers == 1
+                && _combustionState == EngineCombustionState.On;
+            var resumeSurfaceLoops = _speed > 0f;
+
             _audioFlow.Unpause(
                 _surface,
+                resumeEngine,
+                resumeThrottle,
+                resumeWipers,
+                resumeSurfaceLoops,
                 _soundEngine,
                 _soundThrottle,
                 _soundWipers,

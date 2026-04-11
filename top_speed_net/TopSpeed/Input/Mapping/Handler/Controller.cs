@@ -25,16 +25,16 @@ namespace TopSpeed.Input
             _mappingPrevController = state;
             if (axis == AxisOrButton.AxisNone)
                 return;
-            if (_raceInput.KeyMap.IsAxisInUse(axis, _mappingAction))
+            if (_driveInput.KeyMap.IsAxisInUse(axis, _mappingAction))
             {
                 _speech.Speak(LocalizationService.Mark("That control is already in use."));
                 return;
             }
 
-            _raceInput.KeyMap.ApplyAxisMapping(_mappingAction, axis);
+            _driveInput.KeyMap.ApplyAxisMapping(_mappingAction, axis);
             _saveSettings();
             _mappingActive = false;
-            var label = _raceInput.KeyMap.GetLabel(_mappingAction);
+            var label = _driveInput.KeyMap.GetLabel(_mappingAction);
             var control = _input.TryGetControllerDisplayProfile(out var profile)
                 ? KeyMapManager.FormatAxis(axis, profile)
                 : KeyMapManager.FormatAxis(axis);
@@ -147,4 +147,5 @@ namespace TopSpeed.Input
         }
     }
 }
+
 

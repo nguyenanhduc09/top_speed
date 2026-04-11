@@ -53,38 +53,40 @@ namespace TopSpeed.Vehicles
             _liveRadio.SetVolumePercent(radioPercent);
         }
 
-        private void SetOtherEngineVolumePercent(AudioSourceHandle? sound, int percent)
+        private void SetOtherEngineVolumePercent(Source? sound, int percent)
         {
             sound.SetVolumePercent(_settings, AudioVolumeCategory.OtherVehicleEngine, percent);
         }
 
-        private void SetOtherEventVolumePercent(AudioSourceHandle? sound, int percent)
+        private void SetOtherEventVolumePercent(Source? sound, int percent)
         {
             sound.SetVolumePercent(_settings, AudioVolumeCategory.OtherVehicleEvents, percent);
         }
 
-        private AudioSourceHandle CreateRequiredSound(string? path, string label, bool looped = false, bool allowHrtf = true)
+        private Source CreateRequiredSound(string? path, string label, bool looped = false, bool allowHrtf = true)
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new InvalidOperationException($"Sound path not provided for {label}.");
             var resolved = path!.Trim();
             if (!File.Exists(resolved))
                 throw new FileNotFoundException("Sound file not found.", resolved);
+            var asset = _audio.LoadAsset(resolved, streamFromDisk: !looped);
             return looped
-                ? _audio.CreateLoopingSpatialSource(resolved, allowHrtf: allowHrtf)
-                : _audio.CreateSpatialSource(resolved, streamFromDisk: true, allowHrtf: allowHrtf);
+                ? _audio.CreateLoopingSpatialSource(asset, AudioEngineOptions.WorldBusName, allowHrtf)
+                : _audio.CreateSpatialSource(asset, AudioEngineOptions.WorldBusName, allowHrtf);
         }
 
-        private AudioSourceHandle? TryCreateSound(string? path, bool looped = false, bool allowHrtf = true)
+        private Source? TryCreateSound(string? path, bool looped = false, bool allowHrtf = true)
         {
             if (string.IsNullOrWhiteSpace(path))
                 return null;
             var resolved = path!.Trim();
             if (!File.Exists(resolved))
                 return null;
+            var asset = _audio.LoadAsset(resolved, streamFromDisk: !looped);
             return looped
-                ? _audio.CreateLoopingSpatialSource(resolved, allowHrtf: allowHrtf)
-                : _audio.CreateSpatialSource(resolved, streamFromDisk: true, allowHrtf: allowHrtf);
+                ? _audio.CreateLoopingSpatialSource(asset, AudioEngineOptions.WorldBusName, allowHrtf)
+                : _audio.CreateSpatialSource(asset, AudioEngineOptions.WorldBusName, allowHrtf);
         }
 
         private float NormalizeSpeedByTopSpeed(float speedKph, float maxRatio = 1f)

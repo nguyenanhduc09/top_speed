@@ -14,7 +14,7 @@ namespace TopSpeed.Game
                     break;
                 case MenuAction.QuickStart:
                     PrepareQuickStart();
-                    QueueRaceStart(RaceMode.QuickStart);
+                    QueueDriveStart(DriveMode.QuickStart);
                     break;
                 default:
                     break;
@@ -32,4 +32,6 @@ namespace TopSpeed.Game
         }
     }
 }
+
+
 

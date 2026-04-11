@@ -1,0 +1,121 @@
+using System;
+using System.Runtime.InteropServices;
+using MiniAudioEx.Native;
+
+namespace TS.Audio
+{
+    internal sealed class OutputRuntime : IDisposable
+    {
+        private readonly ma_device_data_proc _deviceDataProc;
+        private readonly GCHandle _selfHandle;
+        private readonly IntPtr _contextHandle;
+
+        public AudioOutputConfig Config { get; }
+        public IntPtr ContextHandle => _contextHandle;
+        public ma_engine_ptr EngineHandle { get; }
+        public ma_node_ptr Endpoint => MiniAudioNative.ma_engine_get_endpoint(EngineHandle);
+
+        public OutputRuntime(AudioOutputConfig config)
+        {
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+
+            var deviceInfo = ResolveDeviceInfo(config.DeviceIndex);
+            var sampleRate = config.SampleRate > 0 ? config.SampleRate : 44100u;
+            var channels = config.Channels > 0 ? (byte)config.Channels : (byte)2;
+            var periodSize = config.PeriodSizeInFrames;
+
+            _deviceDataProc = OnDeviceData;
+            var contextConfig = MiniAudioExNative.ma_ex_context_config_init(sampleRate, channels, periodSize, ref deviceInfo);
+            contextConfig = MiniAudioExNative.ma_ex_context_config_set_device_data_proc(contextConfig, _deviceDataProc);
+
+            _contextHandle = MiniAudioExNative.ma_ex_context_init(ref contextConfig);
+            if (_contextHandle == IntPtr.Zero)
+                throw new InvalidOperationException("Failed to initialize audio output.");
+
+            EngineHandle = new ma_engine_ptr(MiniAudioExNative.ma_ex_context_get_engine(_contextHandle));
+            if (EngineHandle.pointer == IntPtr.Zero)
+            {
+                MiniAudioExNative.ma_ex_context_uninit(_contextHandle);
+                throw new InvalidOperationException("Failed to acquire engine from audio output.");
+            }
+
+            _selfHandle = GCHandle.Alloc(this);
+            InitializeListener();
+
+            var engineSampleRate = MiniAudioNative.ma_engine_get_sample_rate(EngineHandle);
+            if (engineSampleRate > 0)
+                Config.SampleRate = engineSampleRate;
+
+            var engineChannels = MiniAudioNative.ma_engine_get_channels(EngineHandle);
+            if (engineChannels > 0)
+                Config.Channels = engineChannels;
+        }
+
+        public void SetMasterVolume(float volume)
+        {
+            MiniAudioExNative.ma_ex_context_set_master_volume(_contextHandle, Clamp01(volume));
+        }
+
+        public float GetMasterVolume()
+        {
+            return MiniAudioExNative.ma_ex_context_get_master_volume(_contextHandle);
+        }
+
+        public void UpdateListener(ma_vec3f position, ma_vec3f direction, ma_vec3f worldUp, ma_vec3f velocity)
+        {
+            const uint listenerIndex = 0;
+            MiniAudioNative.ma_engine_listener_set_position(EngineHandle, listenerIndex, position.x, position.y, position.z);
+            MiniAudioNative.ma_engine_listener_set_direction(EngineHandle, listenerIndex, direction.x, direction.y, direction.z);
+            MiniAudioNative.ma_engine_listener_set_world_up(EngineHandle, listenerIndex, worldUp.x, worldUp.y, worldUp.z);
+            MiniAudioNative.ma_engine_listener_set_velocity(EngineHandle, listenerIndex, velocity.x, velocity.y, velocity.z);
+        }
+
+        public void Dispose()
+        {
+            if (_selfHandle.IsAllocated)
+                _selfHandle.Free();
+
+            if (_contextHandle != IntPtr.Zero)
+                MiniAudioExNative.ma_ex_context_uninit(_contextHandle);
+        }
+
+        private void InitializeListener()
+        {
+            const uint listenerIndex = 0;
+            MiniAudioNative.ma_engine_listener_set_enabled(EngineHandle, listenerIndex, 1);
+            MiniAudioNative.ma_engine_listener_set_position(EngineHandle, listenerIndex, 0f, 0f, 0f);
+            MiniAudioNative.ma_engine_listener_set_direction(EngineHandle, listenerIndex, 0f, 0f, -1f);
+            MiniAudioNative.ma_engine_listener_set_world_up(EngineHandle, listenerIndex, 0f, 1f, 0f);
+            MiniAudioNative.ma_engine_listener_set_velocity(EngineHandle, listenerIndex, 0f, 0f, 0f);
+        }
+
+        private static ma_ex_device_info ResolveDeviceInfo(int? deviceIndex)
+        {
+            return new ma_ex_device_info
+            {
+                index = deviceIndex ?? -1,
+                pName = IntPtr.Zero,
+                nativeDataFormatCount = 0,
+                nativeDataFormats = IntPtr.Zero
+            };
+        }
+
+        private static float Clamp01(float value)
+        {
+            if (value < 0f)
+                return 0f;
+            if (value > 1f)
+                return 1f;
+            return value;
+        }
+
+        private static void OnDeviceData(ma_device_ptr pDevice, IntPtr pOutput, IntPtr pInput, uint frameCount)
+        {
+            var engine = MiniAudioExNative.ma_ex_device_get_user_data(pDevice.pointer);
+            if (engine == IntPtr.Zero)
+                return;
+
+            MiniAudioExNative.ma_engine_read_pcm_frames(engine, pOutput, frameCount, out _);
+        }
+    }
+}

@@ -494,7 +494,12 @@ namespace MiniAudioEx.Core.StandardAPI
             if (soundGroup.pointer == IntPtr.Zero)
                 return;
             SetAtEnd(0, false);
-            MiniAudioExNative.ma_ex_audio_source_play_from_callback(sources[0].handle, proceduralProcessCallback, IntPtr.Zero);
+            MiniAudioExNative.ma_ex_audio_source_play_from_callback(
+                sources[0].handle,
+                proceduralProcessCallback,
+                IntPtr.Zero,
+                (uint)AudioContext.Channels,
+                (uint)AudioContext.SampleRate);
         }
 
         /// <summary>

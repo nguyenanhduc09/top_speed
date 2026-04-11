@@ -13,7 +13,7 @@ namespace TopSpeed.Core.Settings
     {
         public SettingsLoadResult Load()
         {
-            var settings = new RaceSettings();
+            var settings = new DriveSettings();
             var issues = new List<SettingsIssue>();
 
             if (!File.Exists(_settingsPath))
@@ -113,4 +113,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

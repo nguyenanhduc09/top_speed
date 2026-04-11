@@ -4,9 +4,9 @@ namespace TopSpeed.Vehicles.Control
 {
     internal sealed class FinishLockInputController : ICarController
     {
-        private readonly RaceInput _input;
+        private readonly DriveInput _input;
 
-        public FinishLockInputController(RaceInput input)
+        public FinishLockInputController(DriveInput input)
         {
             _input = input;
         }
@@ -24,3 +24,4 @@ namespace TopSpeed.Vehicles.Control
         }
     }
 }
+

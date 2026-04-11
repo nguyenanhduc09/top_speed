@@ -52,51 +52,6 @@ namespace TopSpeed.Server.Network
                 room.RaceStopPending = false;
                 room.RaceStopDelaySeconds = 0f;
 
-                if (paused)
-                {
-                    foreach (var id in room.ActiveRaceParticipantIds)
-                    {
-                        if (!_owner._players.TryGetValue(id, out var player))
-                            continue;
-
-                        if (player.State == PlayerState.Finished)
-                            continue;
-
-                        player.State = PlayerState.AwaitingStart;
-                        player.Speed = 0;
-                        player.EngineRunning = false;
-                        player.Braking = false;
-                        player.Horning = false;
-                        player.Backfiring = false;
-                    }
-
-                    foreach (var bot in room.Bots)
-                    {
-                        if (bot.State == PlayerState.Finished || bot.State == PlayerState.NotReady)
-                            continue;
-
-                        bot.State = PlayerState.AwaitingStart;
-                        bot.RacePhase = BotRacePhase.Normal;
-                        bot.CrashRecoverySeconds = 0f;
-                        bot.SpeedKph = 0f;
-                        bot.StartDelaySeconds = 0f;
-                        bot.EngineStartSecondsRemaining = 0f;
-                        bot.EngineFrequency = bot.AudioProfile.IdleFrequency;
-                        bot.Horning = false;
-                        bot.HornSecondsRemaining = 0f;
-                        bot.BackfirePulseSeconds = 0f;
-                        bot.BackfireArmed = true;
-                        bot.PhysicsState = new BotPhysicsState
-                        {
-                            PositionX = bot.PositionX,
-                            PositionY = bot.PositionY,
-                            SpeedKph = 0f,
-                            Gear = 1,
-                            AutoShiftCooldownSeconds = 0f
-                        };
-                    }
-                }
-
                 _owner._room.TouchVersion(room);
                 _owner.SendProtocolMessageToRoom(
                     room,

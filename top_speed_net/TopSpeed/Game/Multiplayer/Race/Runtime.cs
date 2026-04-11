@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using TopSpeed.Data;
+using TopSpeed.Drive;
+using TopSpeed.Drive.Multiplayer;
 using TopSpeed.Localization;
 using TopSpeed.Menu;
 using TopSpeed.Protocol;
-using TopSpeed.Race;
 
 namespace TopSpeed.Game
 {
@@ -18,7 +19,7 @@ namespace TopSpeed.Game
 
             private readonly Game _owner;
             private readonly MultiplayerRaceBinding _binding;
-            private MultiplayerMode? _mode;
+            private MultiplayerSession? _mode;
             private bool _quitConfirmActive;
 
             public MultiplayerRaceRuntime(Game owner)
@@ -27,7 +28,7 @@ namespace TopSpeed.Game
                 _binding = new MultiplayerRaceBinding();
             }
 
-            public MultiplayerMode? Mode => _mode;
+            public MultiplayerSession? Mode => _mode;
             public bool PendingStart => _binding.PendingStart;
 
             public void ResetSession()
@@ -132,7 +133,7 @@ namespace TopSpeed.Game
                 var vehicleIndex = Math.Max(0, Math.Min(VehicleCatalog.VehicleCount - 1, _binding.VehicleIndex));
 
                 DisposeMode();
-                _mode = _owner._raceModeFactory.CreateMultiplayer(
+                _mode = _owner._driveSessionFactory.CreateMultiplayer(
                     _binding.PendingTrack!,
                     trackName,
                     _binding.AutomaticTransmission,
@@ -142,15 +143,13 @@ namespace TopSpeed.Game
                     _owner._input.VibrationDevice,
                     _owner._session,
                     _binding.RaceInstanceId,
-                    _owner._session.PlayerId,
-                    _owner._session.PlayerNumber,
                     number => _owner._multiplayerCoordinator.ResolvePlayerName(number));
                 _mode.Initialize();
                 _binding.BindStartedRace();
                 _owner._state = AppState.MultiplayerRace;
             }
 
-            public void End(RaceResultSummary? resultSummary = null)
+            public void End(DriveResultSummary? resultSummary = null)
             {
                 DisposeMode();
                 _quitConfirmActive = false;
@@ -314,10 +313,13 @@ namespace TopSpeed.Game
 
             private void DisposeMode()
             {
-                _mode?.FinalizeMultiplayerMode();
+                _mode?.FinalizeSession();
                 _mode?.Dispose();
                 _mode = null;
             }
         }
     }
 }
+
+
+

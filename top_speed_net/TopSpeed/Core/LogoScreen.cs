@@ -11,7 +11,7 @@ namespace TopSpeed.Core
     {
         private const float FadeDurationSeconds = 0.8f;
         private readonly AudioManager _audio;
-        private AudioSourceHandle? _logo;
+        private Source? _logo;
         private bool _fading;
         private float _fadeProgress;
 
@@ -25,7 +25,8 @@ namespace TopSpeed.Core
             var logoPath = Path.Combine(AssetPaths.SoundsRoot, "Legacy", "pitd_logo.wav");
             if (File.Exists(logoPath))
             {
-                _logo = _audio.CreateSource(logoPath, streamFromDisk: true);
+                var asset = _audio.LoadAsset(logoPath, streamFromDisk: true);
+                _logo = _audio.CreateSource(asset, AudioEngineOptions.UiBusName, useHrtf: false);
                 _logo.SetVolume(1.0f);
                 _logo.Play(loop: false);
             }

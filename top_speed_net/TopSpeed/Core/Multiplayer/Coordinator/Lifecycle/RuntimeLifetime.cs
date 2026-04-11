@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TopSpeed.Network;
-using TS.Audio;
 
 namespace TopSpeed.Core.Multiplayer
 {
@@ -76,7 +75,6 @@ namespace TopSpeed.Core.Multiplayer
         public void StopConnectingPulse()
         {
             CancelAndDisposeToken(ref _state.Audio.ConnectingPulseCts);
-            StopAudio(_state.Audio.ConnectingSound);
         }
 
         public void ResetPing()
@@ -87,18 +85,6 @@ namespace TopSpeed.Core.Multiplayer
 
         public void StopNetworkAudio()
         {
-            StopAudio(_state.Audio.ConnectingSound);
-            StopAudio(_state.Audio.ConnectedSound);
-            StopAudio(_state.Audio.OnlineSound);
-            StopAudio(_state.Audio.OfflineSound);
-            StopAudio(_state.Audio.PingStartSound);
-            StopAudio(_state.Audio.PingSound);
-            StopAudio(_state.Audio.RoomCreatedSound);
-            StopAudio(_state.Audio.RoomJoinSound);
-            StopAudio(_state.Audio.RoomLeaveSound);
-            StopAudio(_state.Audio.ChatSound);
-            StopAudio(_state.Audio.RoomChatSound);
-            StopAudio(_state.Audio.BufferSwitchSound);
         }
 
         public void CancelAllOperations()
@@ -106,17 +92,6 @@ namespace TopSpeed.Core.Multiplayer
             CancelConnectOperation();
             CancelDiscoveryOperation();
             StopConnectingPulse();
-        }
-
-        private static void StopAudio(AudioSourceHandle? handle)
-        {
-            try
-            {
-                handle?.Stop();
-            }
-            catch
-            {
-            }
         }
 
         private static void CancelAndDisposeToken(ref CancellationTokenSource? cts)

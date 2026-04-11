@@ -6,7 +6,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        private static void ApplyDocument(RaceSettings settings, SettingsFileDocument document, List<SettingsIssue> issues)
+        private static void ApplyDocument(DriveSettings settings, SettingsFileDocument document, List<SettingsIssue> issues)
         {
             settings.Language = string.IsNullOrWhiteSpace(document.Language)
                 ? settings.Language
@@ -47,4 +47,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

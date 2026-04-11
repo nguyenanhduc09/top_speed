@@ -19,7 +19,7 @@ namespace TopSpeed.Vehicles
         public ComputerPlayer(
             AudioManager audio,
             Track track,
-            RaceSettings settings,
+            DriveSettings settings,
             int vehicleIndex,
             int playerNumber,
             Func<float> currentTime,
@@ -287,4 +287,5 @@ namespace TopSpeed.Vehicles
         }
     }
 }
+
 

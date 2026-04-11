@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TopSpeed.Speech.Playback;
 using TopSpeed.Speech.Prism;
 
 namespace TopSpeed.Speech.ScreenReaders.Prism
@@ -14,6 +15,7 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
         private int? _preferredVoiceIndex;
         private bool _trySapi;
         private bool _preferSapi;
+        private IPlayer? _player;
 
         public IReadOnlyList<SpeechBackendInfo> AvailableBackends
         {
@@ -22,9 +24,22 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
                 if (_context == null)
                     return Array.Empty<SpeechBackendInfo>();
 
-                return _context.AvailableBackends
-                    .Select(static backend => new SpeechBackendInfo(backend.Id, backend.Name, backend.Priority, backend.IsSupported))
-                    .ToArray();
+                var backends = new List<SpeechBackendInfo>();
+                var source = _context.AvailableBackends;
+                for (var i = 0; i < source.Count; i++)
+                {
+                    var info = source[i];
+                    if (!TryProbeSupportedBackend(_context, info, out var backendName))
+                        continue;
+
+                    backends.Add(new SpeechBackendInfo(
+                        info.Id,
+                        string.IsNullOrWhiteSpace(backendName) ? info.Name : backendName,
+                        info.Priority,
+                        isSupported: true));
+                }
+
+                return backends;
             }
         }
 
@@ -102,6 +117,9 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
 
             try
             {
+                if (ShouldUseMemorySpeech())
+                    return SpeakToPlayer(text, interrupt);
+
                 if (_backend.Supports(Features.Speak))
                 {
                     _backend.Speak(text, interrupt);
@@ -126,6 +144,9 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
         {
             try
             {
+                if (_player?.IsSpeaking == true)
+                    return true;
+
                 return _backend != null && _backend.IsSpeaking;
             }
             catch
@@ -136,6 +157,7 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
 
         public void Close()
         {
+            _player?.Stop();
             _backend?.Dispose();
             _backend = null;
             _activeBackendId = null;
@@ -225,6 +247,9 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
 
             try
             {
+                if (ShouldUseMemorySpeech())
+                    return SpeakToPlayer(text, interrupt);
+
                 if (_backend.Supports(Features.Output))
                 {
                     _backend.Output(text, interrupt);
@@ -262,8 +287,15 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
 
         public bool Silence()
         {
+            var silenced = false;
+            if (_player != null)
+            {
+                _player.Stop();
+                silenced = true;
+            }
+
             if (_backend == null || !_backend.Supports(Features.Stop))
-                return false;
+                return silenced;
 
             try
             {
@@ -272,7 +304,7 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
             }
             catch
             {
-                return false;
+                return silenced;
             }
         }
 
@@ -343,18 +375,58 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
 
             try
             {
-                return context.Acquire(info.Id);
+                var backend = context.Acquire(info.Id);
+                if (!backend.IsSupportedAtRuntime)
+                {
+                    backend.Dispose();
+                    return null;
+                }
+
+                return backend;
             }
             catch
             {
                 try
                 {
-                    return context.Create(info.Id);
+                    var backend = context.Create(info.Id);
+                    if (!backend.IsSupportedAtRuntime)
+                    {
+                        backend.Dispose();
+                        return null;
+                    }
+
+                    return backend;
                 }
                 catch
                 {
                     return null;
                 }
+            }
+        }
+
+        public void BindPlayer(IPlayer? player)
+        {
+            _player = player;
+        }
+
+        private static bool TryProbeSupportedBackend(Context context, BackendInfo info, out string backendName)
+        {
+            backendName = info.Name;
+            if (info.Id == Ids.Invalid)
+                return false;
+
+            try
+            {
+                using var backend = context.Create(info.Id);
+                if (!backend.IsSupportedAtRuntime)
+                    return false;
+
+                backendName = backend.Name;
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -382,6 +454,30 @@ namespace TopSpeed.Speech.ScreenReaders.Prism
                 string.Equals(candidate.Name, name, StringComparison.OrdinalIgnoreCase));
 
             return match.Id == Ids.Invalid ? null : match.Id;
+        }
+
+        private bool ShouldUseMemorySpeech()
+        {
+            return _player != null
+                && _backend != null
+                && _activeBackendId == Ids.Sapi
+                && _backend.Supports(Features.SpeakToMemory);
+        }
+
+        private bool SpeakToPlayer(string text, bool interrupt)
+        {
+            if (_backend == null || _player == null)
+                return false;
+
+            var firstChunk = true;
+            _backend.SpeakToMemory(
+                text,
+                (samples, channels, sampleRate) =>
+                {
+                    _player.Write(samples, channels, sampleRate, interrupt && firstChunk);
+                    firstChunk = false;
+                });
+            return true;
         }
     }
 }

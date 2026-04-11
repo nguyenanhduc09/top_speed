@@ -5,7 +5,7 @@ namespace TopSpeed.Game
 {
     internal sealed partial class Game : IDisposable,
         IMenuUiActions,
-        IMenuRaceActions,
+        IMenuDriveActions,
         IMenuServerActions,
         IMenuSettingsActions,
         IMenuAudioActions,
@@ -13,4 +13,5 @@ namespace TopSpeed.Game
     {
     }
 }
+
 

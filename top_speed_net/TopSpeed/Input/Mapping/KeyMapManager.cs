@@ -7,9 +7,9 @@ namespace TopSpeed.Input
 {
     internal sealed class KeyMapManager
     {
-        private readonly RaceInput _input;
+        private readonly DriveInput _input;
 
-        public KeyMapManager(RaceInput input)
+        public KeyMapManager(DriveInput input)
         {
             _input = input;
         }
@@ -100,5 +100,6 @@ namespace TopSpeed.Input
         }
     }
 }
+
 
 

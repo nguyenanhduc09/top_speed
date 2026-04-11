@@ -135,7 +135,7 @@ namespace TopSpeed.Vehicles
                 AudioWorld.ToMeters(listenerZ + offsetZ));
         }
 
-        private static void SetSpatial(AudioSourceHandle? sound, Vector3 position, Vector3 velocity)
+        private static void SetSpatial(Source? sound, Vector3 position, Vector3 velocity)
         {
             if (sound == null)
                 return;

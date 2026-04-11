@@ -7,7 +7,7 @@ namespace TopSpeed.Core.Settings
 {
     internal sealed partial class SettingsManager
     {
-        public void Save(RaceSettings settings)
+        public void Save(DriveSettings settings)
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
@@ -40,4 +40,5 @@ namespace TopSpeed.Core.Settings
         }
     }
 }
+
 

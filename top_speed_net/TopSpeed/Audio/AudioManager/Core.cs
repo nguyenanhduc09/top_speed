@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Threading;
@@ -9,22 +8,13 @@ namespace TopSpeed.Audio
 {
     internal sealed partial class AudioManager : IGameAudio
     {
-        private readonly AudioSystem _system;
-        private readonly AudioOutput _output;
-        private readonly object _cacheLock = new object();
-        private readonly Dictionary<AudioCacheKey, CachedSource> _sourceCache =
-            new Dictionary<AudioCacheKey, CachedSource>(new AudioCacheKeyComparer());
-        private readonly Dictionary<AudioSourceHandle, AudioCacheKey> _handleCache =
-            new Dictionary<AudioSourceHandle, AudioCacheKey>();
-        private readonly object _pathCacheLock = new object();
-        private readonly Dictionary<string, bool> _pathExistsCache =
-            new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        private readonly AudioEngine _engine;
         private Thread? _updateThread;
         private volatile bool _updateRunning;
 
-        public bool IsHrtfActive => _system.IsHrtfActive;
-        public int OutputChannels => _output.Channels;
-        public int OutputSampleRate => _output.SampleRate;
+        public bool IsHrtfActive => _engine.System.IsHrtfActive;
+        public int OutputChannels => _engine.PrimaryOutput.Channels;
+        public int OutputSampleRate => _engine.PrimaryOutput.SampleRate;
 
         public AudioManager(bool useHrtf = false, bool autoDetectDeviceFormat = true)
         {
@@ -37,6 +27,10 @@ namespace TopSpeed.Audio
             {
                 Name = "main"
             };
+            var speechOutputConfig = new AudioOutputConfig
+            {
+                Name = "speech"
+            };
 
             if (autoDetectDeviceFormat)
             {
@@ -44,67 +38,119 @@ namespace TopSpeed.Audio
                 config.SampleRate = 0;
                 outputConfig.Channels = 0;
                 outputConfig.SampleRate = 0;
+                speechOutputConfig.Channels = 0;
+                speechOutputConfig.SampleRate = 0;
             }
             else
             {
                 outputConfig.Channels = config.Channels;
                 outputConfig.SampleRate = config.SampleRate;
+                speechOutputConfig.Channels = config.Channels;
+                speechOutputConfig.SampleRate = config.SampleRate;
             }
 
-            _system = new AudioSystem(config);
-            _output = _system.CreateOutput(outputConfig);
+            var engineOptions = new AudioEngineOptions
+            {
+                SystemConfig = config,
+                PrimaryOutput = outputConfig,
+                SpeechOutput = speechOutputConfig
+            };
+
+            _engine = new AudioEngine(engineOptions);
         }
 
-        public AudioSourceHandle CreateSource(string path, bool streamFromDisk = true, bool useHrtf = false)
+        public SoundAsset LoadAsset(string path, bool streamFromDisk = true)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException("Audio file not found.", path);
-            return _output.CreateSource(path, streamFromDisk, useHrtf);
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException("Audio path is required.", nameof(path));
+
+            var fullPath = Path.GetFullPath(path);
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Audio file not found.", fullPath);
+
+            return _engine.LoadClip(fullPath, streamFromDisk, cache: true);
         }
 
-        public AudioSourceHandle CreateLoopingSource(string path, bool useHrtf = false)
+        public StreamAsset LoadStream(string path)
         {
-            return CreateSource(path, streamFromDisk: false, useHrtf: useHrtf);
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException("Audio path is required.", nameof(path));
+
+            var fullPath = Path.GetFullPath(path);
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Audio file not found.", fullPath);
+
+            return _engine.LoadStream(fullPath, cache: true);
         }
 
-        public AudioSourceHandle CreateSpatialSource(string path, bool streamFromDisk = true, bool allowHrtf = true)
+        public Source CreateSource(SoundAsset asset, string busName, bool? useHrtf = null)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException("Audio file not found.", path);
+            if (asset == null)
+                throw new ArgumentNullException(nameof(asset));
 
-            return _output.CreateSpatialSource(path, streamFromDisk, allowHrtf);
+            return _engine.CreateSource(asset, busName, spatialize: false, useHrtf: useHrtf);
         }
 
-        public AudioSourceHandle CreateLoopingSpatialSource(string path, bool allowHrtf = true)
+        public Source CreateLoopingSource(SoundAsset asset, string busName, bool? useHrtf = null)
         {
-            return CreateSpatialSource(path, streamFromDisk: false, allowHrtf: allowHrtf);
+            return CreateSource(asset, busName, useHrtf);
         }
 
-        public AudioSourceHandle CreateProceduralSource(ProceduralAudioCallback callback, uint channels = 1, uint sampleRate = 44100, bool useHrtf = true)
+        public Source CreateSpatialSource(SoundAsset asset, string busName, bool? allowHrtf = null)
+        {
+            if (asset == null)
+                throw new ArgumentNullException(nameof(asset));
+
+            return _engine.CreateSpatialSource(asset, busName, allowHrtf);
+        }
+
+        public Source CreateLoopingSpatialSource(SoundAsset asset, string busName, bool? allowHrtf = null)
+        {
+            return CreateSpatialSource(asset, busName, allowHrtf);
+        }
+
+        public Source CreateProceduralSource(
+            ProceduralAudioCallback callback,
+            uint channels = 1,
+            uint sampleRate = 44100,
+            string? busName = null,
+            bool? spatialize = null,
+            bool? useHrtf = null)
         {
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
-            return _output.CreateProceduralSource(callback, channels, sampleRate, useHrtf);
+
+            return _engine.CreateProceduralSource(callback, channels, sampleRate, busName, spatialize, useHrtf);
+        }
+
+        public void PlayOneShot(SoundAsset asset, string busName, Action<Source>? configure = null, bool? useHrtf = null)
+        {
+            _engine.PlayOneShot(asset, busName, configure, spatialize: false, useHrtf: useHrtf);
+        }
+
+        public void PlayOneShotSpatial(SoundAsset asset, string busName, Action<Source>? configure = null, bool? allowHrtf = null)
+        {
+            _engine.PlayOneShotSpatial(asset, busName, configure, allowHrtf);
         }
 
         public void Update()
         {
-            _system.Update();
+            _engine.Update();
         }
 
         public void SetMasterVolume(float volume)
         {
-            _output.SetMasterVolume(volume);
+            _engine.PrimaryOutput.SetMasterVolume(volume);
         }
 
         public void UpdateListener(Vector3 position, Vector3 forward, Vector3 up, Vector3 velocity)
         {
-            _system.UpdateListenerAll(position, forward, up, velocity);
+            _engine.SetListener(position, forward, up, velocity);
         }
 
         public void SetRoomAcoustics(RoomAcoustics acoustics)
         {
-            _output.SetRoomAcoustics(acoustics);
+            _engine.PrimaryOutput.SetRoomAcoustics(acoustics);
         }
     }
 }

@@ -2,11 +2,11 @@ using TopSpeed.Input;
 
 namespace TopSpeed.Vehicles.Control
 {
-    internal sealed class RaceInputCarController : ICarController
+    internal sealed class DriveInputCarController : ICarController
     {
-        private readonly RaceInput _input;
+        private readonly DriveInput _input;
 
-        public RaceInputCarController(RaceInput input)
+        public DriveInputCarController(DriveInput input)
         {
             _input = input;
         }
@@ -24,4 +24,5 @@ namespace TopSpeed.Vehicles.Control
         }
     }
 }
+
 

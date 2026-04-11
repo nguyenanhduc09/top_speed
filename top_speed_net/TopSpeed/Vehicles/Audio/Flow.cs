@@ -12,27 +12,27 @@ namespace TopSpeed.Vehicles.Audio
         private const int MaxSurfaceFreq = 100000;
 
         public void RefreshVolumes(
-            RaceSettings settings,
+            DriveSettings settings,
             bool force,
             int throttleVolume,
-            AudioSourceHandle soundEngine,
-            AudioSourceHandle soundStart,
-            AudioSourceHandle? soundThrottle,
-            AudioSourceHandle soundHorn,
-            AudioSourceHandle soundBrake,
-            AudioSourceHandle soundMiniCrash,
-            AudioSourceHandle soundBump,
-            AudioSourceHandle soundBadSwitch,
-            AudioSourceHandle? soundWipers,
-            AudioSourceHandle soundCrash,
-            AudioSourceHandle? soundBackfire,
-            AudioSourceHandle[] soundCrashVariants,
-            AudioSourceHandle[] soundBackfireVariants,
-            AudioSourceHandle soundAsphalt,
-            AudioSourceHandle soundGravel,
-            AudioSourceHandle soundWater,
-            AudioSourceHandle soundSand,
-            AudioSourceHandle soundSnow,
+            Source soundEngine,
+            Source soundStart,
+            Source? soundThrottle,
+            Source soundHorn,
+            Source soundBrake,
+            Source soundMiniCrash,
+            Source soundBump,
+            Source soundBadSwitch,
+            Source? soundWipers,
+            Source soundCrash,
+            Source? soundBackfire,
+            Source[] soundCrashVariants,
+            Source[] soundBackfireVariants,
+            Source soundAsphalt,
+            Source soundGravel,
+            Source soundWater,
+            Source soundSand,
+            Source soundSnow,
             ref int lastPlayerEngineVolumePercent,
             ref int lastPlayerEventsVolumePercent,
             ref int lastSurfaceLoopVolumePercent)
@@ -76,7 +76,7 @@ namespace TopSpeed.Vehicles.Audio
             SetSurfaceLoopVolumePercent(settings, soundSnow, 90);
         }
 
-        public void UpdateHorn(AudioSourceHandle soundHorn, CarState state, bool horning)
+        public void UpdateHorn(Source soundHorn, CarState state, bool horning)
         {
             if (horning && state != CarState.Crashing)
             {
@@ -94,11 +94,11 @@ namespace TopSpeed.Vehicles.Audio
             float speed,
             ref int surfaceFrequency,
             ref int prevSurfaceFrequency,
-            AudioSourceHandle soundAsphalt,
-            AudioSourceHandle soundGravel,
-            AudioSourceHandle soundWater,
-            AudioSourceHandle soundSand,
-            AudioSourceHandle soundSnow)
+            Source soundAsphalt,
+            Source soundGravel,
+            Source soundWater,
+            Source soundSand,
+            Source soundSnow)
         {
             surfaceFrequency = (int)(speed * 500);
             if (surfaceFrequency == prevSurfaceFrequency)
@@ -129,15 +129,15 @@ namespace TopSpeed.Vehicles.Audio
         public void ApplyPan(
             TrackSurface surface,
             int pan,
-            AudioSourceHandle soundHorn,
-            AudioSourceHandle soundBrake,
-            AudioSourceHandle? soundBackfire,
-            AudioSourceHandle? soundWipers,
-            AudioSourceHandle soundAsphalt,
-            AudioSourceHandle soundGravel,
-            AudioSourceHandle soundWater,
-            AudioSourceHandle soundSand,
-            AudioSourceHandle soundSnow)
+            Source soundHorn,
+            Source soundBrake,
+            Source? soundBackfire,
+            Source? soundWipers,
+            Source soundAsphalt,
+            Source soundGravel,
+            Source soundWater,
+            Source soundSand,
+            Source soundSnow)
         {
             soundHorn.SetPanPercent(pan);
             soundBrake.SetPanPercent(pan);
@@ -176,16 +176,16 @@ namespace TopSpeed.Vehicles.Audio
 
         public void Pause(
             TrackSurface surface,
-            AudioSourceHandle soundEngine,
-            AudioSourceHandle? soundThrottle,
-            AudioSourceHandle soundBrake,
-            AudioSourceHandle soundHorn,
-            AudioSourceHandle? soundWipers,
-            AudioSourceHandle soundAsphalt,
-            AudioSourceHandle soundGravel,
-            AudioSourceHandle soundWater,
-            AudioSourceHandle soundSand,
-            AudioSourceHandle soundSnow,
+            Source soundEngine,
+            Source? soundThrottle,
+            Source soundBrake,
+            Source soundHorn,
+            Source? soundWipers,
+            Source soundAsphalt,
+            Source soundGravel,
+            Source soundWater,
+            Source soundSand,
+            Source soundSnow,
             Action stopResetBackfireVariants)
         {
             soundEngine.Stop();
@@ -218,18 +218,37 @@ namespace TopSpeed.Vehicles.Audio
 
         public void Unpause(
             TrackSurface surface,
-            AudioSourceHandle soundEngine,
-            AudioSourceHandle? soundThrottle,
-            AudioSourceHandle? soundWipers,
-            AudioSourceHandle soundAsphalt,
-            AudioSourceHandle soundGravel,
-            AudioSourceHandle soundWater,
-            AudioSourceHandle soundSand,
-            AudioSourceHandle soundSnow)
+            bool resumeEngine,
+            bool resumeThrottle,
+            bool resumeWipers,
+            bool resumeSurfaceLoops,
+            Source soundEngine,
+            Source? soundThrottle,
+            Source? soundWipers,
+            Source soundAsphalt,
+            Source soundGravel,
+            Source soundWater,
+            Source soundSand,
+            Source soundSnow)
         {
-            soundEngine.Play(loop: true);
-            soundThrottle?.Play(loop: true);
-            soundWipers?.Play(loop: true);
+            if (resumeEngine)
+                soundEngine.Play(loop: true);
+            else if (soundEngine.IsPlaying)
+                soundEngine.Stop();
+
+            if (resumeThrottle)
+                soundThrottle?.Play(loop: true);
+            else if (soundThrottle?.IsPlaying == true)
+                soundThrottle.Stop();
+
+            if (resumeWipers)
+                soundWipers?.Play(loop: true);
+            else if (soundWipers?.IsPlaying == true)
+                soundWipers.Stop();
+
+            if (!resumeSurfaceLoops)
+                return;
+
             switch (surface)
             {
                 case TrackSurface.Asphalt:
@@ -250,20 +269,21 @@ namespace TopSpeed.Vehicles.Audio
             }
         }
 
-        private static void SetPlayerEngineVolumePercent(RaceSettings settings, AudioSourceHandle? sound, int percent)
+        private static void SetPlayerEngineVolumePercent(DriveSettings settings, Source? sound, int percent)
         {
             sound.SetVolumePercent(settings, AudioVolumeCategory.PlayerVehicleEngine, percent);
         }
 
-        private static void SetPlayerEventVolumePercent(RaceSettings settings, AudioSourceHandle? sound, int percent)
+        private static void SetPlayerEventVolumePercent(DriveSettings settings, Source? sound, int percent)
         {
             sound.SetVolumePercent(settings, AudioVolumeCategory.PlayerVehicleEvents, percent);
         }
 
-        private static void SetSurfaceLoopVolumePercent(RaceSettings settings, AudioSourceHandle? sound, int percent)
+        private static void SetSurfaceLoopVolumePercent(DriveSettings settings, Source? sound, int percent)
         {
             sound.SetVolumePercent(settings, AudioVolumeCategory.SurfaceLoops, percent);
         }
     }
 }
+
 

@@ -6,7 +6,6 @@ using TopSpeed.Audio;
 using TopSpeed.Common;
 using TopSpeed.Input;
 using TS.Audio;
-
 namespace TopSpeed.Core.Multiplayer
 {
     internal sealed partial class MultiplayerCoordinator
@@ -14,8 +13,8 @@ namespace TopSpeed.Core.Multiplayer
         private void StartConnectingPulse()
         {
             StopConnectingPulse();
-            var handle = GetNetworkSound(ref _state.Audio.ConnectingSound, "connecting.ogg");
-            if (handle == null)
+            var sound = GetNetworkSound(ref _state.Audio.ConnectingSound, "connecting.ogg");
+            if (sound == null)
                 return;
 
             var token = _lifetime.BeginConnectingPulse();
@@ -25,7 +24,10 @@ namespace TopSpeed.Core.Multiplayer
                 {
                     try
                     {
-                        handle.Restart(loop: false);
+                        _audio.PlayOneShot(sound, AudioEngineOptions.UiBusName, configure: handle =>
+                        {
+                            handle.SetVolumePercent(_settings, AudioVolumeCategory.OnlineServerEvents, 100);
+                        });
                     }
                     catch
                     {
@@ -53,7 +55,7 @@ namespace TopSpeed.Core.Multiplayer
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
 
-            AudioSourceHandle? handle;
+            SoundAsset? handle;
             if (string.Equals(fileName, "online.ogg", StringComparison.OrdinalIgnoreCase))
                 handle = GetNetworkSound(ref _state.Audio.OnlineSound, fileName);
             else if (string.Equals(fileName, "offline.ogg", StringComparison.OrdinalIgnoreCase))
@@ -87,15 +89,17 @@ namespace TopSpeed.Core.Multiplayer
 
             try
             {
-                handle.SetVolumePercent(_settings, AudioVolumeCategory.OnlineServerEvents, 100);
-                handle.Restart(loop: false);
+                _audio.PlayOneShot(handle, AudioEngineOptions.UiBusName, configure: sound =>
+                {
+                    sound.SetVolumePercent(_settings, AudioVolumeCategory.OnlineServerEvents, 100);
+                });
             }
             catch
             {
             }
         }
 
-        private AudioSourceHandle? GetNetworkSound(ref AudioSourceHandle? cache, string fileName)
+        private SoundAsset? GetNetworkSound(ref SoundAsset? cache, string fileName)
         {
             if (cache != null)
                 return cache;
@@ -106,8 +110,7 @@ namespace TopSpeed.Core.Multiplayer
 
             try
             {
-                cache = _audio.AcquireCachedSource(fullPath, streamFromDisk: false);
-                cache.SetVolumePercent(_settings, AudioVolumeCategory.OnlineServerEvents, 100);
+                cache = _audio.LoadAsset(fullPath, streamFromDisk: false);
                 return cache;
             }
             catch

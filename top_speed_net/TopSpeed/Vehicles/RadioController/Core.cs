@@ -7,7 +7,7 @@ namespace TopSpeed.Vehicles
     internal sealed partial class VehicleRadioController : IDisposable
     {
         private readonly AudioManager _audio;
-        private AudioSourceHandle? _source;
+        private Source? _source;
         private bool _desiredPlaying;
         private bool _pausedByGame;
         private string? _mediaPath;

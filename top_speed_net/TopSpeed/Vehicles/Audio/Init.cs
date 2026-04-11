@@ -29,11 +29,11 @@ namespace TopSpeed.Vehicles
             if (_hasWipers == 1)
                 _soundWipers = CreateRequiredSound(Path.Combine(_legacyRoot, "wipers.wav"), looped: true, allowHrtf: false);
 
-            _soundAsphalt = CreateRequiredSound(Path.Combine(_legacyRoot, "asphalt.wav"), looped: true, allowHrtf: false);
-            _soundGravel = CreateRequiredSound(Path.Combine(_legacyRoot, "gravel.wav"), looped: true, allowHrtf: false);
-            _soundWater = CreateRequiredSound(Path.Combine(_legacyRoot, "water.wav"), looped: true, allowHrtf: false);
-            _soundSand = CreateRequiredSound(Path.Combine(_legacyRoot, "sand.wav"), looped: true, allowHrtf: false);
-            _soundSnow = CreateRequiredSound(Path.Combine(_legacyRoot, "snow.wav"), looped: true, allowHrtf: false);
+            _soundAsphalt = CreateTrackSurfaceLoop(Path.Combine(_legacyRoot, "asphalt.wav"));
+            _soundGravel = CreateTrackSurfaceLoop(Path.Combine(_legacyRoot, "gravel.wav"));
+            _soundWater = CreateTrackSurfaceLoop(Path.Combine(_legacyRoot, "water.wav"));
+            _soundSand = CreateTrackSurfaceLoop(Path.Combine(_legacyRoot, "sand.wav"));
+            _soundSnow = CreateTrackSurfaceLoop(Path.Combine(_legacyRoot, "snow.wav"));
             _soundMiniCrash = CreateRequiredSound(Path.Combine(_legacyRoot, "crashshort.wav"));
             _soundBump = CreateRequiredSound(Path.Combine(_legacyRoot, "bump.wav"), allowHrtf: false);
             _soundBadSwitch = CreateRequiredSound(Path.Combine(_legacyRoot, "badswitch.wav"), allowHrtf: false);

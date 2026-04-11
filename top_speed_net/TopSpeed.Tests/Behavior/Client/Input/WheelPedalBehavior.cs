@@ -12,8 +12,8 @@ public sealed class WheelPedalBehaviorTests
     [Fact]
     public void WheelPedals_AutoInvert_FromRestEndpoint_ForThrottleBrakeAndClutch()
     {
-        var settings = new RaceSettings { DeviceMode = InputDeviceMode.Controller };
-        var input = new RaceInput(settings);
+        var settings = new DriveSettings { DeviceMode = InputDeviceMode.Controller };
+        var input = new DriveInput(settings);
 
         input.Run(new InputState(), new State { Z = 100, Rz = 100, Slider1 = 100 }, 0f, controllerIsRacingWheel: true);
         input.Run(new InputState(), new State { Z = -100, Rz = -100, Slider1 = -100 }, 0f, controllerIsRacingWheel: true);
@@ -26,8 +26,8 @@ public sealed class WheelPedalBehaviorTests
     [Fact]
     public void WheelPedals_RefineRestEndpoint_ToUseFullTravel()
     {
-        var settings = new RaceSettings { DeviceMode = InputDeviceMode.Controller };
-        var input = new RaceInput(settings);
+        var settings = new DriveSettings { DeviceMode = InputDeviceMode.Controller };
+        var input = new DriveInput(settings);
 
         input.Run(new InputState(), new State { Rz = 60 }, 0f, controllerIsRacingWheel: true);
         input.Run(new InputState(), new State { Rz = 100 }, 0f, controllerIsRacingWheel: true);
@@ -40,8 +40,8 @@ public sealed class WheelPedalBehaviorTests
     [Fact]
     public void WheelPedals_AutoInvert_UsesObservedSpan_ForPartialRange()
     {
-        var settings = new RaceSettings { DeviceMode = InputDeviceMode.Controller };
-        var input = new RaceInput(settings);
+        var settings = new DriveSettings { DeviceMode = InputDeviceMode.Controller };
+        var input = new DriveInput(settings);
 
         input.Run(new InputState(), new State { Rz = 31 }, 0f, controllerIsRacingWheel: true);
         input.Run(new InputState(), new State { Rz = -31 }, 0f, controllerIsRacingWheel: true);
@@ -61,3 +61,4 @@ public sealed class WheelPedalBehaviorTests
         ((bool)method!.Invoke(null, new object[] { clutch })!).Should().Be(expected);
     }
 }
+
