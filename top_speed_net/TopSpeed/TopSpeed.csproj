@@ -229,16 +229,29 @@
   <Target Name="CopyUpdaterNet10" AfterTargets="Build" Condition="('$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net10.0-windows') and '$(RuntimeIdentifier)' != ''">
     <PropertyGroup>
       <_UpdaterProjectPath>$(MSBuildThisFileDirectory)../Updater/Updater.csproj</_UpdaterProjectPath>
+      <_UpdaterOutputPath>$([System.IO.Path]::GetFullPath('$(OutDir)'))</_UpdaterOutputPath>
+      <_UpdaterStagingPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)updater-build/'))</_UpdaterStagingPath>
     </PropertyGroup>
-    <MSBuild Projects="$(_UpdaterProjectPath)" Targets="Restore;Publish" Properties="Configuration=$(Configuration);TargetFramework=net10.0;RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=true;PublishDir=$(OutDir);UseNativeAotUpdater=$(UseNativeAotUpdater);UseTrimmedUpdater=$(UseTrimmedUpdater)" />
+    <RemoveDir Directories="$(_UpdaterStagingPath)" Condition="Exists('$(_UpdaterStagingPath)')" />
+    <MSBuild Projects="$(_UpdaterProjectPath)" Targets="Restore;Publish" Properties="Configuration=$(Configuration);TargetFramework=net10.0;RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=true;PublishDir=$(_UpdaterStagingPath);UseNativeAotUpdater=$(UseNativeAotUpdater);UseTrimmedUpdater=$(UseTrimmedUpdater)" />
+    <ItemGroup>
+      <_UpdaterPublishedFiles Include="$(_UpdaterStagingPath)**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_UpdaterPublishedFiles)" DestinationFiles="@(_UpdaterPublishedFiles->'$(_UpdaterOutputPath)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
   <Target Name="PublishUpdaterNet10" AfterTargets="Publish" Condition="('$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net10.0-windows') and '$(RuntimeIdentifier)' != ''">
     <PropertyGroup>
       <_UpdaterProjectPath>$(MSBuildThisFileDirectory)../Updater/Updater.csproj</_UpdaterProjectPath>
       <_PublishDestinationPath>$([System.IO.Path]::GetFullPath('$(PublishDir)'))</_PublishDestinationPath>
+      <_UpdaterPublishStagingPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)updater-publish/'))</_UpdaterPublishStagingPath>
     </PropertyGroup>
-    <MSBuild Projects="$(_UpdaterProjectPath)" Targets="Restore;Publish" Properties="Configuration=$(Configuration);TargetFramework=net10.0;RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=true;PublishDir=$(_PublishDestinationPath);UseNativeAotUpdater=$(UseNativeAotUpdater);UseTrimmedUpdater=$(UseTrimmedUpdater)" />
+    <RemoveDir Directories="$(_UpdaterPublishStagingPath)" Condition="Exists('$(_UpdaterPublishStagingPath)')" />
+    <MSBuild Projects="$(_UpdaterProjectPath)" Targets="Restore;Publish" Properties="Configuration=$(Configuration);TargetFramework=net10.0;RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=true;PublishDir=$(_UpdaterPublishStagingPath);UseNativeAotUpdater=$(UseNativeAotUpdater);UseTrimmedUpdater=$(UseTrimmedUpdater)" />
+    <ItemGroup>
+      <_UpdaterPublishedFiles Include="$(_UpdaterPublishStagingPath)**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_UpdaterPublishedFiles)" DestinationFiles="@(_UpdaterPublishedFiles->'$(_PublishDestinationPath)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
   <Target Name="CreateMacAppBundle" AfterTargets="Publish" DependsOnTargets="PublishUpdaterNet10" Condition="'$(TargetFramework)' == 'net10.0' and '$(RuntimeIdentifier)' == 'osx-x64'">
