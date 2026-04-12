@@ -41,6 +41,10 @@
     <MetadataUpdaterSupport Condition="'$(UseNativeAotUpdater)' == 'true'">false</MetadataUpdaterSupport>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0' and '$(RuntimeIdentifier)' != '' and $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux'))">
+    <UseNativeAotUpdater>false</UseNativeAotUpdater>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />

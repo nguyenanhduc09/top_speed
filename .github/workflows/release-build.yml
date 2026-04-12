@@ -217,14 +217,14 @@ jobs:
     #     done
     #     sudo apt-get install -y clang llvm zlib1g-dev binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
-    - name: Run shared tests (net10.0)
+    - name: Run shared tests
       run: dotnet test TopSpeed.Tests/TopSpeed.Tests.csproj --configuration Release --framework net10.0 --verbosity normal
 
     - name: Publish Linux servers
       shell: bash
       run: |
         set -euo pipefail
-        dotnet publish TopSpeed.Server/TopSpeed.Server.csproj --configuration Release -p:ServerPublishProfile=ReleaseLinuxX64 -p:UseNativeAotUpdater=true
+        dotnet publish TopSpeed.Server/TopSpeed.Server.csproj --configuration Release -p:ServerPublishProfile=ReleaseLinuxX64 -p:UseTrimmedUpdater=true
         dotnet publish TopSpeed.Server/TopSpeed.Server.csproj --configuration Release -p:ServerPublishProfile=ReleaseLinuxArm64 -p:UseTrimmedUpdater=true
 
         profiles=(
@@ -239,8 +239,8 @@ jobs:
 
         dotnet publish TopSpeed.Server/TopSpeed.Server.csproj --configuration Release -p:ServerPublishProfile=ReleaseLinuxX86FrameworkDependent
 
-    - name: Build Linux client with AOT updater
-      run: dotnet build TopSpeed/TopSpeed.csproj --configuration Release -p:RuntimeIdentifier=linux-x64 -p:UseNativeAotUpdater=true
+    - name: Build Linux client
+      run: dotnet build TopSpeed/TopSpeed.csproj --configuration Release -p:RuntimeIdentifier=linux-x64 -p:UseTrimmedUpdater=true
 
     - name: Create Linux archives
       shell: bash
@@ -315,10 +315,10 @@ jobs:
     - name: Run shared tests (net10.0)
       run: dotnet test TopSpeed.Tests/TopSpeed.Tests.csproj --configuration Release --framework net10.0 --verbosity normal
 
-    - name: Publish macOS client with AOT updater
+    - name: Publish macOS client
       run: dotnet publish TopSpeed/TopSpeed.csproj --configuration Release -p:RuntimeIdentifier=osx-x64 -p:UseNativeAotUpdater=true
 
-    - name: Publish macOS server with AOT updater
+    - name: Publish macOS server
       run: dotnet publish TopSpeed.Server/TopSpeed.Server.csproj --configuration Release -p:ServerPublishProfile=ReleaseMacX64 -p:UseNativeAotUpdater=true
 
     - name: Create macOS archives

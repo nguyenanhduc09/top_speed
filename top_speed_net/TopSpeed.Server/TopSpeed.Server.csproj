@@ -124,9 +124,10 @@
       <_ServerUpdaterBinaryName Condition="'$(RuntimeIdentifier)' == 'win-x64'">Updater.exe</_ServerUpdaterBinaryName>
       <_ServerUpdaterBinaryName Condition="'$(_ServerUpdaterBinaryName)' == ''">Updater</_ServerUpdaterBinaryName>
       <_ServerUpdaterBuildDir Condition="'$(_ServerUpdaterTargetFramework)' == 'net472'">$(MSBuildThisFileDirectory)../Updater/bin/$(Configuration)/net472/</_ServerUpdaterBuildDir>
+      <_ServerUpdaterPublishDir>$([System.IO.Path]::GetFullPath('$(PublishDir)'))</_ServerUpdaterPublishDir>
     </PropertyGroup>
     <MSBuild Projects="$(_ServerUpdaterProjectPath)" Targets="Restore;Build" Properties="Configuration=$(Configuration);TargetFramework=net472" Condition="'$(_ServerUpdaterTargetFramework)' == 'net472'" />
-    <MSBuild Projects="$(_ServerUpdaterProjectPath)" Targets="Restore;Publish" Properties="Configuration=$(Configuration);TargetFramework=net10.0;RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=true;PublishDir=$(PublishDir);UseNativeAotUpdater=$(UseNativeAotUpdater);UseTrimmedUpdater=$(UseTrimmedUpdater)" Condition="'$(_ServerUpdaterTargetFramework)' == 'net10.0'" />
+    <MSBuild Projects="$(_ServerUpdaterProjectPath)" Targets="Restore;Publish" Properties="Configuration=$(Configuration);TargetFramework=net10.0;RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=true;PublishDir=$(_ServerUpdaterPublishDir);UseNativeAotUpdater=$(UseNativeAotUpdater);UseTrimmedUpdater=$(UseTrimmedUpdater)" Condition="'$(_ServerUpdaterTargetFramework)' == 'net10.0'" />
     <Copy SourceFiles="$(_ServerUpdaterBuildDir)$(_ServerUpdaterBinaryName)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" Condition="'$(_ServerUpdaterTargetFramework)' == 'net472'" />
     <Copy SourceFiles="$(_ServerUpdaterBuildDir)Updater.pdb" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" Condition="'$(_ServerUpdaterTargetFramework)' == 'net472' and Exists('$(_ServerUpdaterBuildDir)Updater.pdb')" />
   </Target>
