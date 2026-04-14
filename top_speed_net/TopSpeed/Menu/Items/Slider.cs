@@ -10,6 +10,7 @@ namespace TopSpeed.Menu
         private readonly IReadOnlyList<int> _steps;
         private readonly Func<int> _getValue;
         private readonly Action<int> _setValue;
+        private readonly Func<int, string>? _formatValue;
         private readonly Action<int>? _onChanged;
 
         public Slider(
@@ -21,8 +22,9 @@ namespace TopSpeed.Menu
             MenuAction action = MenuAction.None,
             string? nextMenuId = null,
             bool suppressPostActivateAnnouncement = false,
-            string? hint = null)
-            : this(text, ParseSteps(rangeOrSteps), getValue, setValue, onChanged, action, nextMenuId, suppressPostActivateAnnouncement, hint)
+            string? hint = null,
+            Func<int, string>? formatValue = null)
+            : this(text, ParseSteps(rangeOrSteps), getValue, setValue, onChanged, action, nextMenuId, suppressPostActivateAnnouncement, hint, formatValue)
         {
         }
 
@@ -36,8 +38,9 @@ namespace TopSpeed.Menu
             MenuAction action = MenuAction.None,
             string? nextMenuId = null,
             bool suppressPostActivateAnnouncement = false,
-            string? hint = null)
-            : this(text, BuildRange(minValue, maxValue), getValue, setValue, onChanged, action, nextMenuId, suppressPostActivateAnnouncement, hint)
+            string? hint = null,
+            Func<int, string>? formatValue = null)
+            : this(text, BuildRange(minValue, maxValue), getValue, setValue, onChanged, action, nextMenuId, suppressPostActivateAnnouncement, hint, formatValue)
         {
         }
 
@@ -50,7 +53,8 @@ namespace TopSpeed.Menu
             MenuAction action = MenuAction.None,
             string? nextMenuId = null,
             bool suppressPostActivateAnnouncement = false,
-            string? hint = null)
+            string? hint = null,
+            Func<int, string>? formatValue = null)
             : base(text, action, nextMenuId, onActivate: null, suppressPostActivateAnnouncement, hint)
         {
             if (steps == null)
@@ -60,6 +64,7 @@ namespace TopSpeed.Menu
                 throw new ArgumentException("Slider requires at least one step.", nameof(steps));
             _getValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
             _setValue = setValue ?? throw new ArgumentNullException(nameof(setValue));
+            _formatValue = formatValue;
             _onChanged = onChanged;
         }
 
@@ -167,6 +172,9 @@ namespace TopSpeed.Menu
 
         private string GetValueLabel(int value)
         {
+            if (_formatValue != null)
+                return _formatValue(value);
+
             return value.ToString();
         }
 

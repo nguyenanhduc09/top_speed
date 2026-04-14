@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using System.Collections.Generic;
 using TopSpeed.Data;
 using TopSpeed.Input;
@@ -27,6 +29,13 @@ namespace TopSpeed.Menu
                     () => _settings.CurveAnnouncement == CurveAnnouncementMode.SpeedDependent,
                     value => _settingsActions.UpdateSetting(() => _settings.CurveAnnouncement = value ? CurveAnnouncementMode.SpeedDependent : CurveAnnouncementMode.FixedDistance),
                     hint: LocalizationService.Mark("Switch between fixed distance and speed dependent curve announcements. Press ENTER to change.")),
+                new Slider(
+                    LocalizationService.Mark("Speed dependent curve announcement lead time"),
+                    "5-40",
+                    () => (int)Math.Round(Math.Max(0.5f, Math.Min(4.0f, _settings.CurveAnnouncementLeadTimeSeconds)) * 10.0f),
+                    value => _settingsActions.UpdateSetting(() => _settings.CurveAnnouncementLeadTimeSeconds = value / 10.0f),
+                    hint: LocalizationService.Mark("Sets how early speed dependent curve announcements are spoken. Use LEFT or RIGHT to change by 0.1 seconds, PAGE UP or PAGE DOWN to change by 1.0 second, HOME for maximum, END for minimum."),
+                    formatValue: FormatCurveLeadTimeSeconds),
                 new RadioButton(LocalizationService.Mark("Automatic race information"),
                     new[]
                     {
@@ -83,6 +92,13 @@ namespace TopSpeed.Menu
             }
 
             return BackMenu("options_drive_computers", items, LocalizationService.Mark("Number of computer players"));
+        }
+
+        private static string FormatCurveLeadTimeSeconds(int tenths)
+        {
+            var clampedTenths = Math.Max(5, Math.Min(40, tenths));
+            var seconds = (clampedTenths / 10.0f).ToString("0.0", CultureInfo.InvariantCulture);
+            return LocalizationService.Format(LocalizationService.Mark("{0} seconds"), seconds);
         }
     }
 }

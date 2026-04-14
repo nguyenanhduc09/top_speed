@@ -191,6 +191,7 @@ namespace TopSpeed.Core.Settings
         [DataMember(Name = "automaticInfo")] public int? AutomaticInfo { get; set; }
         [DataMember(Name = "copilot")] public int? Copilot { get; set; }
         [DataMember(Name = "curveAnnouncement")] public int? CurveAnnouncement { get; set; }
+        [DataMember(Name = "curveAnnouncementLeadTimeSeconds")] public decimal? CurveAnnouncementLeadTimeSeconds { get; set; }
         [DataMember(Name = "numberOfLaps")] public int? NumberOfLaps { get; set; }
         [DataMember(Name = "numberOfComputers")] public int? NumberOfComputers { get; set; }
         [DataMember(Name = "difficulty")] public int? Difficulty { get; set; }

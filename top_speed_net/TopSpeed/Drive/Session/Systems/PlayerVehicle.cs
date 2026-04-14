@@ -60,7 +60,12 @@ namespace TopSpeed.Drive.Session.Systems
             _car.Evaluate(road);
             _trackCrashState();
 
-            if (_track.NextRoad(_car.PositionY, _car.Speed, (int)_settings.CurveAnnouncement, out var nextRoad))
+            if (_track.NextRoad(
+                _car.PositionY,
+                _car.Speed,
+                (int)_settings.CurveAnnouncement,
+                _settings.CurveAnnouncementLeadTimeSeconds,
+                out var nextRoad))
                 _setCurrentRoad(_trackAudio.AnnounceNextRoad(_getCurrentRoad(), nextRoad));
         }
 
