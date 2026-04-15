@@ -67,6 +67,7 @@ namespace TopSpeed.Drive.Multiplayer
         private readonly SnapshotState _snapshots;
         private readonly RuntimeState _runtime;
         private readonly AudioSource[] _soundNumbers;
+        private readonly AudioSource[] _soundLaps;
         private readonly AudioSource?[][] _randomSounds;
         private readonly int[] _totalRandomSounds;
         private readonly AudioSource[] _soundUnkey;

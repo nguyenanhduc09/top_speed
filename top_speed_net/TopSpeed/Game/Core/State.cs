@@ -93,6 +93,7 @@ namespace TopSpeed.Game
         private int _updatePercent;
         private int _updateTonePercent;
         private int _lastSpokenUpdatePercent;
+        private bool _updateDownloadCanceledByUser;
         private bool _updateProgressOpen;
         private bool _updateCompleteOpen;
         private string _updateZipPath = string.Empty;
