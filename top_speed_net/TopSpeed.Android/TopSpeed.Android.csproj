@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>30</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>TopSpeed.Android</RootNamespace>
+    <AssemblyName>TopSpeed.Android</AssemblyName>
+    <ApplicationId>com.topspeed.game</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AndroidLibrary Include="..\TopSpeed\ThirdParty\android\prism-release.aar" />
+    <AndroidNativeLibrary Include="..\TopSpeed\ThirdParty\android\libSDL3.so" Abi="arm64-v8a" />
+    <AndroidNativeLibrary Include="..\TopSpeed\ThirdParty\android\libphonon.so" Abi="arm64-v8a" />
+    <AndroidNativeLibrary Include="..\MiniAudioExNET\runtimes\android-arm64\native\libminiaudioex.so" Abi="arm64-v8a" />
+  </ItemGroup>
+</Project>
