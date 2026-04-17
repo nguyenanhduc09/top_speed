@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using TopSpeed.Input;
 
 namespace TopSpeed.Core.Settings
 {
@@ -122,54 +123,41 @@ namespace TopSpeed.Core.Settings
     [DataContract]
     internal sealed class SettingsKeyboardDocument
     {
-        [DataMember(Name = "left")] public int? Left { get; set; }
-        [DataMember(Name = "right")] public int? Right { get; set; }
-        [DataMember(Name = "throttle")] public int? Throttle { get; set; }
-        [DataMember(Name = "brake")] public int? Brake { get; set; }
-        [DataMember(Name = "clutch")] public int? Clutch { get; set; }
-        [DataMember(Name = "gearUp")] public int? GearUp { get; set; }
-        [DataMember(Name = "gearDown")] public int? GearDown { get; set; }
-        [DataMember(Name = "horn")] public int? Horn { get; set; }
-        [DataMember(Name = "requestInfo")] public int? RequestInfo { get; set; }
-        [DataMember(Name = "currentGear")] public int? CurrentGear { get; set; }
-        [DataMember(Name = "currentLapNr")] public int? CurrentLapNr { get; set; }
-        [DataMember(Name = "currentRacePerc")] public int? CurrentRacePerc { get; set; }
-        [DataMember(Name = "currentLapPerc")] public int? CurrentLapPerc { get; set; }
-        [DataMember(Name = "currentRaceTime")] public int? CurrentRaceTime { get; set; }
-        [DataMember(Name = "startEngine")] public int? StartEngine { get; set; }
-        [DataMember(Name = "reportDistance")] public int? ReportDistance { get; set; }
-        [DataMember(Name = "reportSpeed")] public int? ReportSpeed { get; set; }
-        [DataMember(Name = "trackName")] public int? TrackName { get; set; }
-        [DataMember(Name = "pause")] public int? Pause { get; set; }
+        [DataMember(Name = "bindings")]
+        public List<SettingsKeyboardBindingDocument>? Bindings { get; set; }
+    }
+
+    [DataContract]
+    internal sealed class SettingsKeyboardBindingDocument
+    {
+        [DataMember(Name = "intent")]
+        public string? Intent { get; set; }
+
+        [DataMember(Name = "key")]
+        public int? Key { get; set; }
     }
 
     [DataContract]
     internal sealed class SettingsControllerDocument
     {
-        [DataMember(Name = "left")] public int? Left { get; set; }
-        [DataMember(Name = "right")] public int? Right { get; set; }
-        [DataMember(Name = "throttle")] public int? Throttle { get; set; }
-        [DataMember(Name = "brake")] public int? Brake { get; set; }
-        [DataMember(Name = "clutch")] public int? Clutch { get; set; }
-        [DataMember(Name = "gearUp")] public int? GearUp { get; set; }
-        [DataMember(Name = "gearDown")] public int? GearDown { get; set; }
-        [DataMember(Name = "horn")] public int? Horn { get; set; }
-        [DataMember(Name = "requestInfo")] public int? RequestInfo { get; set; }
-        [DataMember(Name = "currentGear")] public int? CurrentGear { get; set; }
-        [DataMember(Name = "currentLapNr")] public int? CurrentLapNr { get; set; }
-        [DataMember(Name = "currentRacePerc")] public int? CurrentRacePerc { get; set; }
-        [DataMember(Name = "currentLapPerc")] public int? CurrentLapPerc { get; set; }
-        [DataMember(Name = "currentRaceTime")] public int? CurrentRaceTime { get; set; }
-        [DataMember(Name = "startEngine")] public int? StartEngine { get; set; }
-        [DataMember(Name = "reportDistance")] public int? ReportDistance { get; set; }
-        [DataMember(Name = "reportSpeed")] public int? ReportSpeed { get; set; }
-        [DataMember(Name = "trackName")] public int? TrackName { get; set; }
-        [DataMember(Name = "pause")] public int? Pause { get; set; }
+        [DataMember(Name = "bindings")]
+        public List<SettingsControllerBindingDocument>? Bindings { get; set; }
+
         [DataMember(Name = "throttleInvertMode")] public int? ThrottleInvertMode { get; set; }
         [DataMember(Name = "brakeInvertMode")] public int? BrakeInvertMode { get; set; }
         [DataMember(Name = "clutchInvertMode")] public int? ClutchInvertMode { get; set; }
         [DataMember(Name = "steeringDeadZone")] public int? SteeringDeadZone { get; set; }
         [DataMember(Name = "center")] public SettingsControllerCenterDocument? Center { get; set; }
+    }
+
+    [DataContract]
+    internal sealed class SettingsControllerBindingDocument
+    {
+        [DataMember(Name = "intent")]
+        public string? Intent { get; set; }
+
+        [DataMember(Name = "axis")]
+        public int? Axis { get; set; }
     }
 
     [DataContract]

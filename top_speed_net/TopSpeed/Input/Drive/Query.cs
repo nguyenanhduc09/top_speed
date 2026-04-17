@@ -1,3 +1,4 @@
+using System;
 using Key = TopSpeed.Input.InputKey;
 using TopSpeed.Input.Devices.Controller;
 
@@ -5,37 +6,7 @@ namespace TopSpeed.Input
 {
     internal sealed partial class DriveInput
     {
-        public bool GetGearUp() => IsActionTriggered(InputAction.GearUp);
-
-        public bool GetGearDown() => IsActionTriggered(InputAction.GearDown);
-
-        public bool GetHorn()
-        {
-            if (IsActionTriggered(InputAction.Horn))
-                return true;
-            if (!_pausedHornInputAllowed || _overlayInputBlocked)
-                return false;
-
-            var meta = GetActionMeta(InputAction.Horn);
-            return IsActionActiveOnKeyboard(InputAction.Horn, meta)
-                || IsActionActiveOnController(InputAction.Horn, meta);
-        }
-
-        public bool GetRequestInfo() => IsActionTriggered(InputAction.RequestInfo);
-
-        public bool GetCurrentGear() => IsActionTriggered(InputAction.CurrentGear);
-
         public bool GetToggleShiftOnDemand() => _allowAuxiliaryInput && WasPressed(Key.M);
-
-        public bool GetCurrentLapNr() => IsActionTriggered(InputAction.CurrentLapNr);
-
-        public bool GetCurrentRacePerc() => IsActionTriggered(InputAction.CurrentRacePerc);
-
-        public bool GetCurrentLapPerc() => IsActionTriggered(InputAction.CurrentLapPerc);
-
-        public bool GetCurrentRaceTime() => IsActionTriggered(InputAction.CurrentRaceTime);
-
-        public bool GetMappedAction(InputAction action) => IsActionTriggered(action);
 
         public bool TryGetPlayerInfo(out int player)
         {
@@ -77,19 +48,9 @@ namespace TopSpeed.Input
             return false;
         }
 
-        public bool GetTrackName() => IsActionTriggered(InputAction.TrackName);
-
         public bool GetPlayerNumber() => _allowAuxiliaryInput && WasPressed(_kbPlayerNumber);
 
-        public bool GetPause() => IsActionTriggered(InputAction.Pause);
-
-        public bool GetStartEngine() => IsActionTriggered(InputAction.StartEngine);
-
         public bool GetFlush() => !_overlayInputBlocked && _lastState.IsDown(_kbFlush);
-
-        public bool GetSpeedReport() => IsActionTriggered(InputAction.ReportSpeed);
-
-        public bool GetDistanceReport() => IsActionTriggered(InputAction.ReportDistance);
 
         public bool GetNextPanelRequest() => WasPressed(Key.Tab) && IsCtrlDown() && !IsShiftDown();
 
@@ -120,25 +81,63 @@ namespace TopSpeed.Input
             return _lastState.IsDown(key) && !_prevState.IsDown(key);
         }
 
-        private bool IsActionTriggered(InputAction action)
+        private DriveIntentState CaptureIntentState()
+        {
+            var triggered = new bool[Enum.GetValues(typeof(DriveIntent)).Length];
+            foreach (var pair in _intentBindings)
+                triggered[(int)pair.Key] = EvaluateIntentTrigger(pair.Key);
+
+            var steering = ComputeSteering();
+            var throttle = ComputeThrottle();
+            var brake = ComputeBrake();
+            var clutch = ComputeClutch();
+
+            // Steering is derived from the left/right mappings.
+            triggered[(int)DriveIntent.Steering] = steering != 0;
+
+            return new DriveIntentState(steering, throttle, brake, clutch, triggered);
+        }
+
+        private bool EvaluateIntentTrigger(DriveIntent intent)
+        {
+            if (intent == DriveIntent.Horn)
+                return EvaluateHornIntentTrigger();
+
+            return EvaluateIntentTriggerCore(intent);
+        }
+
+        private bool EvaluateHornIntentTrigger()
+        {
+            if (EvaluateIntentTriggerCore(DriveIntent.Horn))
+                return true;
+            if (!_pausedHornInputAllowed || _overlayInputBlocked)
+                return false;
+
+            var meta = GetIntentMeta(DriveIntent.Horn);
+            return IsIntentActiveOnKeyboard(DriveIntent.Horn, meta)
+                || IsIntentActiveOnController(DriveIntent.Horn, meta);
+        }
+
+        private bool EvaluateIntentTriggerCore(DriveIntent intent)
         {
             if (_overlayInputBlocked)
                 return false;
-            var meta = GetActionMeta(action);
+
+            var meta = GetIntentMeta(intent);
             if (!IsScopeEnabled(meta.Scope))
                 return false;
 
-            var keyboard = IsActionActiveOnKeyboard(action, meta);
-            var controller = IsActionActiveOnController(action, meta);
+            var keyboard = IsIntentActiveOnKeyboard(intent, meta);
+            var controller = IsIntentActiveOnController(intent, meta);
             return keyboard || controller;
         }
 
-        private bool IsActionActiveOnKeyboard(InputAction action, InputActionMeta meta)
+        private bool IsIntentActiveOnKeyboard(DriveIntent intent, DriveIntentMeta meta)
         {
             if (!UseKeyboard)
                 return false;
 
-            var key = GetKeyMapping(action);
+            var key = GetKeyMapping(intent);
             if (key == Key.Unknown)
                 return false;
 
@@ -151,12 +150,12 @@ namespace TopSpeed.Input
             return active;
         }
 
-        private bool IsActionActiveOnController(InputAction action, InputActionMeta meta)
+        private bool IsIntentActiveOnController(DriveIntent intent, DriveIntentMeta meta)
         {
             if (!UseController)
                 return false;
 
-            var axis = GetAxisMapping(action);
+            var axis = GetAxisMapping(intent);
             if (axis == AxisOrButton.AxisNone)
                 return false;
 
@@ -175,15 +174,12 @@ namespace TopSpeed.Input
             };
         }
 
-        private InputActionMeta GetActionMeta(InputAction action)
+        private DriveIntentMeta GetIntentMeta(DriveIntent intent)
         {
-            if (_actionBindings.TryGetValue(action, out var binding))
+            if (_intentBindings.TryGetValue(intent, out var binding))
                 return binding.Meta;
 
-            return new InputActionMeta(InputScope.Auxiliary, TriggerMode.Press, TriggerMode.Press);
+            return new DriveIntentMeta(InputScope.Auxiliary, TriggerMode.Press, TriggerMode.Press);
         }
     }
 }
-
-
-

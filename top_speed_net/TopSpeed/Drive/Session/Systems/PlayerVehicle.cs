@@ -77,7 +77,7 @@ namespace TopSpeed.Drive.Session.Systems
             if (_car.Gear == previousGear)
                 return;
 
-            if (!_input.GetGearUp() && !_input.GetGearDown())
+            if (!_input.Intents.IsTriggered(DriveIntent.GearUp) && !_input.Intents.IsTriggered(DriveIntent.GearDown))
                 return;
 
             _speakText(SessionText.FormatGearCode(_car));

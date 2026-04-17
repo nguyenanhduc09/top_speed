@@ -13,11 +13,11 @@ using SdlWindowFlags = TS.Sdl.Video.WindowFlags;
 
 namespace TopSpeed.Windowing.Sdl
 {
-    internal sealed class WindowHost : IWindowHost, ITextInputService, IGestureEventSource
+    internal sealed class WindowHost : IWindowHost, ITextInputService, IGestureEventSource, ITouchZoneGestureEventSource
     {
         private static readonly InitFlags RequiredInit = InitFlags.Video | InitFlags.Events | InitFlags.Sensor;
         private readonly object _sync = new object();
-        private readonly GestureRecognizer _gestureRecognizer;
+        private readonly TouchZoneRouter _touchZoneRouter;
         private readonly Queue<TextInputResult> _textResults;
         private readonly StringBuilder _textInputBuffer;
         private IntPtr _window;
@@ -32,13 +32,15 @@ namespace TopSpeed.Windowing.Sdl
         public event Action? Loaded;
         public event Action? Closed;
         public event Action<GestureEvent>? GestureRaised;
+        public event Action<TouchZoneGestureEvent>? TouchZoneGestureRaised;
 
         public IntPtr NativeHandle => _window;
 
         public WindowHost()
         {
-            _gestureRecognizer = new GestureRecognizer(BuildGestureOptions());
-            _gestureRecognizer.Raised += OnGestureRaised;
+            var recognizer = new GestureRecognizer(BuildGestureOptions());
+            _touchZoneRouter = new TouchZoneRouter(recognizer);
+            _touchZoneRouter.GestureRaised += OnTouchZoneGestureRaised;
             _textResults = new Queue<TextInputResult>();
             _textInputBuffer = new StringBuilder(128);
         }
@@ -60,7 +62,7 @@ namespace TopSpeed.Windowing.Sdl
             while (_running && !_closeRequested && !_disposed)
             {
                 PumpEvents();
-                _gestureRecognizer.Update();
+                _touchZoneRouter.Update();
                 Thread.Sleep(4);
             }
 
@@ -72,6 +74,21 @@ namespace TopSpeed.Windowing.Sdl
         {
             _closeRequested = true;
             _running = false;
+        }
+
+        public void SetTouchZones(IReadOnlyList<TouchZone> zones)
+        {
+            if (zones == null)
+                throw new ArgumentNullException(nameof(zones));
+
+            _touchZoneRouter.ClearZones();
+            for (var i = 0; i < zones.Count; i++)
+                _touchZoneRouter.SetZone(zones[i]);
+        }
+
+        public void ClearTouchZones()
+        {
+            _touchZoneRouter.ClearZones();
         }
 
         public void ShowTextInput(string? initialText)
@@ -136,7 +153,8 @@ namespace TopSpeed.Windowing.Sdl
             _running = false;
             _closeRequested = true;
             HideTextInput();
-            _gestureRecognizer.Raised -= OnGestureRaised;
+            _touchZoneRouter.GestureRaised -= OnTouchZoneGestureRaised;
+            _touchZoneRouter.Dispose();
 
             if (_window != IntPtr.Zero)
             {
@@ -188,7 +206,7 @@ namespace TopSpeed.Windowing.Sdl
                     case EventType.FingerMotion:
                     case EventType.FingerUp:
                     case EventType.FingerCanceled:
-                        _gestureRecognizer.Process(value);
+                        _touchZoneRouter.Process(value);
                         break;
 
                     case EventType.TextInput:
@@ -261,9 +279,10 @@ namespace TopSpeed.Windowing.Sdl
             return eventWindowId == 0 || _windowId == 0 || _windowId == eventWindowId;
         }
 
-        private void OnGestureRaised(GestureEvent value)
+        private void OnTouchZoneGestureRaised(TouchZoneGestureEvent value)
         {
-            GestureRaised?.Invoke(value);
+            GestureRaised?.Invoke(value.Gesture);
+            TouchZoneGestureRaised?.Invoke(value);
         }
 
         private static string ResolveWindowTitle()

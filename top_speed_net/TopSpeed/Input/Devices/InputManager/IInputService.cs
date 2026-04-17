@@ -22,8 +22,13 @@ namespace TopSpeed.Input
         bool IsDown(Key key);
         bool WasPressed(Key key);
         void SubmitGesture(in GestureEvent value);
+        void SubmitTouchZoneGesture(in TouchZoneGestureEvent value);
         bool WasGesturePressed(GestureIntent intent);
+        bool WasZoneGesturePressed(GestureIntent intent, string zoneId);
+        void SetTouchZones(IReadOnlyList<TouchZone> zones);
+        void ClearTouchZones();
         bool TryGetControllerState(out State state);
+        DriveInputFrame CaptureDriveInputFrame();
         void SetDeviceMode(InputDeviceMode mode);
         bool TryGetPendingControllerChoices(out IReadOnlyList<Choice> choices);
         bool TrySelectController(Guid instanceGuid);

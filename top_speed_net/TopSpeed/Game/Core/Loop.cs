@@ -5,10 +5,7 @@ namespace TopSpeed.Game
         public void Update(float deltaSeconds)
         {
             _input.Update();
-            if (_input.TryGetControllerState(out var controller))
-                _driveInput.Run(_input.Current, controller, deltaSeconds, _input.ActiveControllerIsRacingWheel);
-            else
-                _driveInput.Run(_input.Current, deltaSeconds);
+            _driveInput.Run(_input.CaptureDriveInputFrame(), deltaSeconds);
 
             TryShowDeviceChoiceDialog();
 

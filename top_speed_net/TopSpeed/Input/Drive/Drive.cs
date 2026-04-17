@@ -5,7 +5,7 @@ namespace TopSpeed.Input
 {
     internal sealed partial class DriveInput
     {
-        public int GetSteering()
+        private int ComputeSteering()
         {
             if (!_allowDrivingInput || _overlayInputBlocked)
                 return 0;
@@ -13,8 +13,8 @@ namespace TopSpeed.Input
             var controllerSteer = 0;
             if (UseController)
             {
-                var left = ApplySteeringDeadZone(GetAxis(_left));
-                var right = ApplySteeringDeadZone(GetAxis(_right));
+                var left = ApplySteeringDeadZone(ResolveSteerLeftAxis());
+                var right = ApplySteeringDeadZone(ResolveSteerRightAxis());
                 controllerSteer = left != 0 ? -left : right;
             }
 
@@ -28,7 +28,17 @@ namespace TopSpeed.Input
             return Math.Abs(keyboardSteer) > Math.Abs(controllerSteer) ? keyboardSteer : controllerSteer;
         }
 
-        public int GetThrottle()
+        private int ResolveSteerLeftAxis()
+        {
+            return UseController ? GetAxis(_left) : 0;
+        }
+
+        private int ResolveSteerRightAxis()
+        {
+            return UseController ? GetAxis(_right) : 0;
+        }
+
+        private int ComputeThrottle()
         {
             if (!_allowDrivingInput || _overlayInputBlocked)
                 return 0;
@@ -44,7 +54,7 @@ namespace TopSpeed.Input
             return Math.Max(controllerThrottle, keyboardThrottle);
         }
 
-        public int GetBrake()
+        private int ComputeBrake()
         {
             if (!_allowDrivingInput || _overlayInputBlocked)
                 return 0;
@@ -60,7 +70,7 @@ namespace TopSpeed.Input
             return Math.Min(controllerBrake, keyboardBrake);
         }
 
-        public int GetClutch()
+        private int ComputeClutch()
         {
             if (!_allowDrivingInput || _overlayInputBlocked)
                 return 0;

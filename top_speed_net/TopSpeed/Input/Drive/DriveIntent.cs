@@ -1,7 +1,8 @@
 namespace TopSpeed.Input
 {
-    internal enum InputAction
+    internal enum DriveIntent
     {
+        Steering,
         SteerLeft,
         SteerRight,
         Throttle,

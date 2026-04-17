@@ -20,7 +20,9 @@ namespace TopSpeed.Input
         private readonly bool[] _keyLatch;
         private readonly object _gestureSync;
         private readonly Dictionary<GestureIntent, int> _gesturePressCounts;
+        private readonly Dictionary<ZoneGestureKey, int> _zoneGesturePressCounts;
         private readonly IGestureEventSource? _gestureEventSource;
+        private readonly ITouchZoneGestureEventSource? _touchZoneGestureEventSource;
         private readonly string? _controllerBackendUnavailableMessage;
         private bool _suspended;
         private bool _menuBackLatched;
@@ -73,9 +75,13 @@ namespace TopSpeed.Input
             _keyLatch = new bool[256];
             _gestureSync = new object();
             _gesturePressCounts = new Dictionary<GestureIntent, int>();
+            _zoneGesturePressCounts = new Dictionary<ZoneGestureKey, int>();
             _gestureEventSource = gestureEventSource;
+            _touchZoneGestureEventSource = gestureEventSource as ITouchZoneGestureEventSource;
             if (_gestureEventSource != null)
                 _gestureEventSource.GestureRaised += OnGestureRaised;
+            if (_touchZoneGestureEventSource != null)
+                _touchZoneGestureEventSource.TouchZoneGestureRaised += OnTouchZoneGestureRaised;
             _controllerBackend.NoControllerDetected += OnNoControllerDetected;
         }
 
@@ -88,6 +94,7 @@ namespace TopSpeed.Input
             _keyLatch = new bool[256];
             _gestureSync = new object();
             _gesturePressCounts = new Dictionary<GestureIntent, int>();
+            _zoneGesturePressCounts = new Dictionary<ZoneGestureKey, int>();
             _controllerBackend.NoControllerDetected += OnNoControllerDetected;
         }
 
@@ -125,6 +132,41 @@ namespace TopSpeed.Input
         private void OnGestureRaised(GestureEvent value)
         {
             SubmitGesture(value);
+        }
+
+        private void OnTouchZoneGestureRaised(TouchZoneGestureEvent value)
+        {
+            SubmitTouchZoneGesture(value);
+        }
+
+        private readonly struct ZoneGestureKey : IEquatable<ZoneGestureKey>
+        {
+            public ZoneGestureKey(GestureIntent intent, string zoneId)
+            {
+                Intent = intent;
+                ZoneId = zoneId;
+            }
+
+            public GestureIntent Intent { get; }
+            public string ZoneId { get; }
+
+            public bool Equals(ZoneGestureKey other)
+            {
+                return Intent == other.Intent && string.Equals(ZoneId, other.ZoneId, StringComparison.Ordinal);
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return obj is ZoneGestureKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((int)Intent * 397) ^ (ZoneId != null ? StringComparer.Ordinal.GetHashCode(ZoneId) : 0);
+                }
+            }
         }
     }
 }

@@ -126,7 +126,7 @@ namespace TopSpeed.Drive.Multiplayer.Session.Systems
                 return;
             if (_car.Gear == previousGear)
                 return;
-            if (!_input.GetGearUp() && !_input.GetGearDown())
+            if (!_input.Intents.IsTriggered(DriveIntent.GearUp) && !_input.Intents.IsTriggered(DriveIntent.GearDown))
                 return;
 
             _speakText(TopSpeed.Drive.Session.SessionText.FormatGearCode(_car));

@@ -27,6 +27,8 @@ namespace TopSpeed.Input
             _controllerBackend.NoControllerDetected -= OnNoControllerDetected;
             if (_gestureEventSource != null)
                 _gestureEventSource.GestureRaised -= OnGestureRaised;
+            if (_touchZoneGestureEventSource != null)
+                _touchZoneGestureEventSource.TouchZoneGestureRaised -= OnTouchZoneGestureRaised;
             SafeRelease(() => _controllerBackend.Dispose());
             SafeRelease(() => _keyboardBackend.Dispose());
         }

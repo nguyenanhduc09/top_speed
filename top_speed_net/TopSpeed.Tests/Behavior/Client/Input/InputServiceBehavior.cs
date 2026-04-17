@@ -81,6 +81,68 @@ public sealed class InputServiceBehaviorTests
     }
 
     [Fact]
+    public void WasZoneGesturePressed_ConsumesMappedZoneGestureOnce()
+    {
+        var (service, _, _) = InputHarness.CreateService();
+        service.SubmitTouchZoneGesture(new TouchZoneGestureEvent(
+            new GestureEvent
+            {
+                Kind = GestureKind.Swipe,
+                FingerCount = 2,
+                Direction = SwipeDirection.Up
+            },
+            new TouchZoneHit("drive_bottom", priority: 0, assigned: true)));
+
+        service.WasZoneGesturePressed(GestureIntent.TwoFingerSwipeUp, "drive_bottom").Should().BeTrue();
+        service.WasZoneGesturePressed(GestureIntent.TwoFingerSwipeUp, "drive_bottom").Should().BeFalse();
+        service.WasGesturePressed(GestureIntent.TwoFingerSwipeUp).Should().BeFalse();
+    }
+
+    [Fact]
+    public void SubmitTouchZoneGesture_IgnoresUnassignedZone()
+    {
+        var (service, _, _) = InputHarness.CreateService();
+        service.SubmitTouchZoneGesture(new TouchZoneGestureEvent(
+            new GestureEvent
+            {
+                Kind = GestureKind.DoubleTap
+            },
+            TouchZoneHit.None));
+
+        service.WasZoneGesturePressed(GestureIntent.DoubleTap, "info_top").Should().BeFalse();
+    }
+
+    [Fact]
+    public void SetTouchZones_ForServiceWithoutZoneSource_IsNoOp()
+    {
+        var (service, _, _) = InputHarness.CreateService();
+        var zones = TouchZoneLayout.Horizontal("top", "bottom");
+
+        var act = () => service.SetTouchZones(zones);
+        var clear = () => service.ClearTouchZones();
+
+        act.Should().NotThrow();
+        clear.Should().NotThrow();
+    }
+
+    [Fact]
+    public void ResetState_ClearsZoneGestureLatch()
+    {
+        var (service, _, _) = InputHarness.CreateService();
+        service.SubmitTouchZoneGesture(new TouchZoneGestureEvent(
+            new GestureEvent
+            {
+                Kind = GestureKind.Swipe,
+                Direction = SwipeDirection.Down
+            },
+            new TouchZoneHit("menu_top", priority: 0, assigned: true)));
+
+        service.ResetState();
+
+        service.WasZoneGesturePressed(GestureIntent.SwipeDown, "menu_top").Should().BeFalse();
+    }
+
+    [Fact]
     public void ResetState_ClearsCurrentKeys()
     {
         var (service, keyboard, _) = InputHarness.CreateService();
