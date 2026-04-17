@@ -49,6 +49,18 @@ namespace TopSpeed.Menu
                     nextMenuId: ShortcutGroupsMenuId,
                     onActivate: RebuildShortcutGroupsMenu)
             };
+
+            if (InteractionHints.IsAndroidPlatform())
+            {
+                items.Insert(3,
+                    new CheckBox(
+                        LocalizationService.Mark("Use motion sensors for steering"),
+                        () => _settings.AndroidUseMotionSteering,
+                        value => _settingsActions.UpdateSetting(() => _settings.AndroidUseMotionSteering = value),
+                        hint: HintForPlatform(
+                            LocalizationService.Mark("When checked, steering uses Android motion sensors instead of drag gestures."),
+                            LocalizationService.Mark("When checked, steering uses Android motion sensors instead of drag gestures. Swipe up to toggle."))));
+            }
             return BackMenu("options_controls", items);
         }
 

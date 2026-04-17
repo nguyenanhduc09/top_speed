@@ -93,6 +93,9 @@ namespace TopSpeed.Core.Settings
         [DataMember(Name = "deviceMode")]
         public int? DeviceMode { get; set; }
 
+        [DataMember(Name = "androidUseMotionSteering")]
+        public bool? AndroidUseMotionSteering { get; set; }
+
         [DataMember(Name = "keyboard")]
         public SettingsKeyboardDocument? Keyboard { get; set; }
 

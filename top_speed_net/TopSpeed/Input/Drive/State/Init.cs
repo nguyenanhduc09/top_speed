@@ -33,6 +33,7 @@ namespace TopSpeed.Input
             _overlayInputBlocked = false;
             _pausedHornInputAllowed = false;
             _controllerIsRacingWheel = false;
+            ClearTouchInputState();
             ResetPedalCalibration();
 
             _kbPlayer1 = Key.F1;

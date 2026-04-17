@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TopSpeed.Input.Devices.Controller;
+using TS.Sdl.Events;
 using TS.Sdl.Input;
 
 namespace TopSpeed.Input
@@ -119,6 +120,61 @@ namespace TopSpeed.Input
             }
         }
 
+        public bool TryGetTouchZoneState(string zoneId, out TouchZoneState state)
+        {
+            state = TouchZoneState.Inactive;
+            if (_suspended || string.IsNullOrWhiteSpace(zoneId))
+                return false;
+
+            var normalizedZoneId = zoneId.Trim();
+            var hasMatch = false;
+            var fingerCount = 0;
+            var primaryStartX = 0f;
+            var primaryStartY = 0f;
+            var primaryX = 0f;
+            var primaryY = 0f;
+            var primaryPressure = 0f;
+            var primaryStartTimestamp = 0UL;
+            var primaryTimestamp = 0UL;
+
+            lock (_gestureSync)
+            {
+                foreach (var touch in _zoneTouchPoints.Values)
+                {
+                    if (!string.Equals(touch.ZoneId, normalizedZoneId, System.StringComparison.Ordinal))
+                        continue;
+
+                    fingerCount++;
+                    if (!hasMatch || touch.StartTimestamp < primaryStartTimestamp)
+                    {
+                        hasMatch = true;
+                        primaryStartX = touch.StartX;
+                        primaryStartY = touch.StartY;
+                        primaryX = touch.X;
+                        primaryY = touch.Y;
+                        primaryPressure = touch.Pressure;
+                        primaryStartTimestamp = touch.StartTimestamp;
+                        primaryTimestamp = touch.Timestamp;
+                    }
+                }
+            }
+
+            if (!hasMatch)
+                return false;
+
+            state = new TouchZoneState(
+                isActive: true,
+                fingerCount,
+                primaryStartX,
+                primaryStartY,
+                primaryX,
+                primaryY,
+                primaryPressure,
+                primaryStartTimestamp,
+                primaryTimestamp);
+            return true;
+        }
+
         public void SetTouchZones(IReadOnlyList<TouchZone> zones)
         {
             if (_touchZoneGestureEventSource == null || zones == null)
@@ -130,6 +186,10 @@ namespace TopSpeed.Input
         public void ClearTouchZones()
         {
             _touchZoneGestureEventSource?.ClearTouchZones();
+            lock (_gestureSync)
+            {
+                _zoneTouchPoints.Clear();
+            }
         }
 
         public bool TryGetControllerState(out State state)
@@ -153,6 +213,56 @@ namespace TopSpeed.Input
             {
                 _gesturePressCounts.Clear();
                 _zoneGesturePressCounts.Clear();
+                _zoneTouchPoints.Clear();
+            }
+        }
+
+        private void SubmitTouchZoneTouch(in TouchZoneTouchEvent value)
+        {
+            if (_suspended || _disposed)
+                return;
+
+            var key = new TouchPointKey(value.TouchId, value.FingerId);
+            var isAssigned = value.Zone.IsAssigned && !string.IsNullOrWhiteSpace(value.Zone.ZoneId);
+            var type = value.Type;
+            lock (_gestureSync)
+            {
+                if (type == EventType.FingerUp || type == EventType.FingerCanceled)
+                {
+                    _zoneTouchPoints.Remove(key);
+                    return;
+                }
+
+                if (!isAssigned)
+                {
+                    _zoneTouchPoints.Remove(key);
+                    return;
+                }
+
+                var zoneId = value.Zone.ZoneId!.Trim();
+                if (_zoneTouchPoints.TryGetValue(key, out var existing))
+                {
+                    _zoneTouchPoints[key] = new TouchPointState(
+                        zoneId,
+                        existing.StartX,
+                        existing.StartY,
+                        value.X,
+                        value.Y,
+                        value.Pressure,
+                        existing.StartTimestamp,
+                        value.Timestamp);
+                    return;
+                }
+
+                _zoneTouchPoints[key] = new TouchPointState(
+                    zoneId,
+                    value.X,
+                    value.Y,
+                    value.X,
+                    value.Y,
+                    value.Pressure,
+                    value.Timestamp,
+                    value.Timestamp);
             }
         }
     }

@@ -13,7 +13,7 @@ using SdlWindowFlags = TS.Sdl.Video.WindowFlags;
 
 namespace TopSpeed.Windowing.Sdl
 {
-    internal sealed class WindowHost : IWindowHost, ITextInputService, IGestureEventSource, ITouchZoneGestureEventSource
+    internal sealed class WindowHost : IWindowHost, ITextInputService, IGestureEventSource, ITouchZoneGestureEventSource, ITouchZoneTouchEventSource
     {
         private static readonly InitFlags RequiredInit = InitFlags.Video | InitFlags.Events | InitFlags.Sensor;
         private readonly object _sync = new object();
@@ -33,6 +33,7 @@ namespace TopSpeed.Windowing.Sdl
         public event Action? Closed;
         public event Action<GestureEvent>? GestureRaised;
         public event Action<TouchZoneGestureEvent>? TouchZoneGestureRaised;
+        public event Action<TouchZoneTouchEvent>? TouchZoneTouchRaised;
 
         public IntPtr NativeHandle => _window;
 
@@ -40,6 +41,7 @@ namespace TopSpeed.Windowing.Sdl
         {
             var recognizer = new GestureRecognizer(BuildGestureOptions());
             _touchZoneRouter = new TouchZoneRouter(recognizer);
+            _touchZoneRouter.TouchRaised += OnTouchZoneTouchRaised;
             _touchZoneRouter.GestureRaised += OnTouchZoneGestureRaised;
             _textResults = new Queue<TextInputResult>();
             _textInputBuffer = new StringBuilder(128);
@@ -153,6 +155,7 @@ namespace TopSpeed.Windowing.Sdl
             _running = false;
             _closeRequested = true;
             HideTextInput();
+            _touchZoneRouter.TouchRaised -= OnTouchZoneTouchRaised;
             _touchZoneRouter.GestureRaised -= OnTouchZoneGestureRaised;
             _touchZoneRouter.Dispose();
 
@@ -283,6 +286,11 @@ namespace TopSpeed.Windowing.Sdl
         {
             GestureRaised?.Invoke(value.Gesture);
             TouchZoneGestureRaised?.Invoke(value);
+        }
+
+        private void OnTouchZoneTouchRaised(TouchZoneTouchEvent value)
+        {
+            TouchZoneTouchRaised?.Invoke(value);
         }
 
         private static string ResolveWindowTitle()

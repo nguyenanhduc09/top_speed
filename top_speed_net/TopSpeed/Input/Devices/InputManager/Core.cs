@@ -21,8 +21,10 @@ namespace TopSpeed.Input
         private readonly object _gestureSync;
         private readonly Dictionary<GestureIntent, int> _gesturePressCounts;
         private readonly Dictionary<ZoneGestureKey, int> _zoneGesturePressCounts;
+        private readonly Dictionary<TouchPointKey, TouchPointState> _zoneTouchPoints;
         private readonly IGestureEventSource? _gestureEventSource;
         private readonly ITouchZoneGestureEventSource? _touchZoneGestureEventSource;
+        private readonly ITouchZoneTouchEventSource? _touchZoneTouchEventSource;
         private readonly string? _controllerBackendUnavailableMessage;
         private bool _suspended;
         private bool _menuBackLatched;
@@ -76,12 +78,16 @@ namespace TopSpeed.Input
             _gestureSync = new object();
             _gesturePressCounts = new Dictionary<GestureIntent, int>();
             _zoneGesturePressCounts = new Dictionary<ZoneGestureKey, int>();
+            _zoneTouchPoints = new Dictionary<TouchPointKey, TouchPointState>();
             _gestureEventSource = gestureEventSource;
             _touchZoneGestureEventSource = gestureEventSource as ITouchZoneGestureEventSource;
+            _touchZoneTouchEventSource = gestureEventSource as ITouchZoneTouchEventSource;
             if (_gestureEventSource != null)
                 _gestureEventSource.GestureRaised += OnGestureRaised;
             if (_touchZoneGestureEventSource != null)
                 _touchZoneGestureEventSource.TouchZoneGestureRaised += OnTouchZoneGestureRaised;
+            if (_touchZoneTouchEventSource != null)
+                _touchZoneTouchEventSource.TouchZoneTouchRaised += OnTouchZoneTouchRaised;
             _controllerBackend.NoControllerDetected += OnNoControllerDetected;
         }
 
@@ -95,6 +101,7 @@ namespace TopSpeed.Input
             _gestureSync = new object();
             _gesturePressCounts = new Dictionary<GestureIntent, int>();
             _zoneGesturePressCounts = new Dictionary<ZoneGestureKey, int>();
+            _zoneTouchPoints = new Dictionary<TouchPointKey, TouchPointState>();
             _controllerBackend.NoControllerDetected += OnNoControllerDetected;
         }
 
@@ -139,6 +146,11 @@ namespace TopSpeed.Input
             SubmitTouchZoneGesture(value);
         }
 
+        private void OnTouchZoneTouchRaised(TouchZoneTouchEvent value)
+        {
+            SubmitTouchZoneTouch(value);
+        }
+
         private readonly struct ZoneGestureKey : IEquatable<ZoneGestureKey>
         {
             public ZoneGestureKey(GestureIntent intent, string zoneId)
@@ -167,6 +179,68 @@ namespace TopSpeed.Input
                     return ((int)Intent * 397) ^ (ZoneId != null ? StringComparer.Ordinal.GetHashCode(ZoneId) : 0);
                 }
             }
+        }
+
+        private readonly struct TouchPointKey : IEquatable<TouchPointKey>
+        {
+            public TouchPointKey(ulong touchId, ulong fingerId)
+            {
+                TouchId = touchId;
+                FingerId = fingerId;
+            }
+
+            public ulong TouchId { get; }
+            public ulong FingerId { get; }
+
+            public bool Equals(TouchPointKey other)
+            {
+                return TouchId == other.TouchId && FingerId == other.FingerId;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return obj is TouchPointKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (TouchId.GetHashCode() * 397) ^ FingerId.GetHashCode();
+                }
+            }
+        }
+
+        private readonly struct TouchPointState
+        {
+            public TouchPointState(
+                string zoneId,
+                float startX,
+                float startY,
+                float x,
+                float y,
+                float pressure,
+                ulong startTimestamp,
+                ulong timestamp)
+            {
+                ZoneId = zoneId;
+                StartX = startX;
+                StartY = startY;
+                X = x;
+                Y = y;
+                Pressure = pressure;
+                StartTimestamp = startTimestamp;
+                Timestamp = timestamp;
+            }
+
+            public string ZoneId { get; }
+            public float StartX { get; }
+            public float StartY { get; }
+            public float X { get; }
+            public float Y { get; }
+            public float Pressure { get; }
+            public ulong StartTimestamp { get; }
+            public ulong Timestamp { get; }
         }
     }
 }

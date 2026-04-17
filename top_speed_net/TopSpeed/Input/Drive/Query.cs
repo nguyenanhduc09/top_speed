@@ -110,12 +110,15 @@ namespace TopSpeed.Input
         {
             if (EvaluateIntentTriggerCore(DriveIntent.Horn))
                 return true;
+            if (_touchHorn && _allowDrivingInput && !_overlayInputBlocked)
+                return true;
             if (!_pausedHornInputAllowed || _overlayInputBlocked)
                 return false;
 
             var meta = GetIntentMeta(DriveIntent.Horn);
             return IsIntentActiveOnKeyboard(DriveIntent.Horn, meta)
-                || IsIntentActiveOnController(DriveIntent.Horn, meta);
+                || IsIntentActiveOnController(DriveIntent.Horn, meta)
+                || _touchHorn;
         }
 
         private bool EvaluateIntentTriggerCore(DriveIntent intent)
@@ -129,7 +132,8 @@ namespace TopSpeed.Input
 
             var keyboard = IsIntentActiveOnKeyboard(intent, meta);
             var controller = IsIntentActiveOnController(intent, meta);
-            return keyboard || controller;
+            var touch = IsIntentActiveOnTouch(intent, meta);
+            return keyboard || controller || touch;
         }
 
         private bool IsIntentActiveOnKeyboard(DriveIntent intent, DriveIntentMeta meta)
@@ -172,6 +176,34 @@ namespace TopSpeed.Input
                 InputScope.Auxiliary => _allowAuxiliaryInput,
                 _ => false
             };
+        }
+
+        private bool IsIntentActiveOnTouch(DriveIntent intent, DriveIntentMeta meta)
+        {
+            if (!IsScopeEnabled(meta.Scope))
+                return false;
+
+            switch (intent)
+            {
+                case DriveIntent.SteerLeft:
+                    return _touchSteering < 0;
+                case DriveIntent.SteerRight:
+                    return _touchSteering > 0;
+                case DriveIntent.Throttle:
+                    return _touchThrottle > 0;
+                case DriveIntent.Brake:
+                    return _touchBrake < 0;
+                case DriveIntent.Clutch:
+                    return _touchClutch > 0;
+                case DriveIntent.GearUp:
+                    return _touchGearUp;
+                case DriveIntent.GearDown:
+                    return _touchGearDown;
+                case DriveIntent.StartEngine:
+                    return _touchStartEngine;
+                default:
+                    return false;
+            }
         }
 
         private DriveIntentMeta GetIntentMeta(DriveIntent intent)

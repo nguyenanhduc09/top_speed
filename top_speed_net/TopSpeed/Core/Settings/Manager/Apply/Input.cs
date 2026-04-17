@@ -15,6 +15,8 @@ namespace TopSpeed.Core.Settings
 
             settings.KeyboardProgressiveRate = ReadEnum(input.KeyboardProgressiveRate, settings.KeyboardProgressiveRate, "input.keyboardProgressiveRate", issues);
             settings.DeviceMode = ReadEnum(input.DeviceMode, settings.DeviceMode, "input.deviceMode", issues);
+            if (input.AndroidUseMotionSteering.HasValue)
+                settings.AndroidUseMotionSteering = input.AndroidUseMotionSteering.Value;
 
             if (input.Keyboard == null)
                 issues.Add(new SettingsIssue(

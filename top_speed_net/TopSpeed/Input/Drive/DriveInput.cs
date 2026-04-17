@@ -142,6 +142,14 @@ namespace TopSpeed.Input
         private float _simBrake;
         private float _simSteer;
         private float _simClutch;
+        private int _touchSteering;
+        private int _touchThrottle;
+        private int _touchBrake;
+        private int _touchClutch;
+        private bool _touchHorn;
+        private bool _touchGearUp;
+        private bool _touchGearDown;
+        private bool _touchStartEngine;
         private DriveIntentState _intentState;
         private bool UseController => _deviceMode != InputDeviceMode.Keyboard && _controllerAvailable;
         private bool UseKeyboard => _deviceMode != InputDeviceMode.Controller || !_controllerAvailable;

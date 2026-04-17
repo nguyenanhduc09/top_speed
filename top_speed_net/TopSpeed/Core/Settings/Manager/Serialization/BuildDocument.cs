@@ -37,6 +37,7 @@ namespace TopSpeed.Core.Settings
                     ForceFeedback = settings.ForceFeedback,
                     KeyboardProgressiveRate = (int)settings.KeyboardProgressiveRate,
                     DeviceMode = (int)settings.DeviceMode,
+                    AndroidUseMotionSteering = settings.AndroidUseMotionSteering,
                     Keyboard = new SettingsKeyboardDocument
                     {
                         Bindings = BuildKeyboardBindings(settings.KeyboardBindings)

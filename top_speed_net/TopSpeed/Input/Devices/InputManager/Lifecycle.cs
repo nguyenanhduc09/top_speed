@@ -29,6 +29,8 @@ namespace TopSpeed.Input
                 _gestureEventSource.GestureRaised -= OnGestureRaised;
             if (_touchZoneGestureEventSource != null)
                 _touchZoneGestureEventSource.TouchZoneGestureRaised -= OnTouchZoneGestureRaised;
+            if (_touchZoneTouchEventSource != null)
+                _touchZoneTouchEventSource.TouchZoneTouchRaised -= OnTouchZoneTouchRaised;
             SafeRelease(() => _controllerBackend.Dispose());
             SafeRelease(() => _keyboardBackend.Dispose());
         }

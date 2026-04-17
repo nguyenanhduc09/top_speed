@@ -25,6 +25,7 @@ namespace TopSpeed.Input
         void SubmitTouchZoneGesture(in TouchZoneGestureEvent value);
         bool WasGesturePressed(GestureIntent intent);
         bool WasZoneGesturePressed(GestureIntent intent, string zoneId);
+        bool TryGetTouchZoneState(string zoneId, out TouchZoneState state);
         void SetTouchZones(IReadOnlyList<TouchZone> zones);
         void ClearTouchZones();
         bool TryGetControllerState(out State state);

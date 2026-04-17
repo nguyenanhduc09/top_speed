@@ -25,7 +25,8 @@ namespace TopSpeed.Input
                 ? (_lastState.IsDown(_kbLeft) ? -100 : (_lastState.IsDown(_kbRight) ? 100 : 0))
                 : (int)(_simSteer * 100f);
 
-            return Math.Abs(keyboardSteer) > Math.Abs(controllerSteer) ? keyboardSteer : controllerSteer;
+            var baseSteering = Math.Abs(keyboardSteer) > Math.Abs(controllerSteer) ? keyboardSteer : controllerSteer;
+            return Math.Abs(_touchSteering) > Math.Abs(baseSteering) ? _touchSteering : baseSteering;
         }
 
         private int ResolveSteerLeftAxis()
@@ -51,7 +52,7 @@ namespace TopSpeed.Input
                 ? (_lastState.IsDown(_kbThrottle) ? 100 : 0)
                 : (int)(_simThrottle * 100f);
 
-            return Math.Max(controllerThrottle, keyboardThrottle);
+            return Math.Max(_touchThrottle, Math.Max(controllerThrottle, keyboardThrottle));
         }
 
         private int ComputeBrake()
@@ -67,7 +68,7 @@ namespace TopSpeed.Input
                 ? (_lastState.IsDown(_kbBrake) ? -100 : 0)
                 : (int)(_simBrake * -100f);
 
-            return Math.Min(controllerBrake, keyboardBrake);
+            return Math.Min(_touchBrake, Math.Min(controllerBrake, keyboardBrake));
         }
 
         private int ComputeClutch()
@@ -77,10 +78,10 @@ namespace TopSpeed.Input
 
             var controllerClutch = UseController ? GetPedalAxis(_clutch, _settings.ControllerClutchInvertMode) : 0;
             if (!UseKeyboard)
-                return controllerClutch;
+                return Math.Max(_touchClutch, controllerClutch);
 
             var keyboardClutch = (int)Math.Round(_simClutch * 100f);
-            return Math.Max(controllerClutch, keyboardClutch);
+            return Math.Max(_touchClutch, Math.Max(controllerClutch, keyboardClutch));
         }
 
         private int ApplySteeringDeadZone(int value)

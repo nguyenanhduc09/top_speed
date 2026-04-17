@@ -7,6 +7,21 @@ namespace TopSpeed.Menu
     {
         private static readonly OSPlatform Android = OSPlatform.Create("ANDROID");
 
+        public static bool IsAndroidPlatform()
+        {
+#if NETFRAMEWORK
+            return false;
+#else
+            if (OperatingSystem.IsAndroid())
+                return true;
+            if (RuntimeInformation.IsOSPlatform(Android))
+                return true;
+            if (RuntimeInformation.RuntimeIdentifier.StartsWith("android", StringComparison.OrdinalIgnoreCase))
+                return true;
+            return Type.GetType("Android.OS.Build, Mono.Android", throwOnError: false) != null;
+#endif
+        }
+
         public static bool IsTouchPlatform()
         {
 #if NETFRAMEWORK
@@ -19,13 +34,7 @@ namespace TopSpeed.Menu
                 return true;
             }
 
-            if (OperatingSystem.IsAndroid())
-                return true;
-            if (RuntimeInformation.IsOSPlatform(Android))
-                return true;
-            if (RuntimeInformation.RuntimeIdentifier.StartsWith("android", StringComparison.OrdinalIgnoreCase))
-                return true;
-            if (Type.GetType("Android.OS.Build, Mono.Android", throwOnError: false) != null)
+            if (IsAndroidPlatform())
                 return true;
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ANDROID_ROOT")))
                 return true;

@@ -23,6 +23,7 @@ namespace TopSpeed.Input
 
         public bool ForceFeedback { get; set; }
         public KeyboardProgressiveRate KeyboardProgressiveRate { get; set; }
+        public bool AndroidUseMotionSteering { get; set; }
         public InputDeviceMode DeviceMode { get; set; }
 
         public AutomaticInfoMode AutomaticInfo { get; set; }
@@ -107,6 +108,7 @@ namespace TopSpeed.Input
 
             ForceFeedback = false;
             KeyboardProgressiveRate = KeyboardProgressiveRate.Off;
+            AndroidUseMotionSteering = true;
             DeviceMode = InputDeviceMode.Keyboard;
             AutomaticInfo = AutomaticInfoMode.On;
             Copilot = CopilotMode.All;

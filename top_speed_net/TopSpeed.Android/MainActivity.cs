@@ -51,6 +51,8 @@ public class MainActivity : SdlActivityBase
 {
     private const string LogTag = "TopSpeed.Android";
     private string? _assetRoot;
+    private AndroidMotionSteeringSource? _motionSteering;
+    private AndroidSpeechThreadDispatcher? _speechDispatcher;
 
     public MainActivity()
     {
@@ -68,6 +70,10 @@ public class MainActivity : SdlActivityBase
         Window?.AddFlags(WindowManagerFlags.Fullscreen);
         Window?.ClearFlags(WindowManagerFlags.ForceNotFullscreen);
         _assetRoot = EnsureRuntimeAssets();
+        _motionSteering = new AndroidMotionSteeringSource(this);
+        _speechDispatcher = new AndroidSpeechThreadDispatcher();
+        global::TopSpeed.Runtime.MotionSteeringRuntime.SetSource(_motionSteering);
+        global::TopSpeed.Runtime.SpeechThreadRuntime.SetDispatcher(_speechDispatcher);
         base.OnCreate(savedInstanceState);
         ApplyImmersiveMode();
     }
@@ -81,6 +87,11 @@ public class MainActivity : SdlActivityBase
 
     protected override void OnDestroy()
     {
+        global::TopSpeed.Runtime.MotionSteeringRuntime.SetSource(null);
+        global::TopSpeed.Runtime.SpeechThreadRuntime.SetDispatcher(null);
+        _speechDispatcher?.Dispose();
+        _speechDispatcher = null;
+        _motionSteering = null;
         global::TopSpeed.AndroidLauncher.RequestClose();
         base.OnDestroy();
     }

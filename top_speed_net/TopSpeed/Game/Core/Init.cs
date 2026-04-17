@@ -35,7 +35,7 @@ namespace TopSpeed.Game
             _settings.Language = ClientLanguages.ResolveCode(_settings.Language, _clientLanguages);
             LocalizationBootstrap.Configure(_settings.Language, LocalizationBootstrap.ClientCatalogGroup);
             var audio = new AudioManager(_settings.HrtfAudio, _settings.AutoDetectAudioDeviceFormat);
-            var isAndroid = RuntimeInformation.IsOSPlatform(OSPlatform.Create("ANDROID"));
+            _isAndroidPlatform = RuntimeInformation.IsOSPlatform(OSPlatform.Create("ANDROID"));
             var keyboardFactories = new List<IKeyboardBackendFactory>
             {
 #if NETFRAMEWORK
@@ -46,7 +46,7 @@ namespace TopSpeed.Game
                 new TopSpeed.Input.Devices.Keyboard.Backends.Sdl.Factory()
             };
             var controllerFactories = new List<IControllerBackendFactory>();
-            if (!isAndroid)
+            if (!_isAndroidPlatform)
                 controllerFactories.Add(new TopSpeed.Input.Backends.Sdl.Factory());
 
             var backendRegistry = new BackendRegistry(

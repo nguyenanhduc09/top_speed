@@ -5,6 +5,7 @@ namespace TopSpeed.Game
         public void Update(float deltaSeconds)
         {
             _input.Update();
+            UpdateDriveTouchControls(deltaSeconds);
             _driveInput.Run(_input.CaptureDriveInputFrame(), deltaSeconds);
 
             TryShowDeviceChoiceDialog();
