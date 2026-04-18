@@ -53,6 +53,7 @@ public class MainActivity : SdlActivityBase
     private string? _assetRoot;
     private AndroidMotionSteeringSource? _motionSteering;
     private AndroidSpeechThreadDispatcher? _speechDispatcher;
+    private AndroidUpdatePackageInstaller? _updateInstaller;
 
     public MainActivity()
     {
@@ -72,8 +73,10 @@ public class MainActivity : SdlActivityBase
         _assetRoot = EnsureRuntimeAssets();
         _motionSteering = new AndroidMotionSteeringSource(this);
         _speechDispatcher = new AndroidSpeechThreadDispatcher();
+        _updateInstaller = new AndroidUpdatePackageInstaller(this);
         global::TopSpeed.Runtime.MotionSteeringRuntime.SetSource(_motionSteering);
         global::TopSpeed.Runtime.SpeechThreadRuntime.SetDispatcher(_speechDispatcher);
+        global::TopSpeed.Runtime.UpdatePackageRuntime.SetInstaller(_updateInstaller);
         base.OnCreate(savedInstanceState);
         ApplyImmersiveMode();
     }
@@ -89,9 +92,11 @@ public class MainActivity : SdlActivityBase
     {
         global::TopSpeed.Runtime.MotionSteeringRuntime.SetSource(null);
         global::TopSpeed.Runtime.SpeechThreadRuntime.SetDispatcher(null);
+        global::TopSpeed.Runtime.UpdatePackageRuntime.SetInstaller(null);
         _speechDispatcher?.Dispose();
         _speechDispatcher = null;
         _motionSteering = null;
+        _updateInstaller = null;
         global::TopSpeed.AndroidLauncher.RequestClose();
         base.OnDestroy();
     }

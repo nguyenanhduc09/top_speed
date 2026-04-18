@@ -25,6 +25,7 @@
     <PackageReference Include="Concentus" Version="1.1.7" />
     <PackageReference Include="LiteNetLib" Version="1.3.1" />
     <PackageReference Include="GetText.NET" Version="10.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.13.1.1" />
     <AndroidLibrary Include="..\TopSpeed\ThirdParty\android\sdl3-android-classes.jar" Bind="false" />
     <AndroidLibrary Include="..\TopSpeed\ThirdParty\android\prism-release.aar" Bind="false" />
     <AndroidMavenLibrary Include="com.ibm.icu:icu4j" Version="78.1" Repository="Central" Bind="false" />

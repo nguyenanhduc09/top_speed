@@ -32,13 +32,7 @@ namespace TopSpeed.Core.Updates
         public string UpdaterEntryName { get; }
         public string GameEntryName { get; }
 
-        public static UpdateConfig Default { get; } = new UpdateConfig(
-            $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/main/info.json",
-            $"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest",
-            "TopSpeed-{runtime}-Release-v-{version}.zip",
-            ResolveRuntimeAssetTag(),
-            "Updater",
-            "TopSpeed");
+        public static UpdateConfig Default { get; } = CreateDefault();
 
         public static GameVersion CurrentVersion =>
             new GameVersion(
@@ -51,7 +45,20 @@ namespace TopSpeed.Core.Updates
         {
             return AssetTemplate
                 .Replace("{runtime}", RuntimeAssetTag)
-                .Replace("{version}", version ?? string.Empty);
+                .Replace("{version}", version ?? string.Empty)
+                .Replace("{ext}", ResolvePackageExtension(RuntimeAssetTag));
+        }
+
+        private static UpdateConfig CreateDefault()
+        {
+            var runtimeAssetTag = ResolveRuntimeAssetTag();
+            return new UpdateConfig(
+                $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/main/info.json",
+                $"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest",
+                "TopSpeed-{runtime}-Release-v-{version}{ext}",
+                runtimeAssetTag,
+                "Updater",
+                "TopSpeed");
         }
 
         private static string ResolveRuntimeAssetTag()
@@ -64,6 +71,13 @@ namespace TopSpeed.Core.Updates
             {
                 return string.Empty;
             }
+        }
+
+        private static string ResolvePackageExtension(string runtimeAssetTag)
+        {
+            return runtimeAssetTag.StartsWith("android", StringComparison.OrdinalIgnoreCase)
+                ? ".apk"
+                : ".zip";
         }
     }
 }
