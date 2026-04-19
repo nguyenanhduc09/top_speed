@@ -6,6 +6,7 @@ namespace TopSpeed.Game
         {
             _input.Update();
             UpdateDriveTouchControls(deltaSeconds);
+            UpdateMultiplayerMenuTouchControls();
             _driveInput.Run(_input.CaptureDriveInputFrame(), deltaSeconds);
 
             TryShowDeviceChoiceDialog();

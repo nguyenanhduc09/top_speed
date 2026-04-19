@@ -139,6 +139,8 @@ namespace TopSpeed.Menu
             screen.OnClose = onClose;
         }
 
+        public bool IsWrapNavigationEnabled => _wrapNavigation;
+
     }
 }
 
