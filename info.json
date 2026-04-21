@@ -1,12 +1,10 @@
 {
-  "version": "2026.4.15.1",
+  "version": "2026.4.21.1",
   "serverVersion": "2026.4.13.2",
   "changes": [
-    "Fixed a bug where lap count announcements were not being played in multiplayer race.",
-    "Fixed a bug where restarting the vehicle would reset the traveled distance.",
-    "Updated Prism library.",
-    "It is now possible to customize speed-dependent curve announcements to make them slower or faster. 1.8 seconds is the default and is the current behavior.",
-    "Added the ability to specify a default call sign that will be used when connecting to specific servers, or a global call sign that will be prefilled when connecting to any server. If both of those are empty, you'll still get the call sign prompt when connecting but it remains empty."
+    "Android support is finally here.",
+    "Fixed a bug with random vehicle selection",
+    "Fix some translation issues."
   ],
   "serverChanges": [
     "The server for Linux now correctly includes the updater."

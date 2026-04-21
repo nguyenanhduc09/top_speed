@@ -231,10 +231,54 @@ def normalize_key_blocks(text: str) -> str:
     return result
 
 
+def normalize_action_reference_blocks(text: str) -> str:
+    """Preserve action/Desktop/Mobile reference blocks as hard line breaks."""
+    lines = text.splitlines()
+    if not lines:
+        return text
+
+    out = list(lines)
+    in_fence = False
+
+    def with_hard_break(value: str) -> str:
+        return value if value.endswith("  ") else value + "  "
+
+    i = 0
+    while i < len(out):
+        stripped = out[i].strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            i += 1
+            continue
+
+        if in_fence:
+            i += 1
+            continue
+
+        if (
+            i + 2 < len(out)
+            and stripped.endswith(":")
+            and out[i + 1].lstrip().startswith("Desktop:")
+            and out[i + 2].lstrip().startswith("Mobile:")
+        ):
+            out[i] = with_hard_break(out[i])
+            out[i + 1] = with_hard_break(out[i + 1])
+            i += 3
+            continue
+
+        i += 1
+
+    result = "\n".join(out)
+    if text.endswith("\n"):
+        result += "\n"
+    return result
+
+
 def render_markdown(input_path: Path, output_path: Path) -> None:
     text = input_path.read_text(encoding="utf-8-sig")
     text = normalize_toc_block(text)
     text = normalize_key_blocks(text)
+    text = normalize_action_reference_blocks(text)
     body = markdown.markdown(
         text,
         extensions=[
@@ -248,7 +292,14 @@ def render_markdown(input_path: Path, output_path: Path) -> None:
         ],
         output_format="html5",
     )
-    title = input_path.stem.replace("-", " ").title()
+    title = ""
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            title = stripped[2:].strip()
+            break
+    if not title:
+        title = input_path.stem.replace("-", " ").title()
     full_html = build_html(title=title, body_html=body)
     if output_path.exists():
         current_html = output_path.read_text(encoding="utf-8")
