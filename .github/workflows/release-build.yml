@@ -134,7 +134,7 @@ jobs:
       run: |
         dotnet restore TopSpeed.Tests/TopSpeed.Tests.csproj
         dotnet restore TopSpeed.Server/TopSpeed.Server.csproj
-        dotnet restore TopSpeed/TopSpeed.csproj --framework net472
+        dotnet restore TopSpeed/TopSpeed.csproj
 
     - name: Build shared tests (net10.0)
       run: dotnet build TopSpeed.Tests/TopSpeed.Tests.csproj --configuration Release --framework net10.0 --no-restore
