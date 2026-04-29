@@ -1,6 +1,6 @@
 {
-  "version": "2026.4.21.1",
-  "serverVersion": "2026.4.13.2",
+  "version": "2026.4.29.1",
+  "serverVersion": "2026.4.29.1",
   "changes": [
     "Fixed audio issues on Android. There should be no stuttering on most phones now. If you had turned off HRTF audio before, please reenable it back and try again.",
     "Added controller support on mobile.",

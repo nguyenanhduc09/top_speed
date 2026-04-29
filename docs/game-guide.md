@@ -77,7 +77,7 @@ Top Speed Remake project code is distributed under GNU GPL v3.
 
 The build includes third-party components with their own licenses. If you redistribute the game, keep those third-party notices with your package.
 
-Main third-party license groups used here include MiniAudioEx license texts, SteamAudio.NET (MIT), Steam Audio native license text (Apache 2.0), and other bundled dependency licenses distributed with the project.
+Main third-party license groups used here include SoundFlow notices, SteamAudio.NET (MIT), Steam Audio native license text (Apache 2.0), and other bundled dependency licenses distributed with the project.
 
 ## 4. Supported Platforms
 Top Speed is available on various desktop operating systems and mobile. Mobile support is currently limited to Android, and hopefully iOS will come in the future.
@@ -104,6 +104,8 @@ Localization handles translated menu text and spoken strings.
 ## 5. Install, Update, and Remove
 ### Install on Desktop
 Desktop builds are portable. Extract the package into one folder and keep all bundled folders beside the executable.
+
+If you are having issues or getting errors when trying to open the game, please download the [Visual C++ Redistributable bundle](https://blindhelp.net/software/vc-dx). This link will open a third-party website where you can download it from there.
 
 Do not move only the executable into another location. The game expects its content folders to stay together. If you need a quick way of accessing the game, you may wish to create a shortcut to the executable and placing it on the desktop (for example) on Windows.
 

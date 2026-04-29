@@ -18,15 +18,15 @@ namespace TopSpeed.Vehicles
                 return false;
             }
 
-            var fullPath = Path.GetFullPath(path);
-            if (!File.Exists(fullPath))
-            {
-                error = LocalizationService.Mark("The selected media file does not exist.");
-                return false;
-            }
-
             try
             {
+                var fullPath = Path.GetFullPath(path);
+                if (!File.Exists(fullPath))
+                {
+                    error = LocalizationService.Mark("The selected media file does not exist.");
+                    return false;
+                }
+
                 var wasPlaying = preservePlaybackState ? _desiredPlaying : false;
                 DisposeSource();
                 var asset = _audio.LoadStream(fullPath);
