@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-29 04:18+0300\n"
+"POT-Creation-Date: 2026-04-29 18:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Join denied: player={0}, room={1}, raceStarted={2}, preparing={3}."
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:205
+#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:209
 #, csharp-format
 msgid "Join room assignment: room={0}, player={1}, playerNumber={2}, host={3}."
 msgstr ""
@@ -675,7 +675,7 @@ msgstr ""
 msgid "Player joined room: room={0} \"{1}\", player={2}, participants={3}/{4}."
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:161
+#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:165
 #, csharp-format
 msgid "Player left room: room={0} \"{1}\", player={2}, notify={3}."
 msgstr ""
@@ -707,8 +707,8 @@ msgstr ""
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Runtime\admin.cs:78
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Notify\Room.cs:194
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Race\Players.cs:60
-#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:196
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:200
+#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:204
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Numbering.cs:72
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Ready.cs:83
 #, csharp-format
@@ -1316,6 +1316,10 @@ msgstr ""
 msgid "You are not in this game room."
 msgstr ""
 
+#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Room\Membership.cs:157
+msgid "You are now host of this room."
+msgstr ""
+
 #: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Protocol\Handshake.cs:152
 #, csharp-format
 msgid ""
@@ -1550,7 +1554,7 @@ msgstr ""
 msgid "{0} says: {1}"
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Race\Control.cs:125
+#: D:\top_speed\top_speed_net\TopSpeed.Server\Network\Services\Race\Control.cs:126
 #, csharp-format
 msgid "{0} stopped the current game."
 msgstr ""

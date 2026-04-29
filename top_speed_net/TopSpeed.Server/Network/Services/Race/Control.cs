@@ -119,8 +119,9 @@ namespace TopSpeed.Server.Network
                 }
 
                 TransitionState(room, RoomRaceState.Lobby);
-                _owner.SendProtocolMessageToRoom(
+                _owner.SendProtocolMessageToRoomExcept(
                     room,
+                    host.Id,
                     LocalizationService.Format(
                         LocalizationService.Mark("{0} stopped the current game."),
                         RaceServer.DescribePlayer(host)));

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-29 16:07+0300\n"
+"POT-Creation-Date: 2026-04-29 18:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2332,7 +2332,7 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
-#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\State\Rooms\Apply.cs:133
+#: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Coordinator\State\Rooms\Apply.cs:128
 #: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Domain\Online\Map.cs:49
 msgid "Player "
 msgstr ""
@@ -4189,7 +4189,7 @@ msgid "You are not in a game room."
 msgstr ""
 
 #: D:\top_speed\top_speed_net\TopSpeed\Core\Multiplayer\Chat\HistoryText.cs:22
-msgid "You are now host of this game."
+msgid "You are now host of this room."
 msgstr ""
 
 #: D:\top_speed\top_speed_net\TopSpeed\Game\Updates\Install.cs:39

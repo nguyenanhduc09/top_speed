@@ -53,11 +53,9 @@ namespace TopSpeed.Core.Multiplayer
         public bool TryApplyCurrentRoomEvent(
             RoomEventInfo roomEvent,
             uint localPlayerId,
-            out bool localHostChanged,
-            out bool becameHost)
+            out bool localHostChanged)
         {
             localHostChanged = false;
-            becameHost = false;
 
             if (!CurrentRoom.InRoom || CurrentRoom.RoomId != roomEvent.RoomId)
                 return false;
@@ -92,9 +90,6 @@ namespace TopSpeed.Core.Multiplayer
             }
 
             localHostChanged = previousIsHost != CurrentRoom.IsHost;
-            becameHost = localHostChanged &&
-                CurrentRoom.IsHost &&
-                (roomEvent.Kind == RoomEventKind.ParticipantLeft || roomEvent.Kind == RoomEventKind.HostChanged);
             WasHost = CurrentRoom.IsHost;
             return true;
         }

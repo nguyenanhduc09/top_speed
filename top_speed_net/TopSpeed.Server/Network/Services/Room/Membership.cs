@@ -152,7 +152,11 @@ namespace TopSpeed.Server.Network
                     TouchVersion(room);
                     _owner._notify.RoomParticipant(room, RoomEventKind.ParticipantLeft, player.Id, oldNumber, PlayerState.NotReady, leftName);
                     if (previousHostId != room.HostId)
+                    {
+                        if (_owner._players.TryGetValue(room.HostId, out var newHost))
+                            _owner.SendProtocolMessage(newHost, ProtocolMessageCode.Ok, LocalizationService.Mark("You are now host of this room."));
                         _owner._notify.RoomLifecycle(room, RoomEventKind.HostChanged);
+                    }
                     _owner._notify.RoomLifecycle(room, RoomEventKind.RoomSummaryUpdated);
                     _owner._notify.BroadcastRoomState(room);
                 }

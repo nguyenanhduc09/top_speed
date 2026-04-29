@@ -93,7 +93,10 @@ namespace TopSpeed.Server.Network
             if (lapDistance <= 0f)
                 return 0f;
 
-            var laps = room.Laps > 0 ? room.Laps : (byte)1;
+            var trackLaps = room.TrackData?.Laps ?? 0;
+            var laps = trackLaps > 0
+                ? trackLaps
+                : room.Laps > 0 ? room.Laps : 1;
             return lapDistance * laps;
         }
 

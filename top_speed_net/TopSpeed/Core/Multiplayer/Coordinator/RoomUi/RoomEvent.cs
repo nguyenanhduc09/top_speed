@@ -13,8 +13,7 @@ namespace TopSpeed.Core.Multiplayer
                 bool isCreator,
                 uint localPlayerId,
                 bool updatedCurrentRoom,
-                bool localHostChanged,
-                bool becameHost)
+                bool localHostChanged)
             {
                 var effects = new List<PacketEffect>();
                 var suppressRemoteRoomCreatedNotice = ShouldSuppressRemoteRoomCreatedNotice(eventInfo, isCreator);
@@ -30,7 +29,7 @@ namespace TopSpeed.Core.Multiplayer
                 }
 
                 if (updatedCurrentRoom)
-                    AddCurrentRoomEventEffects(eventInfo, localPlayerId, effects, becameHost);
+                    AddCurrentRoomEventEffects(eventInfo, localPlayerId, effects);
                 if (localHostChanged)
                     AddRoomMenuRebuildEffects(effects);
                 if (updatedCurrentRoom)
@@ -58,8 +57,7 @@ namespace TopSpeed.Core.Multiplayer
             private void AddCurrentRoomEventEffects(
                 RoomEventInfo roomEvent,
                 uint localPlayerId,
-                List<PacketEffect> effects,
-                bool becameHost)
+                List<PacketEffect> effects)
             {
                 switch (roomEvent.Kind)
                 {
@@ -86,13 +84,6 @@ namespace TopSpeed.Core.Multiplayer
                         }
                         break;
                 }
-
-                if (!becameHost)
-                    return;
-
-                var hostText = HistoryText.BecameHost();
-                effects.Add(PacketEffect.Speak(hostText));
-                effects.Add(PacketEffect.AddRoomEventHistory(hostText));
             }
 
             private bool ShouldSuppressRemoteRoomCreatedNotice(RoomEventInfo eventInfo, bool isCreator)

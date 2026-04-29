@@ -19,7 +19,7 @@ namespace TopSpeed.Core.Multiplayer.Chat
 
         public static string BecameHost()
         {
-            return LocalizationService.Mark("You are now host of this game.");
+            return LocalizationService.Mark("You are now host of this room.");
         }
 
         public static string ParticipantJoined(RoomEventInfo roomEvent)

@@ -28,9 +28,8 @@ namespace TopSpeed.Core.Multiplayer
             var updatedCurrentRoom = _state.Rooms.TryApplyCurrentRoomEvent(
                 eventInfo,
                 localPlayerId,
-                out var localHostChanged,
-                out var becameHost);
-            _roomUi.HandleRoomEvent(eventInfo, isCreator, localPlayerId, updatedCurrentRoom, localHostChanged, becameHost);
+                out var localHostChanged);
+            _roomUi.HandleRoomEvent(eventInfo, isCreator, localPlayerId, updatedCurrentRoom, localHostChanged);
         }
     }
 }
